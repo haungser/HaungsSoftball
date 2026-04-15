@@ -97,9 +97,9 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
   position:fixed;
   z-index:9999;
   pointer-events:none;
-  opacity:0.92;
-  transform:scale(1.04) rotate(1.5deg);
-  box-shadow:0 8px 32px rgba(0,0,0,0.28),0 0 0 2px var(--clay);
+  opacity:0.94;
+  transform:scale(1.03) rotate(1deg);
+  box-shadow:0 10px 36px rgba(0,0,0,0.32),0 0 0 2px var(--clay);
   border-radius:11px;
   background:var(--panel);
   border:1.5px solid var(--clay);
@@ -110,9 +110,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .drag-ghost .arr{display:none;}
 .drag-ghost .drag-handle{color:var(--clay);}
 
-/* Drop target indicator */
-.brow.drop-above{border-top:3px solid var(--clay);}
-.brow.drop-below{border-bottom:3px solid var(--clay);}
+/* Live reorder — rows shift to open a gap where the card will land */
+.brow{transition:transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.16s ease;}
+.brow.dragging{opacity:0.22;transform:scale(0.97);}
+.brow.shift-down{transform:translateY(calc(var(--row-h,72px) + 6px));}
+.brow.shift-up{transform:translateY(calc(-1 * (var(--row-h,72px) + 6px)));}
 .steal-card{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 6px var(--shadow);}
 .steal-dots{display:flex;gap:10px;align-items:center;margin-bottom:6px;}
 .sdot{width:46px;height:46px;border-radius:50%;border:2.5px solid var(--border2);background:var(--panel2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:all 0.18s;}
@@ -368,6 +370,7 @@ let fairPlayMode=false;
 let steals=[false,false,false];
 let lpTimer=null,lpActive=false,touchDragIdx=null,dragIdx=null;
 let ghostEl=null,ghostOffsetY=0,saveTimer=null;
+let dragRowH=72,rafPending=false,lastDestIdx=null,rowRects=[];
 
 // PERSIST
 const SK='haungs10b-v1';
@@ -578,8 +581,22 @@ function haptic(type) {
 /** Create floating ghost clone of the dragged row */
 function createGhost(row, touchY) {
   removeGhost();
+  // Snapshot ALL row positions before any transforms are applied.
+  // getDropTarget uses this frozen geometry — immune to CSS transform jitter.
+  rowRects = [];
+  document.querySelectorAll('#sc-batting .brow:not(.drag-ghost)').forEach(r => {
+    const rect = r.getBoundingClientRect();
+    rowRects.push({ idx: +r.dataset.i, top: rect.top, bottom: rect.bottom, el: r });
+  });
+
   const rect = row.getBoundingClientRect();
   ghostOffsetY = touchY - rect.top;
+  dragRowH = rect.height;
+  document.querySelectorAll('#sc-batting .brow').forEach(r =>
+    r.style.setProperty('--row-h', dragRowH + 'px')
+  );
+  lastDestIdx = null;
+  rafPending = false;
   ghostEl = row.cloneNode(true);
   ghostEl.className = 'brow drag-ghost';
   ghostEl.style.width = rect.width + 'px';
@@ -595,27 +612,36 @@ function moveGhost(touchY) {
 
 function removeGhost() {
   if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+  rowRects = [];
 }
 
-/** Find which row the finger is over and whether above/below midpoint */
+/** Hit-test against frozen rect snapshot — no live layout reads during drag */
 function getDropTarget(touchX, touchY, sourceRow) {
-  removeHighlights();
-  const rows = [...document.querySelectorAll('#sc-batting .brow')];
-  for (const r of rows) {
-    if (r === sourceRow || r.classList.contains('drag-ghost')) continue;
-    const rect = r.getBoundingClientRect();
-    if (touchY >= rect.top && touchY <= rect.bottom) {
-      const mid = rect.top + rect.height / 2;
-      r.classList.add(touchY < mid ? 'drop-above' : 'drop-below');
-      return +r.dataset.i;
-    }
+  for (const r of rowRects) {
+    if (r.el === sourceRow) continue;
+    if (touchY >= r.top && touchY <= r.bottom) return r.idx;
   }
   return null;
 }
 
+/** Shift rows visually — only called when destIdx actually changes */
+function applyShifts(srcIdx, destIdx) {
+  const rows = [...document.querySelectorAll('#sc-batting .brow:not(.drag-ghost)')];
+  rows.forEach(r => {
+    r.classList.remove('shift-down', 'shift-up');
+    if (r.classList.contains('dragging')) return;
+    const ri = +r.dataset.i;
+    if (srcIdx < destIdx) {
+      if (ri > srcIdx && ri <= destIdx) r.classList.add('shift-up');
+    } else {
+      if (ri >= destIdx && ri < srcIdx) r.classList.add('shift-down');
+    }
+  });
+}
+
 function removeHighlights() {
   document.querySelectorAll('.brow').forEach(r => {
-    r.classList.remove('drag-over','drop-above','drop-below');
+    r.classList.remove('drag-over','drop-above','drop-below','shift-down','shift-up');
   });
 }
 
@@ -672,7 +698,6 @@ function renderBatting() {
     row.addEventListener('dragstart', e => {
       dragIdx = i;
       row.classList.add('dragging');
-      // Suppress default ghost — use invisible 1px image
       const img = new Image();
       img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       e.dataTransfer.setDragImage(img, 0, 0);
@@ -680,15 +705,12 @@ function renderBatting() {
     });
     row.addEventListener('dragover', e => {
       e.preventDefault();
-      removeHighlights();
-      const rect = row.getBoundingClientRect();
-      const mid = rect.top + rect.height / 2;
-      row.classList.add(e.clientY < mid ? 'drop-above' : 'drop-below');
+      applyShifts(dragIdx, i);
     });
     row.addEventListener('drop', e => { e.preventDefault(); doDrop(i); });
     row.addEventListener('dragend', () => {
       document.querySelectorAll('.brow').forEach(r =>
-        r.classList.remove('dragging','drag-over','drop-above','drop-below')
+        r.classList.remove('dragging','drag-over','drop-above','drop-below','shift-down','shift-up')
       );
       dragIdx = null;
     });
@@ -698,7 +720,6 @@ function renderBatting() {
 
     handle.addEventListener('touchstart', e => {
       e.stopPropagation();
-      // Clear any lingering state
       clearTimeout(lpTimer);
       lpActive = false;
 
@@ -716,24 +737,48 @@ function renderBatting() {
       if (!lpActive) { clearTimeout(lpTimer); return; }
       e.preventDefault();
       const t = e.touches[0];
-      moveGhost(t.clientY);
-      const target = getDropTarget(t.clientX, t.clientY, row);
-      // Tick haptic when crossing into new row
-      if (target !== null && target !== touchDragIdx) haptic('tick');
+      const touchY = t.clientY;
+
+      // rAF-lock: ghost position update — smooth, no layout thrash
+      if (!rafPending) {
+        rafPending = true;
+        requestAnimationFrame(() => {
+          if (ghostEl) ghostEl.style.top = (touchY - ghostOffsetY) + 'px';
+          rafPending = false;
+        });
+      }
+
+      // Only recompute shifts when finger crosses into a new row
+      const target = getDropTarget(t.clientX, touchY, row);
+      if (target !== null && target !== lastDestIdx) {
+        lastDestIdx = target;
+        haptic('tick');
+        applyShifts(i, target);
+      } else if (target === null && lastDestIdx !== null) {
+        lastDestIdx = null;
+        removeHighlights();
+        row.classList.add('dragging');
+      }
     }, { passive: false });
 
     handle.addEventListener('touchend', e => {
       clearTimeout(lpTimer);
-      if (!lpActive) { touchDragIdx = null; return; }
+      if (!lpActive) { touchDragIdx = null; lpActive = false; return; }
 
       const t = e.changedTouches[0];
-      const target = getDropTarget(t.clientX, t.clientY, row);
+      const src = i;
+      const target = lastDestIdx !== null ? lastDestIdx : getDropTarget(t.clientX, t.clientY, row);
+
       removeGhost();
       removeHighlights();
       document.querySelectorAll('.brow').forEach(x => x.classList.remove('dragging'));
+      lastDestIdx = null;
+      rafPending = false;
 
-      if (target !== null && target !== i) {
+      if (target !== null && target !== src) {
         haptic('drop');
+        dragIdx = null;
+        touchDragIdx = src;
         doDrop(target);
       }
       touchDragIdx = null;
@@ -745,6 +790,8 @@ function renderBatting() {
       removeGhost();
       removeHighlights();
       document.querySelectorAll('.brow').forEach(x => x.classList.remove('dragging'));
+      lastDestIdx = null;
+      rafPending = false;
       touchDragIdx = null;
       lpActive = false;
     });
@@ -850,10 +897,7 @@ function renderDefense(){
 function toggleFairPlay(on){
   fairPlayMode=on;
   save();
-  // Re-run all three blocks in sequence so Fair Play logic has full context
   autoSuggestAll();
-  defBlocks.forEach((_,bi)=>{const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);});
-  renderBatting();
   save();
   renderDefense();
 }
@@ -873,21 +917,50 @@ function renderDefGrid(bi){
     grid.appendChild(cell);
   });
 }
-function setBench(bi,pi){const old=defBlocks[bi].benchIdx;const taken=Object.entries(defBlocks[bi].assignments).find(([,v])=>v===pi);if(taken){defBlocks[bi].assignments[taken[0]]=old;syncBatPos(old,taken[0]);}defBlocks[bi].benchIdx=pi;const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(pi);save();renderDefGrid(bi);}
+function setBench(bi,pi){const old=defBlocks[bi].benchIdx;const taken=Object.entries(defBlocks[bi].assignments).find(([,v])=>v===pi);if(taken){defBlocks[bi].assignments[taken[0]]=old;syncBatPos(old,taken[0]);}defBlocks[bi].benchIdx=pi;const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(pi);save();renderDefGrid(bi);refreshComplianceChips();}
 function doSuggest(bi){
   if(fairPlayMode){
-    // In Fair Play mode, always re-run all blocks in sequence for correct IF/OF accounting
     autoSuggestAll();
-    defBlocks.forEach((_,i)=>{const tag=document.getElementById(`btag-${i}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[i].benchIdx);renderDefGrid(i);});
+    defBlocks.forEach((_,i)=>{
+      const tag=document.getElementById(`btag-${i}`);
+      if(tag)tag.textContent='BENCH: '+fn(defBlocks[i].benchIdx);
+      renderDefGrid(i);
+    });
   } else {
     autoSuggest(bi);
-    const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);
+    const tag=document.getElementById(`btag-${bi}`);
+    if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);
     renderDefGrid(bi);
   }
   if(defBlocks[0].assignments){Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBatPos(pi,pos));renderBatting();}
   save();
-  // Refresh compliance chips
-  renderDefense();
+  refreshComplianceChips();
+}
+
+function refreshComplianceChips(){
+  const sc=document.getElementById('sc-defense');
+  if(!sc)return;
+  // Remove existing chips if any
+  const old=sc.querySelector('.fp-compliance');if(old)old.remove();
+  if(!fairPlayMode)return;
+  const allFilled=defBlocks.every(b=>Object.keys(b.assignments).length===10);
+  if(!allFilled)return;
+  const compliance=getFairPlayCompliance();
+  const chips=document.createElement('div');chips.className='fp-compliance';
+  const benchSet=new Set(defBlocks.map(b=>b.benchIdx));
+  roster.forEach((p,pi)=>{
+    const c=compliance[pi];
+    const isBench=benchSet.has(pi);
+    const minIF=isBench?1:2,minOF=isBench?1:2;
+    const ok=c.if>=minIF&&c.of>=minOF;
+    const chip=document.createElement('span');
+    chip.className='fp-chip '+(ok?'fp-chip-ok':'fp-chip-warn');
+    chip.textContent=(ok?'✓ ':'⚠ ')+p.name.split(' ')[0]+` ${c.if}IF/${c.of}OF`;
+    chips.appendChild(chip);
+  });
+  // Insert after the fp-banner
+  const banner=sc.querySelector('.fp-banner');
+  if(banner)banner.after(chips);else sc.insertBefore(chips,sc.children[1]||null);
 }
 
 // SETTINGS
