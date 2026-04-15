@@ -148,6 +148,23 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .rot-good{background:rgba(26,122,56,0.12);color:var(--good);border:1px solid rgba(26,122,56,0.3);}
 .rot-warn{background:rgba(176,90,0,0.12);color:var(--warn);border:1px solid rgba(176,90,0,0.3);}
 
+/* FAIR PLAY MODE */
+.fp-banner{display:flex;align-items:center;gap:10px;background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:11px 13px;margin-bottom:10px;box-shadow:0 2px 6px var(--shadow);}
+.fp-icon{font-size:1.2rem;flex-shrink:0;}
+.fp-text{flex:1;}
+.fp-label{font-family:'Barlow Condensed',sans-serif;font-size:0.88rem;letter-spacing:1.5px;font-weight:800;color:var(--ink);}
+.fp-sub{font-size:0.67rem;color:var(--muted);margin-top:1px;line-height:1.4;}
+.fp-toggle{position:relative;width:48px;height:27px;flex-shrink:0;}
+.fp-toggle input{opacity:0;width:0;height:0;position:absolute;}
+.fp-slider{position:absolute;inset:0;background:var(--panel2);border:1.5px solid var(--border2);border-radius:27px;cursor:pointer;transition:all 0.22s;}
+.fp-slider::before{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:var(--muted);transition:all 0.22s;}
+.fp-toggle input:checked+.fp-slider{background:var(--grass);border-color:var(--grass-l);}
+.fp-toggle input:checked+.fp-slider::before{transform:translateX(21px);background:#fff;}
+.fp-compliance{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.fp-chip{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:1px;padding:3px 8px;border-radius:10px;font-weight:700;}
+.fp-chip-ok{background:rgba(26,122,56,0.12);color:var(--good);border:1px solid rgba(26,122,56,0.3);}
+.fp-chip-warn{background:rgba(176,90,0,0.12);color:var(--warn);border:1px solid rgba(176,90,0,0.3);}
+
 /* SETTINGS */
 .spc{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;margin-bottom:8px;overflow:hidden;box-shadow:0 2px 6px var(--shadow);}
 .spc-hdr{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--panel2);border-bottom:1.5px solid var(--border2);cursor:pointer;-webkit-tap-highlight-color:transparent;}
@@ -347,14 +364,15 @@ let battingOrder=[
   {idx:9,batPos:'RF'},{idx:10,batPos:'LF'}
 ];
 let defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];
+let fairPlayMode=false;
 let steals=[false,false,false];
 let lpTimer=null,lpActive=false,touchDragIdx=null,dragIdx=null;
 let ghostEl=null,ghostOffsetY=0,saveTimer=null;
 
 // PERSIST
 const SK='haungs10b-v1';
-function save(){try{localStorage.setItem(SK,JSON.stringify({roster,battingOrder,defBlocks,gameLog,awardOverrides,awardNotes,awardBlurbs}));}catch(e){}}
-function load(){try{const r=localStorage.getItem(SK);if(!r)return;const s=JSON.parse(r);if(s.roster)roster=s.roster;if(s.battingOrder)battingOrder=s.battingOrder;if(s.defBlocks)defBlocks=s.defBlocks;if(s.gameLog)gameLog=s.gameLog;if(s.awardOverrides)awardOverrides=s.awardOverrides;if(s.awardNotes)awardNotes=s.awardNotes;if(s.awardBlurbs)awardBlurbs=s.awardBlurbs;}catch(e){}}
+function save(){try{localStorage.setItem(SK,JSON.stringify({roster,battingOrder,defBlocks,gameLog,awardOverrides,awardNotes,awardBlurbs,fairPlayMode}));}catch(e){}}
+function load(){try{const r=localStorage.getItem(SK);if(!r)return;const s=JSON.parse(r);if(s.roster)roster=s.roster;if(s.battingOrder)battingOrder=s.battingOrder;if(s.defBlocks)defBlocks=s.defBlocks;if(s.gameLog)gameLog=s.gameLog;if(s.awardOverrides)awardOverrides=s.awardOverrides;if(s.awardNotes)awardNotes=s.awardNotes;if(s.awardBlurbs)awardBlurbs=s.awardBlurbs;if(typeof s.fairPlayMode==='boolean')fairPlayMode=s.fairPlayMode;}catch(e){}}
 
 // THEME
 function toggleTheme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('tv10b-theme',h.dataset.theme);}catch(e){}}
@@ -419,13 +437,78 @@ function streakLabel(idx){
 function effRank(idx){const r=recentStats(3)[idx];if(!r||r.ab<2)return roster[idx].rank;const b=r.avg>0.4?-2:r.avg>0.3?-1:r.avg<0.15?2:0;return roster[idx].rank+b;}
 
 // AUTO-SUGGEST
-function buildSuggest(benchIdx,prev,pp){
+const IF_POS=new Set(['P','C','1B','2B','3B','SS']);
+const OF_POS=new Set(['LF','LC','CF','RF']);
+
+function buildSuggest(benchIdx,prev,pp,allBlocks){
   const pool=roster.map((_,i)=>i).filter(i=>i!==benchIdx);
   const assigned={},used=new Set();
   const prevMap={};if(prev)Object.entries(prev).forEach(([p,pi])=>prevMap[pi]=p);
   const ppMap={};if(pp)Object.entries(pp).forEach(([p,pi])=>ppMap[pi]=p);
   function sc(pi,pos){return(roster[pi].strengths[pos]||0)*10+(10-effRank(pi))+(prevMap[pi]===pos?-8:0)+(pp&&ppMap[pi]===pos?2:0);}
-  for(const pos of POS_PRI){const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}}
+
+  if(fairPlayMode && allBlocks){
+    // ── FAIR PLAY MODE: guarantee every player ≥2 innings IF and ≥2 innings OF ──
+    // Count IF/OF innings already earned in prior blocks for each player
+    const ifCount={},ofCount={};
+    pool.forEach(pi=>{ifCount[pi]=0;ofCount[pi]=0;});
+    (allBlocks||[]).forEach(b=>{
+      if(!b||!b.assignments)return;
+      Object.entries(b.assignments).forEach(([pos,pi])=>{
+        if(IF_POS.has(pos))ifCount[pi]=(ifCount[pi]||0)+2;
+        if(OF_POS.has(pos))ofCount[pi]=(ofCount[pi]||0)+2;
+      });
+    });
+
+    // Determine which players NEED IF or OF this block to hit 2-inning minimums
+    // This is the last block (bi=2, "allBlocks" contains prior two), so anyone at 0 needs it now
+    const needsIF=pool.filter(pi=>ifCount[pi]===0);
+    const needsOF=pool.filter(pi=>ofCount[pi]===0);
+
+    // Reserve 1 IF spot per needsIF player, 1 OF spot per needsOF player
+    // Build position pools
+    const ifPositions=[...IF_POS].filter(p=>POS_PRI.includes(p));
+    const ofPositions=[...OF_POS].filter(p=>POS_PRI.includes(p));
+
+    // Assign mandated IF players first (sorted by fit)
+    const reservedIF={},reservedOF={};
+    const usedPos=new Set();
+
+    // Sort needsIF by best IF fit descending
+    const sortedNeedsIF=[...needsIF].sort((a,b)=>{
+      const bA=Math.max(...ifPositions.map(p=>roster[a].strengths[p]||0));
+      const bB=Math.max(...ifPositions.map(p=>roster[b].strengths[p]||0));
+      return bB-bA;
+    });
+    sortedNeedsIF.forEach(pi=>{
+      if(used.has(pi))return;
+      const best=ifPositions.filter(p=>!usedPos.has(p)).sort((a,b)=>sc(pi,b)-sc(pi,a))[0];
+      if(best){assigned[best]=pi;used.add(pi);usedPos.add(best);}
+    });
+
+    // Sort needsOF by best OF fit descending
+    const sortedNeedsOF=[...needsOF].sort((a,b)=>{
+      const bA=Math.max(...ofPositions.map(p=>roster[a].strengths[p]||0));
+      const bB=Math.max(...ofPositions.map(p=>roster[b].strengths[p]||0));
+      return bB-bA;
+    });
+    sortedNeedsOF.forEach(pi=>{
+      if(used.has(pi))return;
+      const best=ofPositions.filter(p=>!usedPos.has(p)).sort((a,b)=>sc(pi,b)-sc(pi,a))[0];
+      if(best){assigned[best]=pi;used.add(pi);usedPos.add(best);}
+    });
+
+    // Fill remaining positions with normal scoring
+    for(const pos of POS_PRI){
+      if(assigned[pos]!==undefined)continue;
+      const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));
+      if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}
+    }
+  } else {
+    // ── STANDARD MODE ──
+    for(const pos of POS_PRI){const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}}
+  }
+
   if(prev){
     let changed=0;pool.forEach(pi=>{const np=Object.entries(assigned).find(([,v])=>v===pi)?.[0];if(prevMap[pi]!==np)changed++;});
     if(changed<=pool.length/2){
@@ -440,7 +523,37 @@ function buildSuggest(benchIdx,prev,pp){
   }
   return assigned;
 }
-function autoSuggest(bi){defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,bi>0?defBlocks[bi-1].assignments:null,bi>1?defBlocks[bi-2].assignments:null);}
+
+function autoSuggest(bi){
+  const prev=bi>0?defBlocks[bi-1].assignments:null;
+  const pp=bi>1?defBlocks[bi-2].assignments:null;
+  // Pass prior completed blocks so Fair Play can count what players have already earned
+  const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>b.assignments?{assignments:b.assignments}:null):null;
+  defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks);
+}
+
+// Run all three suggest blocks in sequence so each block sees the prior ones
+function autoSuggestAll(){
+  for(let bi=0;bi<3;bi++){
+    const prev=bi>0?defBlocks[bi-1].assignments:null;
+    const pp=bi>1?defBlocks[bi-2].assignments:null;
+    const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>({assignments:{...b.assignments}})):null;
+    defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks);
+  }
+}
+
+// Compliance check: per player, count IF and OF innings across all 3 blocks
+function getFairPlayCompliance(){
+  const result={};
+  roster.forEach((_,pi)=>{result[pi]={if:0,of:0};});
+  defBlocks.forEach(block=>{
+    Object.entries(block.assignments).forEach(([pos,pi])=>{
+      if(IF_POS.has(pos))result[pi].if+=2;
+      if(OF_POS.has(pos))result[pi].of+=2;
+    });
+  });
+  return result;
+}
 function syncBatPos(pi,pos){const b=battingOrder.find(b=>b.idx===pi);if(b)b.batPos=pos;}
 function manualDefAssign(bi,pos,newPi){
   const block=defBlocks[bi],oldPi=block.assignments[pos];
@@ -672,6 +785,42 @@ const BLK=['Innings 1–2','Innings 3–4','Innings 5–6'];
 function renderDefense(){
   const sc=document.getElementById('sc-defense');sc.innerHTML='';
   sc.appendChild(Object.assign(document.createElement('div'),{className:'slabel',textContent:'SELECT BENCH · ✦ SUGGEST FILLS 10 POSITIONS'}));
+
+  // ── Fair Play Mode banner ──
+  const fpBanner=document.createElement('div');fpBanner.className='fp-banner';
+  fpBanner.innerHTML=`
+    <div class="fp-icon">⚖️</div>
+    <div class="fp-text">
+      <div class="fp-label">FAIR PLAY MODE</div>
+      <div class="fp-sub">Ensures every player gets ≥2 innings in IF <em>and</em> ≥2 innings in OF per game</div>
+    </div>
+    <label class="fp-toggle">
+      <input type="checkbox" id="fpToggle" ${fairPlayMode?'checked':''} onchange="toggleFairPlay(this.checked)">
+      <span class="fp-slider"></span>
+    </label>`;
+  sc.appendChild(fpBanner);
+
+  // Compliance chips (only shown when fair play is on and all blocks have assignments)
+  const allFilled=defBlocks.every(b=>Object.keys(b.assignments).length===10);
+  if(fairPlayMode && allFilled){
+    const compliance=getFairPlayCompliance();
+    const chips=document.createElement('div');chips.className='fp-compliance';chips.id='fpCompliance';
+    // Bench players (sit one full block = 0 playing innings that block — compliance tracks playing innings only)
+    const benchSet=new Set(defBlocks.map(b=>b.benchIdx));
+    roster.forEach((p,pi)=>{
+      const c=compliance[pi];
+      const isBench=benchSet.has(pi);
+      // A benched player plays only 4 innings — reduce requirement accordingly
+      const minIF=isBench?1:2,minOF=isBench?1:2;
+      const ok=c.if>=minIF&&c.of>=minOF;
+      const chip=document.createElement('span');
+      chip.className='fp-chip '+(ok?'fp-chip-ok':'fp-chip-warn');
+      chip.textContent=(ok?'✓ ':'⚠ ')+p.name.split(' ')[0]+` ${c.if}IF/${c.of}OF`;
+      chips.appendChild(chip);
+    });
+    sc.appendChild(chips);
+  }
+
   defBlocks.forEach((block,bi)=>{
     if(!Object.keys(block.assignments).length)autoSuggest(bi);
     const wrap=document.createElement('div');wrap.className='iblock';
@@ -697,6 +846,17 @@ function renderDefense(){
   dugoutBtn.onclick=exportDugout;
   sc.appendChild(dugoutBtn);
 }
+
+function toggleFairPlay(on){
+  fairPlayMode=on;
+  save();
+  // Re-run all three blocks in sequence so Fair Play logic has full context
+  autoSuggestAll();
+  defBlocks.forEach((_,bi)=>{const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);});
+  renderBatting();
+  save();
+  renderDefense();
+}
 function countChanges(bi){if(!bi||!defBlocks[bi-1])return 10;const prev=defBlocks[bi-1].assignments,cur=defBlocks[bi].assignments,pm={};Object.entries(prev).forEach(([p,pi])=>pm[pi]=p);let c=0;Object.entries(cur).forEach(([p,pi])=>{if(pm[pi]!==p)c++;});return c;}
 function renderDefGrid(bi){
   const grid=document.getElementById(`dgrid-${bi}`);if(!grid)return;grid.innerHTML='';
@@ -714,7 +874,21 @@ function renderDefGrid(bi){
   });
 }
 function setBench(bi,pi){const old=defBlocks[bi].benchIdx;const taken=Object.entries(defBlocks[bi].assignments).find(([,v])=>v===pi);if(taken){defBlocks[bi].assignments[taken[0]]=old;syncBatPos(old,taken[0]);}defBlocks[bi].benchIdx=pi;const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(pi);save();renderDefGrid(bi);}
-function doSuggest(bi){autoSuggest(bi);const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);if(bi===0){Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBatPos(pi,pos));renderBatting();}save();renderDefGrid(bi);}
+function doSuggest(bi){
+  if(fairPlayMode){
+    // In Fair Play mode, always re-run all blocks in sequence for correct IF/OF accounting
+    autoSuggestAll();
+    defBlocks.forEach((_,i)=>{const tag=document.getElementById(`btag-${i}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[i].benchIdx);renderDefGrid(i);});
+  } else {
+    autoSuggest(bi);
+    const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);
+    renderDefGrid(bi);
+  }
+  if(defBlocks[0].assignments){Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBatPos(pi,pos));renderBatting();}
+  save();
+  // Refresh compliance chips
+  renderDefense();
+}
 
 // SETTINGS
 function renderSettings(){
