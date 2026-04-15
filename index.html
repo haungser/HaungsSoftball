@@ -227,14 +227,16 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 @media print{
 body>*{display:none!important;}
 #pdf-card{display:block!important;}
-@page{size:letter portrait;margin:0.4in 0.35in 0.35in;}
-@page:first{margin-top:0.35in;}
-@top-center{content:none;}
-@top-left{content:none;}
-@top-right{content:none;}
-@bottom-center{content:none;}
-@bottom-left{content:none;}
-@bottom-right{content:none;}
+@page{
+  size:letter portrait;
+  margin:0.35in;
+  @top-left{content:none;}
+  @top-center{content:none;}
+  @top-right{content:none;}
+  @bottom-left{content:none;}
+  @bottom-center{content:none;}
+  @bottom-right{content:none;}
+}
 #pdf-card{font-family:'Barlow Condensed',Arial Narrow,sans-serif;color:#000;background:#fff;width:100%;padding:0;font-size:9pt;}
 .pdf-hdr{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid #C22818;padding-bottom:5px;margin-bottom:10px;}
 .pdf-team{font-size:20pt;font-weight:900;letter-spacing:1px;color:#C22818;line-height:1;}
@@ -888,7 +890,7 @@ function makeDiagramSVG(block, blockLabel){
   // Infield at bottom, outfield at top — standard softball orientation
   const coords={
     'P': {x:170,y:178},
-    'C': {x:170,y:240},
+    'C': {x:170,y:256},
     '1B':{x:228,y:193},
     '2B':{x:200,y:148},
     '3B':{x:112,y:193},
@@ -913,38 +915,38 @@ function makeDiagramSVG(block, blockLabel){
     </g>`;
   }).join('');
 
-  return `<svg viewBox="0 0 340 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+  return `<svg viewBox="0 0 340 292" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
     <!-- Sky / outfield grass -->
-    <rect width="340" height="270" fill="#4a8a3a"/>
+    <rect width="340" height="292" fill="#4a8a3a"/>
     <!-- Outfield arc -->
-    <path d="M 30,240 Q 170,10 310,240 Z" fill="#3d7a30"/>
+    <path d="M 30,250 Q 170,10 310,250 Z" fill="#3d7a30"/>
     <!-- Infield dirt -->
-    <polygon points="170,230 228,182 170,134 112,182" fill="#c8915a"/>
+    <polygon points="170,246 228,182 170,118 112,182" fill="#c8915a"/>
     <!-- Base paths -->
-    <line x1="170" y1="230" x2="228" y2="182" stroke="#e8d8b0" stroke-width="1.5"/>
-    <line x1="228" y1="182" x2="170" y2="134" stroke="#e8d8b0" stroke-width="1.5"/>
-    <line x1="170" y1="134" x2="112" y2="182" stroke="#e8d8b0" stroke-width="1.5"/>
-    <line x1="112" y1="182" x2="170" y2="230" stroke="#e8d8b0" stroke-width="1.5"/>
+    <line x1="170" y1="246" x2="228" y2="182" stroke="#e8d8b0" stroke-width="1.5"/>
+    <line x1="228" y1="182" x2="170" y2="118" stroke="#e8d8b0" stroke-width="1.5"/>
+    <line x1="170" y1="118" x2="112" y2="182" stroke="#e8d8b0" stroke-width="1.5"/>
+    <line x1="112" y1="182" x2="170" y2="246" stroke="#e8d8b0" stroke-width="1.5"/>
     <!-- Bases -->
-    <rect x="164" y="224" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
+    <rect x="164" y="240" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
     <rect x="222" y="176" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
-    <rect x="164" y="128" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
+    <rect x="164" y="112" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
     <rect x="106" y="176" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
     <!-- Pitcher circle -->
-    <circle cx="170" cy="185" r="10" fill="#b07840" stroke="#9a6830" stroke-width="1"/>
+    <circle cx="170" cy="184" r="10" fill="#b07840" stroke="#9a6830" stroke-width="1"/>
     <!-- Pitcher plate -->
-    <rect x="164" y="183" width="12" height="4" rx="1" fill="white"/>
+    <rect x="164" y="182" width="12" height="4" rx="1" fill="white"/>
     <!-- Outfield grass lines -->
     <line x1="30" y1="240" x2="170" y2="10" stroke="#2d6020" stroke-width="0.5" opacity="0.5"/>
     <line x1="310" y1="240" x2="170" y2="10" stroke="#2d6020" stroke-width="0.5" opacity="0.5"/>
     <!-- Foul lines -->
-    <line x1="170" y1="236" x2="30" y2="260" stroke="white" stroke-width="1" opacity="0.6"/>
-    <line x1="170" y1="236" x2="310" y2="260" stroke="white" stroke-width="1" opacity="0.6"/>
+    <line x1="170" y1="252" x2="30" y2="275" stroke="white" stroke-width="1" opacity="0.6"/>
+    <line x1="170" y1="252" x2="310" y2="275" stroke="white" stroke-width="1" opacity="0.6"/>
     <!-- Player labels -->
     ${labels}
     <!-- Bench label -->
-    <rect x="2" y="252" width="336" height="16" rx="0" fill="rgba(194,40,24,0.85)"/>
-    <text x="170" y="263" text-anchor="middle" font-family="Arial Narrow,sans-serif" font-size="7.5" font-weight="800" fill="white" letter-spacing="1">BENCH: ${benchName}</text>
+    <rect x="2" y="274" width="336" height="18" rx="0" fill="rgba(194,40,24,0.85)"/>
+    <text x="170" y="286" text-anchor="middle" font-family="Arial Narrow,sans-serif" font-size="8" font-weight="800" fill="white" letter-spacing="1">BENCH: ${benchName}</text>
   </svg>`;
 }
 
@@ -977,12 +979,12 @@ function exportDugout(){
   const diagrams=defBlocks.map((block,bi)=>{
     const label=['INNINGS 1–2','INNINGS 3–4','INNINGS 5–6'][bi];
     const svg=makeDiagramSVG(block,label);
-    return `<td style="vertical-align:top;padding:0 6px;width:33.3%;">
-      <div style="font-family:Arial Narrow,sans-serif;font-size:10pt;font-weight:900;color:#C22818;letter-spacing:2px;text-align:center;padding:5px 0 4px;border-bottom:2px solid #C22818;margin-bottom:5px;">${label}</div>
-      <div style="width:100%;aspect-ratio:340/270;border:1.5px solid #ccc;border-radius:4px;overflow:hidden;">
+    return `<div style="flex:1;min-height:0;">
+      <div style="font-family:Arial Narrow,sans-serif;font-size:9pt;font-weight:900;color:#C22818;letter-spacing:2px;text-align:center;padding:3px 0 3px;border-bottom:2px solid #C22818;margin-bottom:4px;">${label}</div>
+      <div style="width:100%;border:1.5px solid #ccc;border-radius:4px;overflow:hidden;line-height:0;">
         ${svg}
       </div>
-    </td>`;
+    </div>`;
   }).join('');
 
   card.innerHTML=`
@@ -1003,21 +1005,21 @@ function exportDugout(){
       </div>
 
       <!-- PAGE 2: field diagrams (page break before) -->
-      <div style="page-break-before:always;padding-top:8px;">
+      <div style="page-break-before:always;padding-top:4px;">
         <table style="width:100%;border-collapse:collapse;border-bottom:3px solid #C22818;margin-bottom:10px;">
           <tr>
             <td style="padding-bottom:5px;"><div style="font-size:15pt;font-weight:900;color:#C22818;letter-spacing:1px;">⚾ TEAM HAUNGS — FIELD POSITIONS</div><div style="font-size:7.5pt;letter-spacing:2px;color:#555;margin-top:1px;">TVL MINORS 10B</div></td>
             <td style="text-align:right;padding-bottom:5px;font-size:9pt;font-weight:700;">${today}</td>
           </tr>
         </table>
-        <table style="width:100%;border-collapse:collapse;"><tr>${diagrams}</tr></table>
+        <div style="display:flex;flex-direction:column;gap:10px;">${diagrams}</div>
       </div>
 
     </div>`;
   window.print();
 }
 
-function _setPrintPage(orientation){const e=document.getElementById('_print_page_style');if(e)e.remove();const s=document.createElement('style');s.id='_print_page_style';s.textContent=`@media print { @page { size: letter ${orientation}; margin: 0.35in; } @top-center{content:none} @top-left{content:none} @top-right{content:none} @bottom-center{content:none} @bottom-left{content:none} @bottom-right{content:none} }`;document.head.appendChild(s);}
+function _setPrintPage(orientation){const e=document.getElementById('_print_page_style');if(e)e.remove();const s=document.createElement('style');s.id='_print_page_style';s.textContent=`@media print { @page { size: letter ${orientation}; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} } }`;document.head.appendChild(s);}
 
 // ── STEALS ────────────────────────────────────────────────────────────────────
 function toggleSteal(n){steals[n-1]=!steals[n-1];save();updateSteals();}
