@@ -915,7 +915,7 @@ function makeDiagramSVG(block, blockLabel){
     </g>`;
   }).join('');
 
-  return `<svg viewBox="0 0 340 292" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+  return `<svg viewBox="-20 -10 380 315" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
     <!-- Sky / outfield grass -->
     <rect width="340" height="292" fill="#4a8a3a"/>
     <!-- Outfield arc -->
@@ -982,9 +982,9 @@ function exportDugout(){
     // Each field: label ~18px + SVG. Three fields + header + gaps must fit one landscape page.
     // Landscape letter ~7.8in usable height. Header ~52px. 3 fields share rest.
     // Use max-height on the SVG container so it scales proportionally and never overflows.
-    return `<div style="display:flex;flex-direction:row;align-items:center;gap:10px;page-break-inside:avoid;">
+    return `<div style="display:flex;flex-direction:row;align-items:center;gap:10px;page-break-inside:avoid;max-height:158px;">
       <div style="font-family:Arial Narrow,sans-serif;font-size:8pt;font-weight:900;color:#C22818;letter-spacing:2px;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;padding:0 2px;">${label}</div>
-      <div style="flex:1;border:1.5px solid #ccc;border-radius:4px;overflow:hidden;line-height:0;max-height:155px;">
+      <div style="flex:1;border:1.5px solid #ccc;border-radius:4px;overflow:hidden;line-height:0;">
         ${svg}
       </div>
     </div>`;
