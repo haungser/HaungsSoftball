@@ -36,11 +36,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 html{height:100%;}
 body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-height:100%;padding:0;max-width:430px;margin:0 auto;-webkit-text-size-adjust:100%;transition:background 0.2s,color 0.2s;}
-
-/* STICKY HEADER WRAPPER */
 .sticky-top{position:sticky;top:0;z-index:200;background:var(--bg);transition:background 0.2s;padding:max(env(safe-area-inset-top),12px) 14px 0;}
-
-/* HEADER */
 .hdr{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:10px;border-bottom:2px solid var(--border2);}
 .hdr-left{display:flex;flex-direction:column;gap:2px;}
 .logo{display:inline-flex;background:var(--clay);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2.5px;padding:3px 10px;border-radius:20px;font-weight:700;margin-bottom:2px;}
@@ -53,25 +49,15 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .theme-btn::before{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--clay);transition:transform 0.22s;}
 [data-theme="dark"] .theme-btn::before{transform:translateX(24px);}
 .theme-icons{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 5px;font-size:0.7rem;pointer-events:none;}
-
-/* TAB BAR — inside sticky wrapper */
 .tab-bar{display:grid;grid-template-columns:repeat(5,1fr);background:var(--tab-bg);border-radius:10px;padding:4px;gap:2px;margin:8px 0 0;border:1.5px solid var(--border2);box-shadow:0 2px 6px var(--shadow);}
 .tab-btn{padding:9px 2px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:1.5px;color:var(--tab-text);cursor:pointer;border-radius:8px;border:none;background:none;font-weight:700;min-height:44px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:all 0.18s;}
 .tab-btn.active{background:var(--clay);color:#fff;}
-
-/* OFFLINE BAR */
 .offline-bar{display:none;background:var(--warn);color:#fff;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;font-weight:700;padding:6px 14px;}
 .offline-bar.show{display:block;}
-
-/* TAB CONTENT */
 .tab-content{display:none;}
 .tab-content.active{display:block;}
 .tab-scroll{padding:14px 14px max(env(safe-area-inset-bottom),30px);}
-
-/* SECTION LABEL */
 .slabel{font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:3px;color:var(--muted);margin-bottom:9px;font-weight:700;}
-
-/* BATTING */
 .batting-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
 .brow{display:grid;grid-template-columns:34px 32px 1fr 64px 36px;align-items:center;gap:7px;background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:9px 10px;box-shadow:0 1px 4px var(--shadow);user-select:none;-webkit-user-select:none;}
 .brow.drag-over{border-color:var(--clay);box-shadow:0 0 0 2px var(--clay);}
@@ -85,32 +71,17 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .bstreak{font-size:0.65rem;font-weight:700;margin-top:1px;}
 .bstreak.hot{color:var(--hot);}
 .bstreak.cold{color:var(--cold);}
+/* EH badge styling */
+.eh-badge{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:0.6rem;letter-spacing:1px;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:4px;background:rgba(154,104,0,0.15);color:var(--gold);vertical-align:middle;}
 .pos-sel{background:var(--panel2);border:1.5px solid var(--border2);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-size:0.82rem;font-weight:700;border-radius:7px;padding:5px 3px;width:100%;cursor:pointer;appearance:none;text-align:center;min-height:36px;}
 .pos-sel:focus{outline:none;border-color:var(--clay);}
 .arrow-btns{display:flex;flex-direction:column;gap:3px;}
 .arr{width:36px;height:44px;background:var(--panel2);border:1.5px solid var(--border2);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:var(--ink2);-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:all 0.15s;}
 .arr:active,.arr:hover{background:var(--clay);border-color:var(--clay);color:#fff;}
 .arr:disabled{opacity:0.18;pointer-events:none;}
-
-/* DRAG GHOST — floating card under finger during touch drag */
-.drag-ghost{
-  position:fixed;
-  z-index:9999;
-  pointer-events:none;
-  opacity:0.94;
-  transform:scale(1.03) rotate(1deg);
-  box-shadow:0 10px 36px rgba(0,0,0,0.32),0 0 0 2px var(--clay);
-  border-radius:11px;
-  background:var(--panel);
-  border:1.5px solid var(--clay);
-  transition:none;
-  left:0;top:0;
-  will-change:transform;
-}
+.drag-ghost{position:fixed;z-index:9999;pointer-events:none;opacity:0.94;transform:scale(1.03) rotate(1deg);box-shadow:0 10px 36px rgba(0,0,0,0.32),0 0 0 2px var(--clay);border-radius:11px;background:var(--panel);border:1.5px solid var(--clay);transition:none;left:0;top:0;will-change:transform;}
 .drag-ghost .arr{display:none;}
 .drag-ghost .drag-handle{color:var(--clay);}
-
-/* Live reorder — rows shift to open a gap where the card will land */
 .brow{transition:transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.16s ease;}
 .brow.dragging{opacity:0.22;transform:scale(0.97);}
 .brow.shift-down{transform:translateY(calc(var(--row-h,72px) + 6px));}
@@ -120,8 +91,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .sdot{width:46px;height:46px;border-radius:50%;border:2.5px solid var(--border2);background:var(--panel2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:all 0.18s;}
 .sdot.used{background:var(--clay);border-color:var(--clay);color:#fff;}
 .sreset{font-size:0.75rem;color:var(--clay);background:none;border:none;padding:4px 0;text-decoration:underline;font-weight:700;cursor:pointer;display:block;margin-top:4px;}
-
-/* DEFENSE */
 .iblock{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;margin-bottom:9px;overflow:hidden;box-shadow:0 2px 6px var(--shadow);}
 .iblock-hdr{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--panel2);border-bottom:1.5px solid var(--border2);cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .iblock-hdr-left{flex:1;}
@@ -149,8 +118,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .rot-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2px;padding:3px 9px;border-radius:12px;margin-bottom:8px;font-weight:700;}
 .rot-good{background:rgba(26,122,56,0.12);color:var(--good);border:1px solid rgba(26,122,56,0.3);}
 .rot-warn{background:rgba(176,90,0,0.12);color:var(--warn);border:1px solid rgba(176,90,0,0.3);}
-
-/* FAIR PLAY MODE */
 .fp-banner{display:flex;align-items:center;gap:10px;background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:11px 13px;margin-bottom:10px;box-shadow:0 2px 6px var(--shadow);}
 .fp-icon{font-size:1.2rem;flex-shrink:0;}
 .fp-text{flex:1;}
@@ -166,8 +133,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .fp-chip{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:1px;padding:3px 8px;border-radius:10px;font-weight:700;}
 .fp-chip-ok{background:rgba(26,122,56,0.12);color:var(--good);border:1px solid rgba(26,122,56,0.3);}
 .fp-chip-warn{background:rgba(176,90,0,0.12);color:var(--warn);border:1px solid rgba(176,90,0,0.3);}
-
-/* SETTINGS */
 .spc{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;margin-bottom:8px;overflow:hidden;box-shadow:0 2px 6px var(--shadow);}
 .spc-hdr{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--panel2);border-bottom:1.5px solid var(--border2);cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .spc-name{font-family:'Barlow Condensed',sans-serif;font-size:0.98rem;font-weight:800;color:var(--ink);flex:1;}
@@ -190,8 +155,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .ldot{width:8px;height:8px;border-radius:50%;display:inline-block;}
 .btn-green{width:100%;padding:12px;background:var(--grass);color:#fff;border:none;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;letter-spacing:3px;cursor:pointer;font-weight:700;margin-top:5px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .btn-red-outline{width:100%;padding:11px;background:transparent;color:var(--bad);border:1.5px solid var(--bad);border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;letter-spacing:2px;cursor:pointer;margin-top:8px;font-weight:700;-webkit-tap-highlight-color:transparent;}
-
-/* STATS */
 .upload-zone{background:var(--panel);border:2.5px dashed var(--border2);border-radius:12px;padding:22px 16px;text-align:center;margin-bottom:10px;box-shadow:0 2px 6px var(--shadow);}
 .upload-zone.over{border-color:var(--clay);}
 .upload-h{font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--ink);margin-bottom:4px;font-weight:800;}
@@ -222,8 +185,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .sstreak{font-size:0.65rem;font-weight:700;}
 .sstreak.hot{color:var(--hot);}
 .sstreak.cold{color:var(--cold);}
-
-/* AWARDS */
 .award-badge{display:inline-flex;align-items:center;background:rgba(26,122,56,0.10);border:1.5px solid rgba(26,122,56,0.3);border-radius:6px;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:0.67rem;letter-spacing:2px;color:var(--good);margin-bottom:10px;font-weight:700;}
 .award-intro{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:12px 14px;margin-bottom:10px;font-size:0.8rem;color:var(--ink2);line-height:1.55;box-shadow:0 2px 6px var(--shadow);}
 .acard{background:var(--panel);border:1.5px solid var(--border2);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px var(--shadow);}
@@ -258,61 +219,51 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .btn-gen{background:var(--clay);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;cursor:pointer;margin-top:6px;font-weight:700;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .aov-label{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2px;color:var(--muted);display:block;margin-bottom:5px;font-weight:700;margin-top:8px;}
 .aov-sel{background:var(--panel2);border:1.5px solid var(--border2);color:var(--ink);border-radius:7px;padding:7px 9px;width:100%;font-family:'Barlow',sans-serif;font-size:0.83rem;cursor:pointer;appearance:none;font-weight:600;}
-
-/* MISC */
 .btn-print{width:100%;padding:14px;background:var(--clay);color:#fff;border:none;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:3px;cursor:pointer;margin-top:6px;font-weight:700;min-height:52px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .age-tag{display:inline-block;font-size:0.6rem;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:3px;vertical-align:middle;}
 .a10{background:rgba(154,104,0,0.15);color:var(--gold);}
 .a9{background:rgba(26,122,56,0.15);color:var(--good);}
 
 @media print{
-  body>*{display:none!important;}
-  #pdf-card{display:block!important;}
-  @page{size:letter portrait;margin:0.5in;}
-  #pdf-card{font-family:'Barlow Condensed',Arial Narrow,sans-serif;color:#000;background:#fff;width:100%;padding:0;}
-  .pdf-hdr{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid #C22818;padding-bottom:6px;margin-bottom:14px;}
-  .pdf-team{font-size:22pt;font-weight:900;letter-spacing:1px;color:#C22818;line-height:1;}
-  .pdf-sub{font-size:8pt;letter-spacing:3px;color:#555;margin-top:2px;}
-  .pdf-meta{text-align:right;font-size:8pt;color:#333;line-height:1.7;}
-  .pdf-body{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
-  .pdf-col{}
-  .pdf-section-title{font-size:7pt;letter-spacing:3px;color:#C22818;font-weight:900;border-bottom:1.5px solid #C22818;padding-bottom:3px;margin-bottom:8px;}
-  .pdf-bat-table{width:100%;border-collapse:collapse;}
-  .pdf-bat-table th{font-size:6.5pt;letter-spacing:2px;color:#888;padding:0 4px 4px;text-align:left;border-bottom:1px solid #ddd;font-weight:700;}
-  .pdf-bat-table th.c{text-align:center;}
-  .pdf-bat-table td{font-size:9pt;font-weight:600;padding:5px 4px;border-bottom:0.5px solid #eee;vertical-align:middle;}
-  .pdf-bat-table td.num{font-size:13pt;font-weight:900;color:#C22818;text-align:center;width:20px;}
-  .pdf-bat-table td.top3{color:#9a6800;}
-  .pdf-bat-table td.pos{text-align:center;font-size:8pt;font-weight:800;color:#333;width:30px;}
-  .pdf-bat-table td.stat{font-size:7pt;color:#777;font-weight:600;}
-  .pdf-bat-table tr:last-child td{border-bottom:none;}
-  .pdf-def-block{margin-bottom:10px;}
-  .pdf-def-label{font-size:7pt;letter-spacing:2px;color:#555;font-weight:700;margin-bottom:4px;}
-  .pdf-def-table{width:100%;border-collapse:collapse;}
-  .pdf-def-table td{font-size:8.5pt;font-weight:700;padding:4px 5px;border-bottom:0.5px solid #eee;}
-  .pdf-def-table td.dpos{color:#C22818;font-size:8pt;font-weight:900;width:28px;}
-  .pdf-def-table tr:last-child td{border-bottom:none;}
-  .pdf-rules{background:#fafafa;border:1.5px solid #ddd;border-radius:4px;padding:8px 10px;margin-top:10px;}
-  .pdf-rules-title{font-size:6.5pt;letter-spacing:3px;color:#C22818;font-weight:900;margin-bottom:5px;}
-  .pdf-rule{font-size:7.5pt;color:#333;margin-bottom:3px;padding-left:12px;position:relative;}
-  .pdf-rule::before{content:'→';position:absolute;left:0;color:#C22818;}
-  .pdf-steal{display:flex;gap:6px;align-items:center;border:1.5px solid #C22818;border-radius:4px;padding:6px 10px;margin-top:8px;}
-  .pdf-steal-label{font-size:6.5pt;letter-spacing:2px;font-weight:900;color:#C22818;}
-  .pdf-steal-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid #C22818;display:inline-flex;align-items:center;justify-content:center;font-size:7pt;font-weight:800;color:#C22818;}
-  .pdf-footer{margin-top:14px;border-top:1px solid #ddd;padding-top:5px;display:flex;justify-content:space-between;font-size:6.5pt;color:#aaa;letter-spacing:1px;}
+body>*{display:none!important;}
+#pdf-card{display:block!important;}
+@page{size:letter portrait;margin:0.35in;}
+#pdf-card{font-family:'Barlow Condensed',Arial Narrow,sans-serif;color:#000;background:#fff;width:100%;padding:0;font-size:9pt;}
+.pdf-hdr{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid #C22818;padding-bottom:5px;margin-bottom:10px;}
+.pdf-team{font-size:20pt;font-weight:900;letter-spacing:1px;color:#C22818;line-height:1;}
+.pdf-sub{font-size:7.5pt;letter-spacing:3px;color:#555;margin-top:2px;}
+.pdf-meta{text-align:right;font-size:8pt;color:#333;line-height:1.6;}
+.pdf-body{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.pdf-section-title{font-size:6.5pt;letter-spacing:3px;color:#C22818;font-weight:900;border-bottom:1.5px solid #C22818;padding-bottom:2px;margin-bottom:6px;}
+.pdf-bat-table{width:100%;border-collapse:collapse;}
+.pdf-bat-table th{font-size:6pt;letter-spacing:2px;color:#888;padding:0 4px 3px;text-align:left;border-bottom:1px solid #ddd;font-weight:700;}
+.pdf-bat-table th.c{text-align:center;}
+.pdf-bat-table td{font-size:8.5pt;font-weight:600;padding:4px 4px;border-bottom:0.5px solid #eee;vertical-align:middle;}
+.pdf-bat-table td.num{font-size:12pt;font-weight:900;color:#C22818;text-align:center;width:18px;}
+.pdf-bat-table td.top3{color:#9a6800;}
+.pdf-bat-table td.pos{text-align:center;font-size:7.5pt;font-weight:800;color:#333;width:28px;}
+.pdf-bat-table td.stat{font-size:6.5pt;color:#777;font-weight:600;}
+.pdf-bat-table tr:last-child td{border-bottom:none;}
+.pdf-def-block{margin-bottom:7px;}
+.pdf-def-label{font-size:6.5pt;letter-spacing:2px;color:#555;font-weight:700;margin-bottom:3px;}
+.pdf-def-table{width:100%;border-collapse:collapse;}
+.pdf-def-table td{font-size:8pt;font-weight:700;padding:3px 5px;border-bottom:0.5px solid #eee;}
+.pdf-def-table td.dpos{color:#C22818;font-size:7.5pt;font-weight:900;width:26px;}
+.pdf-def-table tr:last-child td{border-bottom:none;}
+.pdf-rules{background:#fafafa;border:1.5px solid #ddd;border-radius:4px;padding:6px 9px;margin-top:7px;}
+.pdf-rules-title{font-size:6pt;letter-spacing:3px;color:#C22818;font-weight:900;margin-bottom:4px;}
+.pdf-rule{font-size:7pt;color:#333;margin-bottom:2px;padding-left:11px;position:relative;}
+.pdf-rule::before{content:'→';position:absolute;left:0;color:#C22818;}
+.pdf-steal{display:flex;gap:5px;align-items:center;border:1.5px solid #C22818;border-radius:4px;padding:5px 9px;margin-top:6px;}
+.pdf-steal-label{font-size:6pt;letter-spacing:2px;font-weight:900;color:#C22818;}
+.pdf-steal-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid #C22818;display:inline-flex;align-items:center;justify-content:center;font-size:6.5pt;font-weight:800;color:#C22818;}
+.pdf-footer{margin-top:8px;border-top:1px solid #ddd;padding-top:4px;display:flex;justify-content:space-between;font-size:6pt;color:#aaa;letter-spacing:1px;}
 }
-
 </style>
 </head>
 <body>
-
-<!-- Offline indicator -->
 <div class="offline-bar" id="offlineBar">⚡ OFFLINE MODE — DATA SAVED LOCALLY</div>
-
-<!-- Hidden PDF card — populated on demand, shown only on print -->
 <div id="pdf-card" style="display:none;"></div>
-
-<!-- Sticky header + tabs -->
 <div class="sticky-top">
   <div class="hdr">
     <div class="hdr-left">
@@ -333,8 +284,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
     <button class="tab-btn"        onclick="showTab('awards',this)">🏆 AWARDS</button>
   </div>
 </div>
-
-<!-- Tab content -->
 <div id="tab-batting"  class="tab-content active"><div class="tab-scroll" id="sc-batting"></div></div>
 <div id="tab-defense"  class="tab-content"><div class="tab-scroll" id="sc-defense"></div></div>
 <div id="tab-settings" class="tab-content"><div class="tab-scroll" id="sc-settings"></div></div>
@@ -342,9 +291,13 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 <div id="tab-awards"   class="tab-content"><div class="tab-scroll" id="sc-awards"></div></div>
 
 <script>
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
 const FIELD_POS=['P','C','1B','2B','3B','SS','LF','LC','CF','RF'];
+// BAT_POS = field positions + EH (Extra Hitter) for the bench player
+const BAT_POS=[...FIELD_POS,'EH'];
 const POS_PRI=['P','C','SS','3B','1B','2B','CF','LF','LC','RF'];
 
+// ── ROSTER ────────────────────────────────────────────────────────────────────
 let roster=[
   {name:'Emory Moskowitz',age:9,rank:1,strengths:{C:2,SS:2,'2B':1,CF:1,LF:1,RF:1,LC:1}},
   {name:'Geneva Haungs',age:10,rank:2,strengths:{SS:2,'3B':2,P:1,'1B':1,C:1,LF:1,CF:1,RF:1,LC:1}},
@@ -359,11 +312,13 @@ let roster=[
   {name:'Hayley Allia',age:10,rank:10,strengths:{'2B':2,LF:2,CF:1,RF:1,LC:1}},
 ];
 let awardOverrides={},awardNotes={},awardBlurbs={},gameLog=[];
+
+// Default batting order — bench player (idx:10) gets EH
 let battingOrder=[
   {idx:0,batPos:'C'},{idx:1,batPos:'SS'},{idx:2,batPos:'P'},
   {idx:3,batPos:'3B'},{idx:4,batPos:'1B'},{idx:5,batPos:'LF'},
   {idx:6,batPos:'2B'},{idx:7,batPos:'LC'},{idx:8,batPos:'CF'},
-  {idx:9,batPos:'RF'},{idx:10,batPos:'LF'}
+  {idx:9,batPos:'RF'},{idx:10,batPos:'EH'}
 ];
 let defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];
 let fairPlayMode=false;
@@ -372,16 +327,16 @@ let lpTimer=null,lpActive=false,touchDragIdx=null,dragIdx=null;
 let ghostEl=null,ghostOffsetY=0,saveTimer=null;
 let dragRowH=72,rafPending=false,lastDestIdx=null,rowRects=[];
 
-// PERSIST
+// ── PERSIST ───────────────────────────────────────────────────────────────────
 const SK='haungs10b-v1';
 function save(){try{localStorage.setItem(SK,JSON.stringify({roster,battingOrder,defBlocks,gameLog,awardOverrides,awardNotes,awardBlurbs,fairPlayMode}));}catch(e){}}
 function load(){try{const r=localStorage.getItem(SK);if(!r)return;const s=JSON.parse(r);if(s.roster)roster=s.roster;if(s.battingOrder)battingOrder=s.battingOrder;if(s.defBlocks)defBlocks=s.defBlocks;if(s.gameLog)gameLog=s.gameLog;if(s.awardOverrides)awardOverrides=s.awardOverrides;if(s.awardNotes)awardNotes=s.awardNotes;if(s.awardBlurbs)awardBlurbs=s.awardBlurbs;if(typeof s.fairPlayMode==='boolean')fairPlayMode=s.fairPlayMode;}catch(e){}}
 
-// THEME
+// ── THEME ─────────────────────────────────────────────────────────────────────
 function toggleTheme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('tv10b-theme',h.dataset.theme);}catch(e){}}
 (function(){try{const s=localStorage.getItem('tv10b-theme');if(s)document.documentElement.dataset.theme=s;}catch(e){}})();
 
-// TABS
+// ── TABS ──────────────────────────────────────────────────────────────────────
 function showTab(name,btn){
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -389,12 +344,12 @@ function showTab(name,btn){
   btn.classList.add('active');
 }
 
-// HELPERS
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 const fn=i=>roster[i].name.split(' ')[0];
 const fit=(pi,pos)=>roster[pi].strengths[pos]||0;
 function showSaved(){const e=document.getElementById('saveInd');e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800);}
 
-// STATS
+// ── STATS HELPERS ─────────────────────────────────────────────────────────────
 function seasonTotals(){return gameLog.length?gameLog[gameLog.length-1].cumTotals:{};}
 function gameDelta(i){
   const c=gameLog[i].cumTotals,p=i>0?gameLog[i-1].cumTotals:{};
@@ -439,7 +394,7 @@ function streakLabel(idx){
 }
 function effRank(idx){const r=recentStats(3)[idx];if(!r||r.ab<2)return roster[idx].rank;const b=r.avg>0.4?-2:r.avg>0.3?-1:r.avg<0.15?2:0;return roster[idx].rank+b;}
 
-// AUTO-SUGGEST
+// ── AUTO-SUGGEST DEFENSE ──────────────────────────────────────────────────────
 const IF_POS=new Set(['P','C','1B','2B','3B','SS']);
 const OF_POS=new Set(['LF','LC','CF','RF']);
 
@@ -449,93 +404,38 @@ function buildSuggest(benchIdx,prev,pp,allBlocks){
   const prevMap={};if(prev)Object.entries(prev).forEach(([p,pi])=>prevMap[pi]=p);
   const ppMap={};if(pp)Object.entries(pp).forEach(([p,pi])=>ppMap[pi]=p);
   function sc(pi,pos){return(roster[pi].strengths[pos]||0)*10+(10-effRank(pi))+(prevMap[pi]===pos?-8:0)+(pp&&ppMap[pi]===pos?2:0);}
-
-  if(fairPlayMode && allBlocks){
-    // ── FAIR PLAY MODE: guarantee every player ≥2 innings IF and ≥2 innings OF ──
-    // Count IF/OF innings already earned in prior blocks for each player
+  if(fairPlayMode&&allBlocks){
     const ifCount={},ofCount={};
     pool.forEach(pi=>{ifCount[pi]=0;ofCount[pi]=0;});
-    (allBlocks||[]).forEach(b=>{
-      if(!b||!b.assignments)return;
-      Object.entries(b.assignments).forEach(([pos,pi])=>{
-        if(IF_POS.has(pos))ifCount[pi]=(ifCount[pi]||0)+2;
-        if(OF_POS.has(pos))ofCount[pi]=(ofCount[pi]||0)+2;
-      });
-    });
-
-    // Determine which players NEED IF or OF this block to hit 2-inning minimums
-    // This is the last block (bi=2, "allBlocks" contains prior two), so anyone at 0 needs it now
+    (allBlocks||[]).forEach(b=>{if(!b||!b.assignments)return;Object.entries(b.assignments).forEach(([pos,pi])=>{if(IF_POS.has(pos))ifCount[pi]=(ifCount[pi]||0)+2;if(OF_POS.has(pos))ofCount[pi]=(ofCount[pi]||0)+2;});});
     const needsIF=pool.filter(pi=>ifCount[pi]===0);
     const needsOF=pool.filter(pi=>ofCount[pi]===0);
-
-    // Reserve 1 IF spot per needsIF player, 1 OF spot per needsOF player
-    // Build position pools
     const ifPositions=[...IF_POS].filter(p=>POS_PRI.includes(p));
     const ofPositions=[...OF_POS].filter(p=>POS_PRI.includes(p));
-
-    // Assign mandated IF players first (sorted by fit)
-    const reservedIF={},reservedOF={};
     const usedPos=new Set();
-
-    // Sort needsIF by best IF fit descending
-    const sortedNeedsIF=[...needsIF].sort((a,b)=>{
-      const bA=Math.max(...ifPositions.map(p=>roster[a].strengths[p]||0));
-      const bB=Math.max(...ifPositions.map(p=>roster[b].strengths[p]||0));
-      return bB-bA;
-    });
-    sortedNeedsIF.forEach(pi=>{
-      if(used.has(pi))return;
-      const best=ifPositions.filter(p=>!usedPos.has(p)).sort((a,b)=>sc(pi,b)-sc(pi,a))[0];
-      if(best){assigned[best]=pi;used.add(pi);usedPos.add(best);}
-    });
-
-    // Sort needsOF by best OF fit descending
-    const sortedNeedsOF=[...needsOF].sort((a,b)=>{
-      const bA=Math.max(...ofPositions.map(p=>roster[a].strengths[p]||0));
-      const bB=Math.max(...ofPositions.map(p=>roster[b].strengths[p]||0));
-      return bB-bA;
-    });
-    sortedNeedsOF.forEach(pi=>{
-      if(used.has(pi))return;
-      const best=ofPositions.filter(p=>!usedPos.has(p)).sort((a,b)=>sc(pi,b)-sc(pi,a))[0];
-      if(best){assigned[best]=pi;used.add(pi);usedPos.add(best);}
-    });
-
-    // Fill remaining positions with normal scoring
-    for(const pos of POS_PRI){
-      if(assigned[pos]!==undefined)continue;
-      const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));
-      if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}
-    }
-  } else {
-    // ── STANDARD MODE ──
+    const sortedNeedsIF=[...needsIF].sort((a,b)=>{const bA=Math.max(...ifPositions.map(p=>roster[a].strengths[p]||0));const bB=Math.max(...ifPositions.map(p=>roster[b].strengths[p]||0));return bB-bA;});
+    sortedNeedsIF.forEach(pi=>{if(used.has(pi))return;const best=ifPositions.filter(p=>!usedPos.has(p)).sort((a,b)=>sc(pi,b)-sc(pi,a))[0];if(best){assigned[best]=pi;used.add(pi);usedPos.add(best);}});
+    const sortedNeedsOF=[...needsOF].sort((a,b)=>{const bA=Math.max(...ofPositions.map(p=>roster[a].strengths[p]||0));const bB=Math.max(...ofPositions.map(p=>roster[b].strengths[p]||0));return bB-bA;});
+    sortedNeedsOF.forEach(pi=>{if(used.has(pi))return;const best=ofPositions.filter(p=>!usedPos.has(p)).sort((a,b)=>sc(pi,b)-sc(pi,a))[0];if(best){assigned[best]=pi;used.add(pi);usedPos.add(best);}});
+    for(const pos of POS_PRI){if(assigned[pos]!==undefined)continue;const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}}
+  }else{
     for(const pos of POS_PRI){const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}}
   }
-
   if(prev){
     let changed=0;pool.forEach(pi=>{const np=Object.entries(assigned).find(([,v])=>v===pi)?.[0];if(prevMap[pi]!==np)changed++;});
     if(changed<=pool.length/2){
       const same=pool.filter(pi=>{const np=Object.entries(assigned).find(([,v])=>v===pi)?.[0];return prevMap[pi]===np;});
-      for(let i=0;i<same.length-1&&changed<=pool.length/2;i++){
-        const a=same[i],b=same[i+1];
-        const pa=Object.entries(assigned).find(([,v])=>v===a)?.[0];
-        const pb=Object.entries(assigned).find(([,v])=>v===b)?.[0];
-        if(pa&&pb&&pa!==pb&&(roster[a].strengths[pb]||0)>0&&(roster[b].strengths[pa]||0)>0){assigned[pa]=b;assigned[pb]=a;changed+=2;}
-      }
+      for(let i=0;i<same.length-1&&changed<=pool.length/2;i++){const a=same[i],b=same[i+1];const pa=Object.entries(assigned).find(([,v])=>v===a)?.[0];const pb=Object.entries(assigned).find(([,v])=>v===b)?.[0];if(pa&&pb&&pa!==pb&&(roster[a].strengths[pb]||0)>0&&(roster[b].strengths[pa]||0)>0){assigned[pa]=b;assigned[pb]=a;changed+=2;}}
     }
   }
   return assigned;
 }
-
 function autoSuggest(bi){
   const prev=bi>0?defBlocks[bi-1].assignments:null;
   const pp=bi>1?defBlocks[bi-2].assignments:null;
-  // Pass prior completed blocks so Fair Play can count what players have already earned
   const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>b.assignments?{assignments:b.assignments}:null):null;
   defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks);
 }
-
-// Run all three suggest blocks in sequence so each block sees the prior ones
 function autoSuggestAll(){
   for(let bi=0;bi<3;bi++){
     const prev=bi>0?defBlocks[bi-1].assignments:null;
@@ -544,17 +444,10 @@ function autoSuggestAll(){
     defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks);
   }
 }
-
-// Compliance check: per player, count IF and OF innings across all 3 blocks
 function getFairPlayCompliance(){
   const result={};
   roster.forEach((_,pi)=>{result[pi]={if:0,of:0};});
-  defBlocks.forEach(block=>{
-    Object.entries(block.assignments).forEach(([pos,pi])=>{
-      if(IF_POS.has(pos))result[pi].if+=2;
-      if(OF_POS.has(pos))result[pi].of+=2;
-    });
-  });
+  defBlocks.forEach(block=>{Object.entries(block.assignments).forEach(([pos,pi])=>{if(IF_POS.has(pos))result[pi].if+=2;if(OF_POS.has(pos))result[pi].of+=2;});});
   return result;
 }
 function syncBatPos(pi,pos){const b=battingOrder.find(b=>b.idx===pi);if(b)b.batPos=pos;}
@@ -567,307 +460,134 @@ function manualDefAssign(bi,pos,newPi){
   save();renderDefGrid(bi);renderBatting();
 }
 
-// BATTING
-// ─── Drag state (globals declared above) ─────────────────────
-
-/** Haptic: short pulse on activate, tick on drop */
-function haptic(type) {
-  if (!navigator.vibrate) return;
-  if (type === 'activate') navigator.vibrate([15, 10, 15]);
-  else if (type === 'drop')   navigator.vibrate(8);
-  else if (type === 'tick')   navigator.vibrate(4);
+// ── BATTING TAB ───────────────────────────────────────────────────────────────
+// Returns the set of positions actually used by this player in inning block 1 (innings 1-2)
+// Only block 0 matters — that's the player's "starting position".
+// The bench player for block 0 gets EH.
+function getStartingPos(playerIdx) {
+  // If this player is on the bench for innings 1-2, they are EH
+  if (defBlocks[0].benchIdx === playerIdx) return 'EH';
+  // Otherwise, look up their position in block 0 assignments
+  const pos = Object.entries(defBlocks[0].assignments).find(([,pi])=>pi===playerIdx)?.[0];
+  return pos || battingOrder.find(b=>b.idx===playerIdx)?.batPos || 'P';
 }
 
-/** Create floating ghost clone of the dragged row */
-function createGhost(row, touchY) {
-  removeGhost();
-  // Snapshot ALL row positions before any transforms are applied.
-  // getDropTarget uses this frozen geometry — immune to CSS transform jitter.
-  rowRects = [];
-  document.querySelectorAll('#sc-batting .brow:not(.drag-ghost)').forEach(r => {
-    const rect = r.getBoundingClientRect();
-    rowRects.push({ idx: +r.dataset.i, top: rect.top, bottom: rect.bottom, el: r });
-  });
+function haptic(type){if(!navigator.vibrate)return;if(type==='activate')navigator.vibrate([15,10,15]);else if(type==='drop')navigator.vibrate(8);else if(type==='tick')navigator.vibrate(4);}
 
-  const rect = row.getBoundingClientRect();
-  ghostOffsetY = touchY - rect.top;
-  dragRowH = rect.height;
-  document.querySelectorAll('#sc-batting .brow').forEach(r =>
-    r.style.setProperty('--row-h', dragRowH + 'px')
-  );
-  lastDestIdx = null;
-  rafPending = false;
-  ghostEl = row.cloneNode(true);
-  ghostEl.className = 'brow drag-ghost';
-  ghostEl.style.width = rect.width + 'px';
-  ghostEl.style.top = (touchY - ghostOffsetY) + 'px';
-  ghostEl.style.left = rect.left + 'px';
+function createGhost(row,touchY){
+  removeGhost();
+  rowRects=[];
+  document.querySelectorAll('#sc-batting .brow:not(.drag-ghost)').forEach(r=>{
+    const rect=r.getBoundingClientRect();
+    rowRects.push({idx:+r.dataset.i,top:rect.top,bottom:rect.bottom,el:r});
+  });
+  const rect=row.getBoundingClientRect();
+  ghostOffsetY=touchY-rect.top;
+  dragRowH=rect.height;
+  document.querySelectorAll('#sc-batting .brow').forEach(r=>r.style.setProperty('--row-h',dragRowH+'px'));
+  lastDestIdx=null;rafPending=false;
+  ghostEl=row.cloneNode(true);
+  ghostEl.className='brow drag-ghost';
+  ghostEl.style.width=rect.width+'px';
+  ghostEl.style.top=(touchY-ghostOffsetY)+'px';
+  ghostEl.style.left=rect.left+'px';
   document.body.appendChild(ghostEl);
 }
-
-function moveGhost(touchY) {
-  if (!ghostEl) return;
-  ghostEl.style.top = (touchY - ghostOffsetY) + 'px';
+function removeGhost(){if(ghostEl){ghostEl.remove();ghostEl=null;}rowRects=[];}
+function getDropTarget(touchX,touchY,sourceRow){for(const r of rowRects){if(r.el===sourceRow)continue;if(touchY>=r.top&&touchY<=r.bottom)return r.idx;}return null;}
+function applyShifts(srcIdx,destIdx){
+  const rows=[...document.querySelectorAll('#sc-batting .brow:not(.drag-ghost)')];
+  rows.forEach(r=>{r.classList.remove('shift-down','shift-up');if(r.classList.contains('dragging'))return;const ri=+r.dataset.i;if(srcIdx<destIdx){if(ri>srcIdx&&ri<=destIdx)r.classList.add('shift-up');}else{if(ri>=destIdx&&ri<srcIdx)r.classList.add('shift-down');}});
 }
+function removeHighlights(){document.querySelectorAll('.brow').forEach(r=>r.classList.remove('drag-over','drop-above','drop-below','shift-down','shift-up'));}
 
-function removeGhost() {
-  if (ghostEl) { ghostEl.remove(); ghostEl = null; }
-  rowRects = [];
-}
+function renderBatting(){
+  const sc=document.getElementById('sc-batting');sc.innerHTML='';
+  const lbl=document.createElement('div');lbl.className='slabel';lbl.textContent='HOLD ⠿ TO DRAG · ▲▼ TO MOVE';sc.appendChild(lbl);
+  const list=document.createElement('div');list.className='batting-list';list.id='battingList';
+  const total=battingOrder.length;
 
-/** Hit-test against frozen rect snapshot — no live layout reads during drag */
-function getDropTarget(touchX, touchY, sourceRow) {
-  for (const r of rowRects) {
-    if (r.el === sourceRow) continue;
-    if (touchY >= r.top && touchY <= r.bottom) return r.idx;
-  }
-  return null;
-}
+  battingOrder.forEach((b,i)=>{
+    const p=roster[b.idx];
+    const st=seasonTotals()[b.idx];
+    const streak=streakLabel(b.idx);
+    const row=document.createElement('div');
+    row.className='brow';row.dataset.i=i;
 
-/** Shift rows visually — only called when destIdx actually changes */
-function applyShifts(srcIdx, destIdx) {
-  const rows = [...document.querySelectorAll('#sc-batting .brow:not(.drag-ghost)')];
-  rows.forEach(r => {
-    r.classList.remove('shift-down', 'shift-up');
-    if (r.classList.contains('dragging')) return;
-    const ri = +r.dataset.i;
-    if (srcIdx < destIdx) {
-      if (ri > srcIdx && ri <= destIdx) r.classList.add('shift-up');
-    } else {
-      if (ri >= destIdx && ri < srcIdx) r.classList.add('shift-down');
-    }
-  });
-}
+    // Determine starting position from DEF block 0
+    const startPos=getStartingPos(b.idx);
+    // Sync batPos to reflect current starting position
+    b.batPos=startPos;
 
-function removeHighlights() {
-  document.querySelectorAll('.brow').forEach(r => {
-    r.classList.remove('drag-over','drop-above','drop-below','shift-down','shift-up');
-  });
-}
+    const numCls=i<3?'bnum gold':'bnum';
+    const statLine=st&&st.ab>0?`${st.avg.toFixed(3)} AVG · ${st.h}H/${st.ab}AB`:'No stats yet';
+    const statCls=st&&st.ab>0?'bstat':'bsub';
+    const streakHtml=streak?`<div class="bstreak ${streak.cls}">${streak.label}</div>`:'';
+    const isEH=startPos==='EH';
+    const ehBadge=isEH?`<span class="eh-badge">EH</span>`:'';
 
-function renderBatting() {
-  const sc = document.getElementById('sc-batting');
-  sc.innerHTML = '';
+    // Position display — read-only derived from DEF tab, shown as a non-editable pill
+    const posDisplay=`<div class="pos-sel" style="display:flex;align-items:center;justify-content:center;cursor:default;opacity:0.85;" title="Set in DEF tab">${startPos}</div>`;
 
-  const lbl = document.createElement('div');
-  lbl.className = 'slabel';
-  lbl.textContent = 'HOLD ⠿ TO DRAG · ▲▼ TO MOVE';
-  sc.appendChild(lbl);
-
-  const list = document.createElement('div');
-  list.className = 'batting-list';
-  list.id = 'battingList';
-  const total = battingOrder.length;
-
-  battingOrder.forEach((b, i) => {
-    const p = roster[b.idx];
-    const st = seasonTotals()[b.idx];
-    const streak = streakLabel(b.idx);
-    const row = document.createElement('div');
-    row.className = 'brow';
-    row.dataset.i = i;
-
-    const numCls = i < 3 ? 'bnum gold' : 'bnum';
-    const ageCls = p.age === 10 ? 'a10' : 'a9';
-    const statLine = st && st.ab > 0
-      ? `${st.avg.toFixed(3)} AVG · ${st.h}H/${st.ab}AB`
-      : 'No stats yet';
-    const statCls = st && st.ab > 0 ? 'bstat' : 'bsub';
-    const streakHtml = streak
-      ? `<div class="bstreak ${streak.cls}">${streak.label}</div>`
-      : '';
-    const posOpts = FIELD_POS.map(x =>
-      `<option value="${x}" ${b.batPos === x ? 'selected' : ''}>${x}</option>`
-    ).join('');
-
-    row.innerHTML = `
+    row.innerHTML=`
       <div class="drag-handle" data-h="1">⠿</div>
-      <div class="${numCls}">${i + 1}</div>
+      <div class="${numCls}">${i+1}</div>
       <div>
-        <div class="bname">${fn(b.idx)} <span class="age-tag ${ageCls}">${p.age}</span></div>
+        <div class="bname">${fn(b.idx)}${ehBadge}</div>
         <div class="${statCls}">${statLine}</div>${streakHtml}
       </div>
-      <select class="pos-sel" onchange="updateBatPos(${i},this.value)">${posOpts}</select>
+      ${posDisplay}
       <div class="arrow-btns">
-        <button class="arr" ${i === 0 ? 'disabled' : ''} onclick="moveRow(${i},-1)">▲</button>
-        <button class="arr" ${i === total - 1 ? 'disabled' : ''} onclick="moveRow(${i},1)">▼</button>
+        <button class="arr" ${i===0?'disabled':''} onclick="moveRow(${i},-1)">▲</button>
+        <button class="arr" ${i===total-1?'disabled':''} onclick="moveRow(${i},1)">▼</button>
       </div>`;
 
-    // ── Mouse drag (desktop) ──────────────────────────────
-    row.draggable = true;
-    row.addEventListener('dragstart', e => {
-      dragIdx = i;
-      row.classList.add('dragging');
-      const img = new Image();
-      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-      e.dataTransfer.setDragImage(img, 0, 0);
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    row.addEventListener('dragover', e => {
-      e.preventDefault();
-      applyShifts(dragIdx, i);
-    });
-    row.addEventListener('drop', e => { e.preventDefault(); doDrop(i); });
-    row.addEventListener('dragend', () => {
-      document.querySelectorAll('.brow').forEach(r =>
-        r.classList.remove('dragging','drag-over','drop-above','drop-below','shift-down','shift-up')
-      );
-      dragIdx = null;
-    });
+    // Mouse drag
+    row.draggable=true;
+    row.addEventListener('dragstart',e=>{dragIdx=i;row.classList.add('dragging');const img=new Image();img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';e.dataTransfer.setDragImage(img,0,0);e.dataTransfer.effectAllowed='move';});
+    row.addEventListener('dragover',e=>{e.preventDefault();applyShifts(dragIdx,i);});
+    row.addEventListener('drop',e=>{e.preventDefault();doDrop(i);});
+    row.addEventListener('dragend',()=>{document.querySelectorAll('.brow').forEach(r=>r.classList.remove('dragging','drag-over','drop-above','drop-below','shift-down','shift-up'));dragIdx=null;});
 
-    // ── Touch drag — long-press on handle ─────────────────
-    const handle = row.querySelector('[data-h]');
-
-    handle.addEventListener('touchstart', e => {
-      e.stopPropagation();
-      clearTimeout(lpTimer);
-      lpActive = false;
-
-      const touch = e.touches[0];
-      lpTimer = setTimeout(() => {
-        lpActive = true;
-        touchDragIdx = i;
-        haptic('activate');
-        createGhost(row, touch.clientY);
-        row.classList.add('dragging');
-      }, 300);
-    }, { passive: true });
-
-    handle.addEventListener('touchmove', e => {
-      if (!lpActive) { clearTimeout(lpTimer); return; }
-      e.preventDefault();
-      const t = e.touches[0];
-      const touchY = t.clientY;
-
-      // rAF-lock: ghost position update — smooth, no layout thrash
-      if (!rafPending) {
-        rafPending = true;
-        requestAnimationFrame(() => {
-          if (ghostEl) ghostEl.style.top = (touchY - ghostOffsetY) + 'px';
-          rafPending = false;
-        });
-      }
-
-      // Only recompute shifts when finger crosses into a new row
-      const target = getDropTarget(t.clientX, touchY, row);
-      if (target !== null && target !== lastDestIdx) {
-        lastDestIdx = target;
-        haptic('tick');
-        applyShifts(i, target);
-      } else if (target === null && lastDestIdx !== null) {
-        lastDestIdx = null;
-        removeHighlights();
-        row.classList.add('dragging');
-      }
-    }, { passive: false });
-
-    handle.addEventListener('touchend', e => {
-      clearTimeout(lpTimer);
-      if (!lpActive) { touchDragIdx = null; lpActive = false; return; }
-
-      const t = e.changedTouches[0];
-      const src = i;
-      const target = lastDestIdx !== null ? lastDestIdx : getDropTarget(t.clientX, t.clientY, row);
-
-      removeGhost();
-      removeHighlights();
-      document.querySelectorAll('.brow').forEach(x => x.classList.remove('dragging'));
-      lastDestIdx = null;
-      rafPending = false;
-
-      if (target !== null && target !== src) {
-        haptic('drop');
-        dragIdx = null;
-        touchDragIdx = src;
-        doDrop(target);
-      }
-      touchDragIdx = null;
-      lpActive = false;
-    });
-
-    handle.addEventListener('touchcancel', () => {
-      clearTimeout(lpTimer);
-      removeGhost();
-      removeHighlights();
-      document.querySelectorAll('.brow').forEach(x => x.classList.remove('dragging'));
-      lastDestIdx = null;
-      rafPending = false;
-      touchDragIdx = null;
-      lpActive = false;
-    });
+    // Touch drag
+    const handle=row.querySelector('[data-h]');
+    handle.addEventListener('touchstart',e=>{e.stopPropagation();clearTimeout(lpTimer);lpActive=false;const touch=e.touches[0];lpTimer=setTimeout(()=>{lpActive=true;touchDragIdx=i;haptic('activate');createGhost(row,touch.clientY);row.classList.add('dragging');},300);},{passive:true});
+    handle.addEventListener('touchmove',e=>{if(!lpActive){clearTimeout(lpTimer);return;}e.preventDefault();const t=e.touches[0];const touchY=t.clientY;if(!rafPending){rafPending=true;requestAnimationFrame(()=>{if(ghostEl)ghostEl.style.top=(touchY-ghostOffsetY)+'px';rafPending=false;});}const target=getDropTarget(t.clientX,touchY,row);if(target!==null&&target!==lastDestIdx){lastDestIdx=target;haptic('tick');applyShifts(i,target);}else if(target===null&&lastDestIdx!==null){lastDestIdx=null;removeHighlights();row.classList.add('dragging');}},{passive:false});
+    handle.addEventListener('touchend',e=>{clearTimeout(lpTimer);if(!lpActive){touchDragIdx=null;lpActive=false;return;}const t=e.changedTouches[0];const src=i;const target=lastDestIdx!==null?lastDestIdx:getDropTarget(t.clientX,t.clientY,row);removeGhost();removeHighlights();document.querySelectorAll('.brow').forEach(x=>x.classList.remove('dragging'));lastDestIdx=null;rafPending=false;if(target!==null&&target!==src){haptic('drop');dragIdx=null;touchDragIdx=src;doDrop(target);}touchDragIdx=null;lpActive=false;});
+    handle.addEventListener('touchcancel',()=>{clearTimeout(lpTimer);removeGhost();removeHighlights();document.querySelectorAll('.brow').forEach(x=>x.classList.remove('dragging'));lastDestIdx=null;rafPending=false;touchDragIdx=null;lpActive=false;});
 
     list.appendChild(row);
   });
-
   sc.appendChild(list);
 
   // Steal tracker
-  const steal = document.createElement('div');
-  steal.className = 'steal-card';
-  steal.innerHTML = `
-    <div class="slabel" style="margin-bottom:10px;">STEAL TRACKER — 3 MAX PER INNING</div>
-    <div class="steal-dots">
-      <div class="sdot" id="sd1" onclick="toggleSteal(1)">1</div>
-      <div class="sdot" id="sd2" onclick="toggleSteal(2)">2</div>
-      <div class="sdot" id="sd3" onclick="toggleSteal(3)">3</div>
-      <span style="font-size:0.78rem;color:var(--muted);margin-left:6px;font-weight:600;" id="scnt">0 of 3 used</span>
-    </div>
-    <button class="sreset" onclick="resetSteals()">↺ Reset inning</button>`;
+  const steal=document.createElement('div');steal.className='steal-card';
+  steal.innerHTML=`<div class="slabel" style="margin-bottom:10px;">STEAL TRACKER — 3 MAX PER INNING</div><div class="steal-dots"><div class="sdot" id="sd1" onclick="toggleSteal(1)">1</div><div class="sdot" id="sd2" onclick="toggleSteal(2)">2</div><div class="sdot" id="sd3" onclick="toggleSteal(3)">3</div><span style="font-size:0.78rem;color:var(--muted);margin-left:6px;font-weight:600;" id="scnt">0 of 3 used</span></div><button class="sreset" onclick="resetSteals()">↺ Reset inning</button>`;
   sc.appendChild(steal);
-
-  const printBtn = document.createElement('button');
-  printBtn.className = 'btn-print';
-  printBtn.textContent = '📄 EXPORT LINEUP AS PDF';
-  printBtn.onclick = exportPDF;
-  sc.appendChild(printBtn);
-
+  const printBtn=document.createElement('button');printBtn.className='btn-print';printBtn.textContent='📄 EXPORT LINEUP AS PDF';printBtn.onclick=exportPDF;sc.appendChild(printBtn);
   updateSteals();
 }
+
 function doDrop(ti){const src=dragIdx!==null?dragIdx:touchDragIdx;if(src===null||src===ti)return;const m=battingOrder.splice(src,1)[0];battingOrder.splice(ti,0,m);save();renderBatting();}
 function moveRow(i,dir){const ti=i+dir;if(ti<0||ti>=battingOrder.length)return;const m=battingOrder.splice(i,1)[0];battingOrder.splice(ti,0,m);save();renderBatting();setTimeout(()=>{const rows=document.querySelectorAll('.brow');if(rows[ti])rows[ti].scrollIntoView({block:'nearest',behavior:'smooth'});},60);}
 function updateBatPos(i,v){battingOrder[i].batPos=v;save();}
 
-// DEFENSE
+// ── DEFENSE TAB ───────────────────────────────────────────────────────────────
 const BLK=['Innings 1–2','Innings 3–4','Innings 5–6'];
 function renderDefense(){
   const sc=document.getElementById('sc-defense');sc.innerHTML='';
   sc.appendChild(Object.assign(document.createElement('div'),{className:'slabel',textContent:'SELECT BENCH · ✦ SUGGEST FILLS 10 POSITIONS'}));
-
-  // ── Fair Play Mode banner ──
   const fpBanner=document.createElement('div');fpBanner.className='fp-banner';
-  fpBanner.innerHTML=`
-    <div class="fp-icon">⚖️</div>
-    <div class="fp-text">
-      <div class="fp-label">FAIR PLAY MODE</div>
-      <div class="fp-sub">Ensures every player gets ≥2 innings in IF <em>and</em> ≥2 innings in OF per game</div>
-    </div>
-    <label class="fp-toggle">
-      <input type="checkbox" id="fpToggle" ${fairPlayMode?'checked':''} onchange="toggleFairPlay(this.checked)">
-      <span class="fp-slider"></span>
-    </label>`;
+  fpBanner.innerHTML=`<div class="fp-icon">⚖️</div><div class="fp-text"><div class="fp-label">FAIR PLAY MODE</div><div class="fp-sub">Ensures every player gets ≥2 innings in IF <em>and</em> ≥2 innings in OF per game</div></div><label class="fp-toggle"><input type="checkbox" id="fpToggle" ${fairPlayMode?'checked':''} onchange="toggleFairPlay(this.checked)"><span class="fp-slider"></span></label>`;
   sc.appendChild(fpBanner);
-
-  // Compliance chips (only shown when fair play is on and all blocks have assignments)
   const allFilled=defBlocks.every(b=>Object.keys(b.assignments).length===10);
-  if(fairPlayMode && allFilled){
+  if(fairPlayMode&&allFilled){
     const compliance=getFairPlayCompliance();
     const chips=document.createElement('div');chips.className='fp-compliance';chips.id='fpCompliance';
-    // Bench players (sit one full block = 0 playing innings that block — compliance tracks playing innings only)
     const benchSet=new Set(defBlocks.map(b=>b.benchIdx));
-    roster.forEach((p,pi)=>{
-      const c=compliance[pi];
-      const isBench=benchSet.has(pi);
-      // A benched player plays only 4 innings — reduce requirement accordingly
-      const minIF=isBench?1:2,minOF=isBench?1:2;
-      const ok=c.if>=minIF&&c.of>=minOF;
-      const chip=document.createElement('span');
-      chip.className='fp-chip '+(ok?'fp-chip-ok':'fp-chip-warn');
-      chip.textContent=(ok?'✓ ':'⚠ ')+p.name.split(' ')[0]+` ${c.if}IF/${c.of}OF`;
-      chips.appendChild(chip);
-    });
+    roster.forEach((p,pi)=>{const c=compliance[pi];const isBench=benchSet.has(pi);const minIF=isBench?1:2,minOF=isBench?1:2;const ok=c.if>=minIF&&c.of>=minOF;const chip=document.createElement('span');chip.className='fp-chip '+(ok?'fp-chip-ok':'fp-chip-warn');chip.textContent=(ok?'✓ ':'⚠ ')+p.name.split(' ')[0]+` ${c.if}IF/${c.of}OF`;chips.appendChild(chip);});
     sc.appendChild(chips);
   }
-
   defBlocks.forEach((block,bi)=>{
     if(!Object.keys(block.assignments).length)autoSuggest(bi);
     const wrap=document.createElement('div');wrap.className='iblock';
@@ -884,23 +604,9 @@ function renderDefense(){
     const grid=document.createElement('div');grid.className='def-grid';grid.id=`dgrid-${bi}`;body.appendChild(grid);renderDefGrid(bi);
     wrap.appendChild(hdr);wrap.appendChild(body);sc.appendChild(wrap);
   });
-
-  // Dugout card export button
-  const dugoutBtn=document.createElement('button');
-  dugoutBtn.className='btn-print';
-  dugoutBtn.style.marginTop='6px';
-  dugoutBtn.textContent='📋 EXPORT DUGOUT ROTATION CARD';
-  dugoutBtn.onclick=exportDugout;
-  sc.appendChild(dugoutBtn);
+  const dugoutBtn=document.createElement('button');dugoutBtn.className='btn-print';dugoutBtn.style.marginTop='6px';dugoutBtn.textContent='📋 EXPORT DUGOUT ROTATION CARD';dugoutBtn.onclick=exportDugout;sc.appendChild(dugoutBtn);
 }
-
-function toggleFairPlay(on){
-  fairPlayMode=on;
-  save();
-  autoSuggestAll();
-  save();
-  renderDefense();
-}
+function toggleFairPlay(on){fairPlayMode=on;save();autoSuggestAll();save();renderDefense();renderBatting();}
 function countChanges(bi){if(!bi||!defBlocks[bi-1])return 10;const prev=defBlocks[bi-1].assignments,cur=defBlocks[bi].assignments,pm={};Object.entries(prev).forEach(([p,pi])=>pm[pi]=p);let c=0;Object.entries(cur).forEach(([p,pi])=>{if(pm[pi]!==p)c++;});return c;}
 function renderDefGrid(bi){
   const grid=document.getElementById(`dgrid-${bi}`);if(!grid)return;grid.innerHTML='';
@@ -916,31 +622,30 @@ function renderDefGrid(bi){
     cell.innerHTML=`<div class="def-pos" ${dup?'style="color:var(--bad)"':''}>${pos}${dup?' ⚠':''}</div><select class="def-psel" onchange="manualDefAssign(${bi},'${pos}',+this.value)">${pOpts}</select><div class="${dotCls}"></div>`;
     grid.appendChild(cell);
   });
+  // After updating the grid, refresh batting to reflect new starting positions
+  renderBatting();
 }
-function setBench(bi,pi){const old=defBlocks[bi].benchIdx;const taken=Object.entries(defBlocks[bi].assignments).find(([,v])=>v===pi);if(taken){defBlocks[bi].assignments[taken[0]]=old;syncBatPos(old,taken[0]);}defBlocks[bi].benchIdx=pi;const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(pi);save();renderDefGrid(bi);refreshComplianceChips();}
-function doSuggest(bi){
-  if(fairPlayMode){
-    autoSuggestAll();
-    defBlocks.forEach((_,i)=>{
-      const tag=document.getElementById(`btag-${i}`);
-      if(tag)tag.textContent='BENCH: '+fn(defBlocks[i].benchIdx);
-      renderDefGrid(i);
-    });
-  } else {
-    autoSuggest(bi);
-    const tag=document.getElementById(`btag-${bi}`);
-    if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);
-    renderDefGrid(bi);
+function setBench(bi,pi){
+  const old=defBlocks[bi].benchIdx;
+  const taken=Object.entries(defBlocks[bi].assignments).find(([,v])=>v===pi);
+  if(taken){defBlocks[bi].assignments[taken[0]]=old;syncBatPos(old,taken[0]);}
+  defBlocks[bi].benchIdx=pi;
+  // EH assignment: block 0 bench player => EH in batting order
+  if(bi===0){
+    const ehRow=battingOrder.find(b=>b.batPos==='EH'||b.idx===pi||b.idx===old);
+    battingOrder.forEach(b=>{if(b.idx===pi)b.batPos='EH';if(b.idx===old&&old!==pi)b.batPos=getStartingPos(old);});
   }
-  if(defBlocks[0].assignments){Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBatPos(pi,pos));renderBatting();}
-  save();
-  refreshComplianceChips();
+  const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(pi);
+  save();renderDefGrid(bi);renderBatting();refreshComplianceChips();
 }
-
+function doSuggest(bi){
+  if(fairPlayMode){autoSuggestAll();defBlocks.forEach((_,i)=>{const tag=document.getElementById(`btag-${i}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[i].benchIdx);renderDefGrid(i);});}
+  else{autoSuggest(bi);const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);renderDefGrid(bi);}
+  if(defBlocks[0].assignments){Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBatPos(pi,pos));renderBatting();}
+  save();refreshComplianceChips();
+}
 function refreshComplianceChips(){
-  const sc=document.getElementById('sc-defense');
-  if(!sc)return;
-  // Remove existing chips if any
+  const sc=document.getElementById('sc-defense');if(!sc)return;
   const old=sc.querySelector('.fp-compliance');if(old)old.remove();
   if(!fairPlayMode)return;
   const allFilled=defBlocks.every(b=>Object.keys(b.assignments).length===10);
@@ -948,22 +653,11 @@ function refreshComplianceChips(){
   const compliance=getFairPlayCompliance();
   const chips=document.createElement('div');chips.className='fp-compliance';
   const benchSet=new Set(defBlocks.map(b=>b.benchIdx));
-  roster.forEach((p,pi)=>{
-    const c=compliance[pi];
-    const isBench=benchSet.has(pi);
-    const minIF=isBench?1:2,minOF=isBench?1:2;
-    const ok=c.if>=minIF&&c.of>=minOF;
-    const chip=document.createElement('span');
-    chip.className='fp-chip '+(ok?'fp-chip-ok':'fp-chip-warn');
-    chip.textContent=(ok?'✓ ':'⚠ ')+p.name.split(' ')[0]+` ${c.if}IF/${c.of}OF`;
-    chips.appendChild(chip);
-  });
-  // Insert after the fp-banner
-  const banner=sc.querySelector('.fp-banner');
-  if(banner)banner.after(chips);else sc.insertBefore(chips,sc.children[1]||null);
+  roster.forEach((p,pi)=>{const c=compliance[pi];const isBench=benchSet.has(pi);const minIF=isBench?1:2,minOF=isBench?1:2;const ok=c.if>=minIF&&c.of>=minOF;const chip=document.createElement('span');chip.className='fp-chip '+(ok?'fp-chip-ok':'fp-chip-warn');chip.textContent=(ok?'✓ ':'⚠ ')+p.name.split(' ')[0]+` ${c.if}IF/${c.of}OF`;chips.appendChild(chip);});
+  const banner=sc.querySelector('.fp-banner');if(banner)banner.after(chips);else sc.insertBefore(chips,sc.children[1]||null);
 }
 
-// SETTINGS
+// ── SETTINGS TAB ──────────────────────────────────────────────────────────────
 function renderSettings(){
   const sc=document.getElementById('sc-settings');sc.innerHTML='';
   sc.appendChild(Object.assign(document.createElement('div'),{className:'slabel',textContent:'EDIT RANK · AGE · POSITION STRENGTHS'}));
@@ -978,11 +672,11 @@ function renderSettings(){
     card.appendChild(hdr);card.appendChild(body);sc.appendChild(card);renderPosGrid(idx);
   });
   const sb=document.createElement('button');sb.className='btn-green';sb.textContent='✓ SAVE & APPLY TO LINEUP';sb.onclick=()=>{defBlocks.forEach((_,bi)=>autoSuggest(bi));save();renderAll();showSaved();};sc.appendChild(sb);
-  const rb=document.createElement('button');rb.className='btn-red-outline';rb.textContent='✕ RESET ALL APP DATA';rb.onclick=()=>{if(!confirm('Clear batting order, defense, stats, and awards? Roster stays.'))return;battingOrder=[{idx:0,batPos:'C'},{idx:1,batPos:'SS'},{idx:2,batPos:'P'},{idx:3,batPos:'3B'},{idx:4,batPos:'1B'},{idx:5,batPos:'LF'},{idx:6,batPos:'2B'},{idx:7,batPos:'LC'},{idx:8,batPos:'CF'},{idx:9,batPos:'RF'},{idx:10,batPos:'LF'}];defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];gameLog=[];awardOverrides={};awardNotes={};awardBlurbs={};steals=[false,false,false];save();renderAll();showSaved();};sc.appendChild(rb);
+  const rb=document.createElement('button');rb.className='btn-red-outline';rb.textContent='✕ RESET ALL APP DATA';rb.onclick=()=>{if(!confirm('Clear batting order, defense, stats, and awards? Roster stays.'))return;battingOrder=[{idx:0,batPos:'C'},{idx:1,batPos:'SS'},{idx:2,batPos:'P'},{idx:3,batPos:'3B'},{idx:4,batPos:'1B'},{idx:5,batPos:'LF'},{idx:6,batPos:'2B'},{idx:7,batPos:'LC'},{idx:8,batPos:'CF'},{idx:9,batPos:'RF'},{idx:10,batPos:'EH'}];defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];gameLog=[];awardOverrides={};awardNotes={};awardBlurbs={};steals=[false,false,false];save();renderAll();showSaved();};sc.appendChild(rb);
 }
 function renderPosGrid(idx){const g=document.getElementById(`pg-${idx}`);if(!g)return;g.innerHTML='';FIELD_POS.forEach(pos=>{const s=roster[idx].strengths[pos]||0,cls=s===2?'ptog pri':s===1?'ptog sec':'ptog',lbl=s===2?'★':s===1?'◎':'○';const el=document.createElement('div');el.className=cls;el.innerHTML=`<span class="ptog-lbl">${lbl} ${pos}</span>`;el.addEventListener('click',()=>{const c=roster[idx].strengths[pos]||0,n=c===0?2:c===2?1:0;if(!n)delete roster[idx].strengths[pos];else roster[idx].strengths[pos]=n;renderPosGrid(idx);});g.appendChild(el);});}
 
-// STATS
+// ── STATS TAB ─────────────────────────────────────────────────────────────────
 function renderStats(){
   const sc=document.getElementById('sc-stats');sc.innerHTML='';
   const uz=document.createElement('div');uz.className='upload-zone';uz.id='upzone';
@@ -999,7 +693,7 @@ function renderStats(){
   const st=seasonTotals(),rc=recentStats(3);
   const sorted=roster.map((_,i)=>i).filter(i=>st[i]&&st[i].ab>0).sort((a,b)=>(st[b].avg||0)-(st[a].avg||0));
   const noStats=roster.map((_,i)=>i).filter(i=>!st[i]||!st[i].ab);
-  [...sorted,...noStats].forEach(ri=>{const p=roster[ri],s=st[ri],ageCls=p.age===10?'a10':'a9';const row=document.createElement('div');row.className='stat-row';if(!s||!s.ab){row.innerHTML=`<div><div class="sp">${fn(ri)} <span class="age-tag ${ageCls}">${p.age}</span></div><div class="ssub">No data</div></div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div>`;}else{const ac=s.avg>=0.35?'sv ba hi':s.avg>=0.25?'sv ba mid':'sv ba lo',oc=s.obp>=0.4?'sv hi':s.obp>=0.3?'sv mid':'sv lo',streak=streakLabel(ri),tHtml=streak?`<span class="sstreak ${streak.cls}">${streak.label.split(' ')[0]}</span>`:`<span class="sv lo">—</span>`;row.innerHTML=`<div><div class="sp">${fn(ri)} <span class="age-tag ${ageCls}">${p.age}</span></div><div class="ssub">${s.gp} GP</div></div><div class="${ac}">${s.avg.toFixed(3)}</div><div class="${oc}">${s.obp.toFixed(3)}</div><div class="sv">${s.h}</div><div class="sv">${s.ab}</div><div class="sv">${s.sb||0}</div><div style="text-align:center">${tHtml}</div>`;}sc.appendChild(row);});
+  [...sorted,...noStats].forEach(ri=>{const p=roster[ri],s=st[ri];const row=document.createElement('div');row.className='stat-row';if(!s||!s.ab){row.innerHTML=`<div><div class="sp">${fn(ri)}</div><div class="ssub">No data</div></div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div>`;}else{const ac=s.avg>=0.35?'sv ba hi':s.avg>=0.25?'sv ba mid':'sv ba lo',oc=s.obp>=0.4?'sv hi':s.obp>=0.3?'sv mid':'sv lo',streak=streakLabel(ri),tHtml=streak?`<span class="sstreak ${streak.cls}">${streak.label.split(' ')[0]}</span>`:`<span class="sv lo">—</span>`;row.innerHTML=`<div><div class="sp">${fn(ri)}</div><div class="ssub">${s.gp} GP</div></div><div class="${ac}">${s.avg.toFixed(3)}</div><div class="${oc}">${s.obp.toFixed(3)}</div><div class="sv">${s.h}</div><div class="sv">${s.ab}</div><div class="sv">${s.sb||0}</div><div style="text-align:center">${tHtml}</div>`;}sc.appendChild(row);});
 }
 function handleCSV(input){if(input.files[0])parseCSV(input.files[0]);}
 function parseCSV(file){
@@ -1027,7 +721,7 @@ function parseCSV(file){
 }
 function delGame(i){if(!confirm(`Remove ${gameLog[i].label}?`))return;gameLog.splice(i,1);save();renderAll();}
 
-// AWARDS
+// ── AWARDS TAB ────────────────────────────────────────────────────────────────
 const AWARDS=[
   {id:'batting_title',emoji:'🥎',name:'Batting Champion',desc:'Highest batting avg — min 2 AB/game, 75% of games played',cat:'cat-stat',catL:'STATS',auto:()=>{const s=seasonTotals(),tg=gameLog.length,mg=Math.ceil(tg*0.75),ma=mg*2;return roster.map((_,i)=>i).filter(i=>s[i]&&(s[i].gp||0)>=mg&&(s[i].ab||0)>=ma).sort((a,b)=>s[b].avg-s[a].avg).slice(0,3).map(i=>({idx:i,val:s[i].avg.toFixed(3),reason:`${s[i].h}H/${s[i].ab}AB · ${s[i].gp}GP`}));}},
   {id:'obp',emoji:'👁️',name:'On-Base Queen',desc:'Highest on-base percentage — min 6 plate appearances',cat:'cat-stat',catL:'STATS',auto:()=>{const s=seasonTotals();return roster.map((_,i)=>i).filter(i=>s[i]&&s[i].pa>=6).sort((a,b)=>s[b].obp-s[a].obp).slice(0,3).map(i=>({idx:i,val:s[i].obp.toFixed(3),reason:`${s[i].h}H+${s[i].bb||0}BB/${s[i].pa}PA`}));}},
@@ -1053,17 +747,10 @@ const MEDALS=['🥇','🥈','🥉'];
 function genBlurb(award,wi,note){
   const first=fn(wi),s=seasonTotals()[wi];
   let stat='',extra='';
-  if(s&&s.ab>0){
-    stat=`This season, <strong>${first}</strong> batted <span class="sh">${s.avg.toFixed(3)}</span> with an OBP of <span class="sh">${s.obp.toFixed(3)}</span>, recording ${s.h} hit${s.h!==1?'s':''} in ${s.ab} at-bats across ${s.gp} game${s.gp!==1?'s':''}.`;
-    const xbh=(s.s2||0)+(s.s3||0)+(s.hr||0);
-    if(s.sb>0)stat+=` She swiped <span class="sh">${s.sb}</span> base${s.sb!==1?'s':''}, a constant threat on the basepaths.`;
-    if(xbh>0)stat+=` Her ${xbh} extra-base hit${xbh!==1?'s':''} demonstrated real power at the plate.`;
-    if(streakLabel(wi)?.cls==='hot')stat+=` She finished the season on a tear, posting her best numbers in the final stretch.`;
-  }else{stat=`<strong>${first}</strong> brought energy and effort every single game.`;}
+  if(s&&s.ab>0){stat=`This season, <strong>${first}</strong> batted <span class="sh">${s.avg.toFixed(3)}</span> with an OBP of <span class="sh">${s.obp.toFixed(3)}</span>, recording ${s.h} hit${s.h!==1?'s':''} in ${s.ab} at-bats across ${s.gp} game${s.gp!==1?'s':''}.`;const xbh=(s.s2||0)+(s.s3||0)+(s.hr||0);if(s.sb>0)stat+=` She swiped <span class="sh">${s.sb}</span> base${s.sb!==1?'s':''}, a constant threat on the basepaths.`;if(xbh>0)stat+=` Her ${xbh} extra-base hit${xbh!==1?'s':''} demonstrated real power at the plate.`;if(streakLabel(wi)?.cls==='hot')stat+=` She finished the season on a tear, posting her best numbers in the final stretch.`;}else{stat=`<strong>${first}</strong> brought energy and effort every single game.`;}
   if(note&&note.trim())extra=` ${note.trim().replace(/\.$/,'')} — the kind of impact that doesn't show up in any stat line.`;
   return stat+extra;
 }
-
 function renderAwards(){
   const sc=document.getElementById('sc-awards');sc.innerHTML='';
   const hasStats=gameLog.length>0;
@@ -1089,100 +776,83 @@ function renderAwards(){
   });
 }
 
-// ═══════════════════════════════════════════
-// EXPORT PDF — builds formatted scorecard
-// ═══════════════════════════════════════════
-function exportPDF() {
-  const card = document.getElementById('pdf-card');
-  const today = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  const st = seasonTotals();
-
-  // Set page orientation to portrait via injected style
+// ── EXPORT PDF ────────────────────────────────────────────────────────────────
+function exportPDF(){
+  const card=document.getElementById('pdf-card');
+  const today=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const st=seasonTotals();
   _setPrintPage('portrait');
 
-  // ── Batting rows ──────────────────────────────────────────
-  const batRows = battingOrder.map((b, i) => {
-    const p = roster[b.idx];
-    const s = st[b.idx];
-    const statStr = s && s.ab > 0 ? `${s.avg.toFixed(3)} / ${s.obp.toFixed(3)}` : '—';
-    const numCls = i < 3 ? 'num top3' : 'num';
+  // Batting rows — no ages
+  const batRows=battingOrder.map((b,i)=>{
+    const p=roster[b.idx];
+    const s=st[b.idx];
+    const statStr=s&&s.ab>0?`${s.avg.toFixed(3)} / ${s.obp.toFixed(3)}`:'—';
+    const numCls=i<3?'num top3':'num';
+    const dispPos=getStartingPos(b.idx);
     return `<tr>
-      <td class="${numCls}">${i + 1}</td>
+      <td class="${numCls}">${i+1}</td>
       <td>${p.name}</td>
-      <td class="pos">${b.batPos}</td>
+      <td class="pos">${dispPos}</td>
       <td class="stat">${statStr}</td>
     </tr>`;
   }).join('');
 
-  // ── Defense blocks ────────────────────────────────────────
-  const defHTML = defBlocks.map((block, bi) => {
-    const label = ['INNINGS 1–2','INNINGS 3–4','INNINGS 5–6'][bi];
-    const bench = roster[block.benchIdx].name;
-    const rows = POS_PRI.map(pos => {
-      const pi = block.assignments[pos];
-      const name = pi !== undefined ? roster[pi].name : '—';
+  // Defense blocks
+  const defHTML=defBlocks.map((block,bi)=>{
+    const label=['INNINGS 1–2','INNINGS 3–4','INNINGS 5–6'][bi];
+    const bench=roster[block.benchIdx].name;
+    const rows=POS_PRI.map(pos=>{
+      const pi=block.assignments[pos];
+      const name=pi!==undefined?roster[pi].name:'—';
       return `<tr><td class="dpos">${pos}</td><td>${name}</td></tr>`;
     }).join('');
     return `<div class="pdf-def-block">
-      <div class="pdf-def-label">${label} &nbsp;·&nbsp; BENCH: ${bench}</div>
+      <div class="pdf-def-label">${label} · BENCH: ${bench}</div>
       <table class="pdf-def-table">${rows}</table>
     </div>`;
   }).join('');
 
-  card.innerHTML = `
+  card.innerHTML=`
     <div class="pdf-hdr">
-      <div>
-        <div class="pdf-team">TEAM HAUNGS</div>
-        <div class="pdf-sub">TVL MINORS 10B · GAME DAY LINEUP</div>
-      </div>
-      <div class="pdf-meta">
-        <div>${today}</div>
-        <div>vs. ___________________</div>
-        <div>&#9744; Home &nbsp;&nbsp; &#9744; Away</div>
-      </div>
+      <div><div class="pdf-team">TEAM HAUNGS</div><div class="pdf-sub">TVL MINORS 10B · GAME DAY LINEUP</div></div>
+      <div class="pdf-meta"><div>${today}</div><div>vs. ___________________</div><div>&#9744; Home &nbsp; &#9744; Away</div></div>
     </div>
-
     <div class="pdf-body">
       <div class="pdf-col">
         <div class="pdf-section-title">BATTING ORDER</div>
         <table class="pdf-bat-table">
-          <thead><tr>
-            <th class="c">#</th><th>PLAYER</th><th class="c">POS</th><th>AVG / OBP</th>
-          </tr></thead>
+          <thead><tr><th class="c">#</th><th>PLAYER</th><th class="c">POS</th><th>AVG / OBP</th></tr></thead>
           <tbody>${batRows}</tbody>
         </table>
         <div class="pdf-steal">
           <span class="pdf-steal-label">STEALS&nbsp;</span>
-          <div class="pdf-steal-dot">1</div>
-          <div class="pdf-steal-dot">2</div>
-          <div class="pdf-steal-dot">3</div>
-          <span style="font-size:7pt;color:#C22818;margin-left:6px;font-weight:700;">MAX 3 / INNING</span>
+          <div class="pdf-steal-dot">1</div><div class="pdf-steal-dot">2</div><div class="pdf-steal-dot">3</div>
+          <span style="font-size:6.5pt;color:#C22818;margin-left:5px;font-weight:700;">MAX 3 / INNING</span>
         </div>
         <div class="pdf-rules">
           <div class="pdf-rules-title">10B RULES — KNOW COLD</div>
-          <div class="pdf-rule">3 steals max per inning (double steal = 2)</div>
-          <div class="pdf-rule">No stealing home · Overthrow on steal: runners stay</div>
-          <div class="pdf-rule">Ball 4 loaded bases → coach pitches, count carries over</div>
-          <div class="pdf-rule">1 bunt per inning max · No slash bunting</div>
-          <div class="pdf-rule">4 runs per inning cap · Pitchers: 3-inning limit</div>
-          <div class="pdf-rule">10 fielders (4 OF) · No infield fly · No dropped 3rd adv.</div>
+          <div class="pdf-rule">3 steals max/inning · No stealing home · Overthrow: runners stay</div>
+          <div class="pdf-rule">Ball 4 loaded → coach pitches, count carries over</div>
+          <div class="pdf-rule">1 bunt/inning max · No slash bunting · 4-run/inning cap</div>
+          <div class="pdf-rule">Pitchers: 3-inning limit · 10 fielders · No infield fly</div>
         </div>
       </div>
       <div class="pdf-col">
         <div class="pdf-section-title">DEFENSIVE ROTATION</div>
         ${defHTML}
-        <div class="pdf-rules" style="margin-top:8px;">
+        <div class="pdf-rules" style="margin-top:6px;">
           <div class="pdf-rules-title">PITCHING ROTATION</div>
-          <div class="pdf-rule">Innings 1–2: ___________________</div>
-          <div class="pdf-rule">Innings 3–4: ___________________</div>
-          <div class="pdf-rule">Innings 5–6: ___________________</div>
+          <div class="pdf-rule">Inn 1–2: ___________________</div>
+          <div class="pdf-rule">Inn 3–4: ___________________</div>
+          <div class="pdf-rule">Inn 5–6: ___________________</div>
         </div>
-        <div class="pdf-rules" style="margin-top:8px;">
+        <div class="pdf-rules" style="margin-top:6px;">
           <div class="pdf-rules-title">SCORE BY INNING</div>
-          <table style="width:100%;border-collapse:collapse;margin-top:4px;">
-            <tr>${[1,2,3,4,5,6,'R'].map(n=>`<td style="border:1px solid #ddd;padding:3px 4px;text-align:center;font-size:8pt;font-weight:700;color:${n==='R'?'#C22818':'#444'};">${n}</td>`).join('')}</tr>
-            <tr>${Array(7).fill('<td style="border:1px solid #ddd;padding:9px 4px;"></td>').join('')}</tr>
-            <tr>${Array(7).fill('<td style="border:1px solid #ddd;padding:9px 4px;"></td>').join('')}</tr>
+          <table style="width:100%;border-collapse:collapse;margin-top:3px;">
+            <tr>${[1,2,3,4,5,6,'R'].map(n=>`<td style="border:1px solid #ddd;padding:2px 4px;text-align:center;font-size:7.5pt;font-weight:700;color:${n==='R'?'#C22818':'#444'};">${n}</td>`).join('')}</tr>
+            <tr>${Array(7).fill('<td style="border:1px solid #ddd;padding:7px 4px;"></td>').join('')}</tr>
+            <tr>${Array(7).fill('<td style="border:1px solid #ddd;padding:7px 4px;"></td>').join('')}</tr>
           </table>
         </div>
       </div>
@@ -1192,119 +862,67 @@ function exportPDF() {
       <span>${today} · Coach's Playbook</span>
       <span>haungs10b</span>
     </div>`;
-
   window.print();
 }
 
-// ═══════════════════════════════════════════
-// EXPORT DUGOUT ROTATION CARD
-// Large-print landscape, post in dugout
-// ═══════════════════════════════════════════
-function exportDugout() {
-  const card = document.getElementById('pdf-card');
-  const today = new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-
-  // Set page orientation to landscape via injected style
+// ── EXPORT DUGOUT CARD ────────────────────────────────────────────────────────
+function exportDugout(){
+  const card=document.getElementById('pdf-card');
+  const today=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   _setPrintPage('landscape');
-
-  // Build one column per inning block using TABLE layout (Safari-safe)
-  const colsHTML = defBlocks.map((block, bi) => {
-    const label = ['INNINGS 1–2','INNINGS 3–4','INNINGS 5–6'][bi];
-    const bench = roster[block.benchIdx].name.split(' ')[0] + ' ' +
-                  roster[block.benchIdx].name.split(' ')[1]?.[0] + '.';
-
-    // Sort by first name for easy scanning
-    const players = Object.entries(block.assignments)
-      .map(([pos, pi]) => ({
-        first: roster[pi].name.split(' ')[0],
-        last:  roster[pi].name.split(' ').slice(1).join(' '),
-        pos
-      }))
-      .sort((a, b) => a.first.localeCompare(b.first));
-
-    const rows = players.map(({first, last, pos}, idx) => `
+  const colsHTML=defBlocks.map((block,bi)=>{
+    const label=['INNINGS 1–2','INNINGS 3–4','INNINGS 5–6'][bi];
+    const benchName=roster[block.benchIdx].name;
+    const players=Object.entries(block.assignments)
+      .map(([pos,pi])=>({first:roster[pi].name.split(' ')[0],last:roster[pi].name.split(' ').slice(1).join(' '),pos}))
+      .sort((a,b)=>a.first.localeCompare(b.first));
+    const rows=players.map(({first,last,pos},idx)=>`
       <tr style="background:${idx%2===0?'#fff':'#fafafa'};">
-        <td style="padding:8px 10px;font-size:13pt;font-weight:800;color:#111;border-bottom:1px solid #eee;">
-          ${first} <span style="font-size:9pt;font-weight:600;color:#666;">${last}</span>
-        </td>
-        <td style="padding:8px 10px;font-size:16pt;font-weight:900;color:#C22818;text-align:right;border-bottom:1px solid #eee;white-space:nowrap;">
-          ${pos}
-        </td>
+        <td style="padding:6px 10px;font-size:12pt;font-weight:800;color:#111;border-bottom:1px solid #eee;">${first} <span style="font-size:8.5pt;font-weight:600;color:#666;">${last}</span></td>
+        <td style="padding:6px 10px;font-size:14pt;font-weight:900;color:#C22818;text-align:right;border-bottom:1px solid #eee;white-space:nowrap;">${pos}</td>
       </tr>`).join('');
-
-    return `<td style="vertical-align:top;padding:0 8px;width:33.3%;">
+    return `<td style="vertical-align:top;padding:0 7px;width:33.3%;">
       <table style="width:100%;border-collapse:collapse;border:2px solid #ddd;border-radius:6px;overflow:hidden;">
-        <tr>
-          <td colspan="2" style="background:#C22818;color:#fff;font-size:13pt;font-weight:900;letter-spacing:2px;padding:9px 12px;text-align:center;">
-            ${label}
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" style="background:#fff3f3;color:#C22818;font-size:9pt;font-weight:700;letter-spacing:1px;padding:5px 12px;border-bottom:1px solid #fcc;">
-            ⬛ BENCH: ${bench}
-          </td>
-        </tr>
+        <tr><td colspan="2" style="background:#C22818;color:#fff;font-size:12pt;font-weight:900;letter-spacing:2px;padding:8px 11px;text-align:center;">${label}</td></tr>
+        <tr><td colspan="2" style="background:#fff3f3;color:#C22818;font-size:8.5pt;font-weight:700;letter-spacing:1px;padding:4px 11px;border-bottom:1px solid #fcc;">⬛ BENCH: ${benchName}</td></tr>
         ${rows}
-      </table>
-    </td>`;
+      </table></td>`;
   }).join('');
-
-  card.innerHTML = `
+  card.innerHTML=`
     <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;color:#000;background:#fff;">
-      <table style="width:100%;border-collapse:collapse;border-bottom:4px solid #C22818;margin-bottom:14px;">
+      <table style="width:100%;border-collapse:collapse;border-bottom:4px solid #C22818;margin-bottom:12px;">
         <tr>
-          <td style="padding-bottom:8px;">
-            <div style="font-size:20pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">⚾ TEAM HAUNGS — DEFENSIVE ROTATION</div>
-            <div style="font-size:9pt;letter-spacing:3px;color:#555;margin-top:3px;">TVL MINORS 10B · FIND YOUR NAME → FIND YOUR POSITION</div>
-          </td>
-          <td style="text-align:right;padding-bottom:8px;white-space:nowrap;">
-            <div style="font-size:12pt;font-weight:700;">${today}</div>
-            <div style="font-size:9pt;color:#555;">vs. _______________</div>
-          </td>
+          <td style="padding-bottom:7px;"><div style="font-size:18pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">⚾ TEAM HAUNGS — DEFENSIVE ROTATION</div><div style="font-size:8.5pt;letter-spacing:3px;color:#555;margin-top:2px;">TVL MINORS 10B · FIND YOUR NAME → FIND YOUR POSITION</div></td>
+          <td style="text-align:right;padding-bottom:7px;white-space:nowrap;"><div style="font-size:11pt;font-weight:700;">${today}</div><div style="font-size:8.5pt;color:#555;">vs. _______________</div></td>
         </tr>
       </table>
-      <table style="width:100%;border-collapse:collapse;">
-        <tr>${colsHTML}</tr>
-      </table>
-      <table style="width:100%;border-collapse:collapse;margin-top:12px;border-top:1px solid #ddd;">
-        <tr>
-          <td style="padding-top:5px;font-size:7pt;color:#aaa;letter-spacing:1px;">TEAM HAUNGS · TVL MINORS 10B</td>
-          <td style="padding-top:5px;font-size:7pt;color:#aaa;text-align:center;">Post in dugout — players check position each inning change</td>
-          <td style="padding-top:5px;font-size:7pt;color:#aaa;text-align:right;">${today}</td>
-        </tr>
+      <table style="width:100%;border-collapse:collapse;"><tr>${colsHTML}</tr></table>
+      <table style="width:100%;border-collapse:collapse;margin-top:10px;border-top:1px solid #ddd;">
+        <tr><td style="padding-top:4px;font-size:6.5pt;color:#aaa;letter-spacing:1px;">TEAM HAUNGS · TVL MINORS 10B</td><td style="padding-top:4px;font-size:6.5pt;color:#aaa;text-align:center;">Post in dugout — players check position each inning change</td><td style="padding-top:4px;font-size:6.5pt;color:#aaa;text-align:right;">${today}</td></tr>
       </table>
     </div>`;
-
   window.print();
 }
 
-/** Inject a <style> tag to control @page size for the upcoming print */
-function _setPrintPage(orientation) {
-  const existing = document.getElementById('_print_page_style');
-  if (existing) existing.remove();
-  const s = document.createElement('style');
-  s.id = '_print_page_style';
-  s.textContent = `@media print { @page { size: letter ${orientation}; margin: 0.4in; } }`;
-  document.head.appendChild(s);
-}
+function _setPrintPage(orientation){const e=document.getElementById('_print_page_style');if(e)e.remove();const s=document.createElement('style');s.id='_print_page_style';s.textContent=`@media print { @page { size: letter ${orientation}; margin: 0.35in; } }`;document.head.appendChild(s);}
 
-// STEALS
+// ── STEALS ────────────────────────────────────────────────────────────────────
 function toggleSteal(n){steals[n-1]=!steals[n-1];save();updateSteals();}
 function resetSteals(){steals=[false,false,false];save();updateSteals();}
 function updateSteals(){steals.forEach((s,i)=>{const e=document.getElementById('sd'+(i+1));if(e)e.classList.toggle('used',s);});const ct=document.getElementById('scnt');if(ct)ct.textContent=steals.filter(Boolean).length+' of 3 used';}
 
-// OFFLINE
+// ── OFFLINE ───────────────────────────────────────────────────────────────────
 function updateOnline(){const b=document.getElementById('offlineBar');if(b)b.classList.toggle('show',!navigator.onLine);}
 window.addEventListener('online',updateOnline);window.addEventListener('offline',updateOnline);
 
-// SERVICE WORKER — non-blocking, safe
+// ── SERVICE WORKER ────────────────────────────────────────────────────────────
 window.addEventListener('load',()=>{
   if(!('serviceWorker' in navigator))return;
   try{const sw=`const C='h10b-v5';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./','./index.html']).catch(()=>{})));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{if(!e.request.url.startsWith('http'))return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp&&resp.status===200){const cl=resp.clone();caches.open(C).then(c=>c.put(e.request,cl));}return resp;}).catch(()=>new Response('Offline',{status:503}))));});`;
   navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'text/javascript'})),{scope:'./'}).catch(()=>{});}catch(e){}
 });
 
-// INIT
+// ── INIT ──────────────────────────────────────────────────────────────────────
 function renderAll(){renderBatting();renderDefense();renderSettings();renderStats();renderAwards();}
 load();
 defBlocks.forEach((b,bi)=>{if(!Object.keys(b.assignments).length)autoSuggest(bi);});
