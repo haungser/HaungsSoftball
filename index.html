@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Team Haungs</title>
+
+<!-- PWA / Home Screen config -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Haungs 10B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#C22818">
+
+<!-- PWA manifest inline -->
+<script>
+// Inline web app manifest as blob URL so no separate file needed
+const manifest = {
+  name: "Team Haungs — TVL Minors 10B",
+  short_name: "Haungs 10B",
+  start_url: "./",
+  display: "standalone",
+  orientation: "portrait",
+  background_color: "#C22818",
+  theme_color: "#C22818",
+  icons: [{
+    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23C22818'/%3E%3Ctext x='256' y='370' font-family='Arial Black' font-size='300' text-anchor='middle' fill='white'%3E%E2%9A%BE%3C/text%3E%3C/svg%3E",
+    sizes: "512x512",
+    type: "image/svg+xml",
+    purpose: "any maskable"
+  }]
+};
+const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+const murl = URL.createObjectURL(blob);
+const ml = document.createElement('link');
+ml.rel='manifest'; ml.href=murl;
+document.head.appendChild(ml);
+</script>
+
+<!-- Service Worker registration -->
+<script>
+if('serviceWorker' in navigator){
+  // Inline the SW as a blob — no separate sw.js file needed
+  const swCode = `
+const CACHE = 'haungs10b-v3';
+const FONTS = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600;700&display=swap';
+
+// On install: cache the page itself and fonts
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache =>
+      cache.addAll([
+        './',
+        './index.html',
+        FONTS
+      ]).catch(() => {}) // don't fail if font fetch fails
+    )
+  );
+  self.skipWaiting();
+});
+
+// On activate: clear old caches
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+// Fetch: cache-first for same-origin and fonts, network-first for everything else
+self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+  const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
+
+  if(isSameOrigin || isFont){
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if(cached) return cached;
+        return fetch(e.request).then(resp => {
+          if(resp && resp.status === 200){
+            const clone = resp.clone();
+            caches.open(CACHE).then(cache => cache.put(e.request, clone));
+          }
+          return resp;
+        }).catch(() => cached || new Response('Offline', {status:503}));
+      })
+    );
+  }
+});
+  `;
+  const swBlob = new Blob([swCode], {type:'text/javascript'});
+  const swURL = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swURL, {scope: './'})
+    .then(reg => {
+      console.log('SW registered:', reg.scope);
+      // On update available, reload to get fresh version
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        nw.addEventListener('statechange', () => {
+          if(nw.state === 'activated') window.location.reload();
+        });
+      });
+    })
+    .catch(e => console.log('SW registration failed:', e));
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+<style>
+[data-theme="light"] {
+  --bg:#F4F1E8; --bg2:#EAE7DC; --panel:#FFFFFF; --panel2:#F0EDE3;
+  --border:rgba(0,0,0,0.10); --border2:rgba(0,0,0,0.20);
+  --ink:#0F1209; --ink2:#2e2e22; --muted:#6b6955;
+  --clay:#C22818; --clay-d:#9E1A0A; --clay-l:#E03828;
+  --grass:#1a7a38; --grass-l:#228a45;
+  --gold:#9a6800; --good:#1a7a38; --warn:#b05a00; --bad:#b01818; --teal:#0a6a62;
+  --tab-bg:#E2DED2; --tab-inactive:#5a5845;
+  --shadow:rgba(0,0,0,0.10);
+  --streak-hot:#c03010; --streak-cold:#0a6a80;
+  --award-blurb-bg:rgba(26,122,56,0.07); --award-blurb-border:rgba(26,122,56,0.22);
+  --header-title:#0F1209;
+}
+[data-theme="dark"] {
+  --bg:#14181a; --bg2:#1c2124; --panel:#1c2124; --panel2:#222a2e;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.14);
+  --ink:#edeae2; --ink2:#ccc9be; --muted:rgba(237,234,226,0.45);
+  --clay:#C2553A; --clay-d:#9E3E26; --clay-l:#e8705a;
+  --grass:#2a5c3a; --grass-l:#3a7a50;
+  --gold:#d4a84b; --good:#4caf72; --warn:#e0943a; --bad:#e05a5a; --teal:#3a8a82;
+  --tab-bg:#1c2124; --tab-inactive:rgba(237,234,226,0.45);
+  --shadow:rgba(0,0,0,0.35);
+  --streak-hot:#ff7043; --streak-cold:#4dd0e1;
+  --award-blurb-bg:rgba(76,175,114,0.08); --award-blurb-border:rgba(76,175,114,0.25);
+  --header-title:#edeae2;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Barlow',sans-serif;
+  min-height:100dvh;
+  /* Safe area padding: top = Dynamic Island, bottom = home indicator bar */
+  padding: max(env(safe-area-inset-top), 16px) max(env(safe-area-inset-right), 14px) max(env(safe-area-inset-bottom), 20px) max(env(safe-area-inset-left), 14px);
+  max-width:430px; /* iPhone 17 Pro width */
+  margin:0 auto;
+  transition:background 0.25s,color 0.25s;
+  -webkit-text-size-adjust:100%; /* prevent iOS font inflation */
+  overflow-x:hidden;
+}
+
+/* HEADER */
+header{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 0 12px;margin-bottom:12px;border-bottom:2px solid var(--border2);}
+.header-left{display:flex;flex-direction:column;gap:3px;}
+.logo-badge{display:inline-flex;align-items:center;background:var(--clay);color:#ffffff;font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2.5px;padding:4px 13px;border-radius:20px;font-weight:700;width:fit-content;}
+.header-title{font-family:'Barlow Condensed',sans-serif;font-size:1.9rem;font-weight:800;line-height:1.05;letter-spacing:0.5px;color:var(--header-title);}
+.header-title em{color:var(--clay);font-style:normal;}
+.header-sub{font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:2px;color:var(--muted);font-weight:600;}
+.save-ind{font-size:0.65rem;color:var(--good);letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;opacity:0;transition:opacity 0.4s;display:block;height:14px;font-weight:700;}
+.save-ind.show{opacity:1;}
+.theme-toggle{background:var(--panel2);border:2px solid var(--border2);border-radius:30px;width:60px;height:34px;cursor:pointer;position:relative;flex-shrink:0;margin-top:4px;transition:background 0.25s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.theme-toggle::before{content:'';position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;background:var(--clay);transition:transform 0.25s;}
+[data-theme="dark"] .theme-toggle::before{transform:translateX(26px);}
+.theme-icons{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 6px;font-size:0.75rem;pointer-events:none;}
+
+/* TABS */
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--tab-bg);border-radius:12px;padding:4px;margin-bottom:14px;border:1.5px solid var(--border2);gap:2px;box-shadow:0 2px 6px var(--shadow);}
+.tab{padding:10px 2px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:1.5px;color:var(--tab-inactive);cursor:pointer;border-radius:9px;transition:all 0.18s;border:none;background:none;font-weight:700;min-height:44px;display:flex;align-items:center;justify-content:center;}
+.tab.active{background:var(--clay);color:#ffffff;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.slabel{font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:3px;color:var(--muted);margin-bottom:10px;padding-left:1px;font-weight:700;}
+
+/* BATTING */
+.batting-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.batter-row{display:grid;grid-template-columns:26px 32px 1fr 66px 34px;align-items:center;gap:8px;background:var(--panel);border:1.5px solid var(--border2);border-radius:12px;padding:10px 11px;cursor:grab;box-shadow:0 1px 4px var(--shadow);transition:border-color 0.2s,opacity 0.2s,box-shadow 0.15s;user-select:none;-webkit-user-select:none;}
+.batter-row.dragging{opacity:0.35;border-color:var(--clay);}
+.batter-row.drag-over{border-color:var(--clay);box-shadow:0 0 0 2px var(--clay);}
+
+.bat-num{font-family:'Barlow Condensed',sans-serif;font-size:1.45rem;font-weight:800;color:var(--clay);text-align:center;line-height:1;}
+.bat-num.gold{color:var(--gold);}
+.bname{font-weight:700;font-size:0.95rem;color:var(--ink);line-height:1.2;}
+.bsub{font-size:0.72rem;color:var(--muted);margin-top:1px;}
+.bstat{font-size:0.72rem;color:var(--good);margin-top:1px;font-weight:700;}
+.bstreak{font-size:0.68rem;margin-top:1px;font-weight:700;}
+.bstreak.hot{color:var(--streak-hot);}
+.bstreak.cold{color:var(--streak-cold);}
+.pos-select{background:var(--panel2);border:1.5px solid var(--border2);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-size:0.88rem;letter-spacing:1px;font-weight:700;border-radius:8px;padding:6px 3px;width:100%;cursor:pointer;appearance:none;text-align:center;min-height:36px;}
+.pos-select:focus{outline:none;border-color:var(--clay);}
+
+/* STEAL TRACKER */
+.steal-card{background:var(--panel);border:1.5px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:14px;box-shadow:0 2px 6px var(--shadow);}
+.steal-card h3{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-weight:700;}
+.steal-dots{display:flex;gap:10px;align-items:center;margin-bottom:7px;}
+.steal-dot{width:46px;height:46px;border-radius:50%;border:2.5px solid var(--border2);background:var(--panel2);cursor:pointer;transition:all 0.18s;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.steal-dot.used{background:var(--clay);border-color:var(--clay);color:#ffffff;}
+.steal-count{font-size:0.8rem;color:var(--muted);margin-left:4px;font-weight:600;}
+.steal-reset{font-size:0.75rem;color:var(--clay);cursor:pointer;background:none;border:none;padding:4px 0;text-decoration:underline;font-weight:700;min-height:44px;display:flex;align-items:center;}
+
+/* REORDER ARROWS */
+.reorder-btns{display:flex;flex-direction:column;gap:3px;flex-shrink:0;}
+.reorder-btn{width:34px;height:44px;background:var(--panel2);border:1.5px solid var(--border2);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--ink2);font-weight:700;transition:all 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.reorder-btn:active,.reorder-btn:hover{background:var(--clay);border-color:var(--clay);color:#fff;}
+.reorder-btn:disabled{opacity:0.18;pointer-events:none;}
+/* Drag handle — tall enough to be a comfortable touch target */
+.drag-handle{color:var(--muted);font-size:1.1rem;text-align:center;cursor:grab;padding:6px 2px;touch-action:none;-webkit-tap-highlight-color:transparent;min-height:44px;display:flex;align-items:center;justify-content:center;}
+
+/* DEFENSE */
+.inning-block{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;margin-bottom:9px;overflow:hidden;box-shadow:0 2px 6px var(--shadow);}
+.inning-hdr{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--panel2);border-bottom:1.5px solid var(--border2);cursor:pointer;}
+.inning-hdr-left{flex:1;}
+.inning-title{font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;letter-spacing:2px;color:var(--ink);font-weight:800;}
+.inning-bench-tag{font-size:0.7rem;color:var(--clay);margin-top:1px;font-weight:700;}
+.inning-chevron{color:var(--muted);font-size:0.7rem;transition:transform 0.2s;}
+.inning-hdr.open .inning-chevron{transform:rotate(180deg);}
+.inning-body{display:none;padding:11px;}
+.inning-body.open{display:block;}
+.bench-row{display:flex;align-items:center;gap:10px;background:rgba(194,40,24,0.07);border:1.5px solid rgba(194,40,24,0.25);border-radius:8px;padding:8px 11px;margin-bottom:9px;}
+.bench-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;color:var(--clay);white-space:nowrap;font-weight:700;}
+.bench-sel{flex:1;background:transparent;border:none;color:var(--clay);font-family:'Barlow',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;appearance:none;}
+.bench-sel:focus{outline:none;}
+.suggest-btn{background:var(--clay);color:#ffffff;border:none;border-radius:6px;padding:6px 11px;font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;cursor:pointer;white-space:nowrap;font-weight:700;transition:background 0.18s;}
+.suggest-btn:hover{background:var(--clay-d);}
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.def-cell{display:flex;align-items:center;gap:7px;background:var(--panel2);border:1.5px solid var(--border2);border-radius:8px;padding:7px 10px;}
+.def-pos{font-family:'Barlow Condensed',sans-serif;font-size:0.82rem;color:var(--clay);min-width:26px;letter-spacing:1px;font-weight:800;}
+.def-name-sel{flex:1;background:transparent;border:none;color:var(--ink);font-size:0.82rem;font-weight:700;cursor:pointer;appearance:none;}
+.def-name-sel:focus{outline:none;}
+.fit-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.fit-good{background:var(--good);}
+.fit-ok{background:var(--warn);}
+.fit-weak{background:var(--bad);}
+.fit-legend{display:flex;gap:12px;margin-bottom:9px;flex-wrap:wrap;}
+.fit-legend span{font-size:0.67rem;color:var(--muted);display:flex;align-items:center;gap:4px;font-weight:600;}
+.rotation-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2px;padding:3px 8px;border-radius:12px;margin-bottom:8px;font-weight:700;}
+.rot-good{background:rgba(26,122,56,0.12);color:var(--good);border:1px solid rgba(26,122,56,0.3);}
+.rot-warn{background:rgba(176,90,0,0.12);color:var(--warn);border:1px solid rgba(176,90,0,0.3);}
+
+/* SETTINGS */
+.spc{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;margin-bottom:8px;overflow:hidden;box-shadow:0 2px 6px var(--shadow);}
+.spc-hdr{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--panel2);border-bottom:1.5px solid var(--border2);cursor:pointer;}
+.spc-name{font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:1px;font-weight:800;color:var(--ink);flex:1;}
+.spc-rank-badge{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--gold);background:rgba(154,104,0,0.12);border:1.5px solid rgba(154,104,0,0.35);border-radius:5px;padding:2px 8px;font-weight:700;}
+.spc-body{display:none;padding:11px 13px;}
+.spc-body.open{display:block;}
+.settings-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.settings-row label{font-size:0.75rem;color:var(--muted);min-width:68px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-weight:700;}
+.num-input{background:var(--panel2);border:1.5px solid var(--border2);color:var(--ink);border-radius:7px;padding:5px 8px;font-size:0.9rem;font-family:'Barlow Condensed',sans-serif;width:58px;text-align:center;font-weight:700;}
+.num-input:focus{outline:none;border-color:var(--clay);}
+.pos-strength-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;}
+.pos-tog{display:flex;align-items:center;gap:3px;background:var(--panel2);border:1.5px solid var(--border2);border-radius:7px;padding:5px 9px;cursor:pointer;transition:all 0.14s;user-select:none;}
+.pos-tog.pri{background:rgba(194,40,24,0.10);border-color:var(--clay);}
+.pos-tog.sec{background:rgba(10,106,98,0.10);border-color:var(--teal);}
+.pos-tog-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:1px;color:var(--muted);font-weight:700;}
+.pos-tog.pri .pos-tog-lbl{color:var(--clay);}
+.pos-tog.sec .pos-tog-lbl{color:var(--teal);}
+.pos-legend{display:flex;gap:12px;margin-bottom:9px;flex-wrap:wrap;}
+.pos-legend span{font-size:0.68rem;color:var(--muted);display:flex;align-items:center;gap:4px;font-weight:600;}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.save-settings-btn{width:100%;padding:12px;background:var(--grass);color:#ffffff;border:none;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;letter-spacing:3px;cursor:pointer;transition:background 0.18s;margin-top:5px;font-weight:700;}
+.save-settings-btn:hover{background:var(--grass-l);}
+
+/* STATS */
+.gc-upload-card{background:var(--panel);border:2.5px dashed var(--border2);border-radius:12px;padding:20px 16px;text-align:center;margin-bottom:10px;transition:border-color 0.2s;box-shadow:0 2px 6px var(--shadow);}
+.gc-upload-card.dragover{border-color:var(--clay);}
+.gc-upload-icon{font-size:1.8rem;margin-bottom:7px;}
+.gc-upload-card h3{font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--ink);margin-bottom:4px;font-weight:800;}
+.gc-upload-card p{font-size:0.77rem;color:var(--muted);line-height:1.5;margin-bottom:10px;font-weight:500;}
+.gc-upload-btn{display:inline-block;background:var(--clay);color:#ffffff;font-family:'Barlow Condensed',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:8px 18px;border-radius:8px;cursor:pointer;border:none;font-weight:700;}
+.game-log-card{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:12px 14px;margin-bottom:10px;box-shadow:0 2px 6px var(--shadow);}
+.game-log-card h4{font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;letter-spacing:2px;color:var(--clay);margin-bottom:10px;font-weight:800;}
+.game-log-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);gap:8px;}
+.game-log-row:last-child{border-bottom:none;}
+.game-log-num{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:1px;color:var(--muted);min-width:52px;font-weight:700;}
+.game-log-label{font-size:0.82rem;color:var(--ink);font-weight:700;flex:1;}
+.game-log-delta{font-size:0.72rem;color:var(--good);font-weight:700;}
+.game-log-del{font-size:0.7rem;color:var(--bad);cursor:pointer;background:none;border:1.5px solid var(--bad);padding:2px 7px;border-radius:5px;font-weight:700;}
+.stats-header-row{display:grid;grid-template-columns:1fr repeat(6,36px);gap:3px;padding:5px 10px;margin-bottom:4px;}
+.stats-header-row span{font-family:'Barlow Condensed',sans-serif;font-size:0.63rem;letter-spacing:2px;color:var(--muted);text-align:center;font-weight:700;}
+.stats-header-row span:first-child{text-align:left;}
+.stat-player-row{display:grid;grid-template-columns:1fr repeat(6,36px);gap:3px;align-items:center;background:var(--panel);border:1.5px solid var(--border2);border-radius:9px;padding:7px 10px;margin-bottom:5px;box-shadow:0 1px 3px var(--shadow);}
+.stat-pname{font-size:0.83rem;font-weight:700;color:var(--ink);}
+.stat-psub{font-size:0.65rem;color:var(--muted);font-weight:600;}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:0.87rem;text-align:center;color:var(--ink2);font-weight:700;}
+.stat-val.hi{color:var(--good);}
+.stat-val.mid{color:var(--warn);}
+.stat-val.lo{color:var(--muted);}
+.stat-val.ba{font-size:0.94rem;}
+.stat-streak{font-size:0.65rem;font-weight:700;}
+.stat-streak.hot{color:var(--streak-hot);}
+.stat-streak.cold{color:var(--streak-cold);}
+.stats-note{background:rgba(26,122,56,0.09);border:1.5px solid rgba(26,122,56,0.3);border-radius:9px;padding:10px 13px;margin-bottom:10px;font-size:0.78rem;color:var(--ink2);line-height:1.5;font-weight:500;}
+.stats-note strong{color:var(--good);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:block;margin-bottom:3px;font-weight:800;}
+.stats-clear-btn{background:transparent;border:1.5px solid var(--bad);color:var(--bad);font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:2px;padding:6px 12px;border-radius:7px;cursor:pointer;margin-bottom:10px;font-weight:700;}
+
+/* AWARDS */
+.awards-intro{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:12px 14px;margin-bottom:10px;box-shadow:0 2px 6px var(--shadow);}
+.awards-intro p{font-size:0.8rem;color:var(--ink2);line-height:1.55;font-weight:500;}
+.awards-updated-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(26,122,56,0.10);border:1.5px solid rgba(26,122,56,0.3);border-radius:6px;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:0.67rem;letter-spacing:2px;color:var(--good);margin-bottom:10px;font-weight:700;}
+.award-card{background:var(--panel);border:1.5px solid var(--border2);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px var(--shadow);}
+.award-header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1.5px solid var(--border2);background:var(--panel2);}
+.award-emoji{font-size:1.4rem;flex-shrink:0;}
+.award-header-text{flex:1;}
+.award-name{font-family:'Barlow Condensed',sans-serif;font-size:1.02rem;letter-spacing:1px;font-weight:800;color:var(--ink);}
+.award-desc{font-size:0.72rem;color:var(--muted);margin-top:2px;line-height:1.4;font-weight:500;}
+.award-category{font-family:'Barlow Condensed',sans-serif;font-size:0.62rem;letter-spacing:2px;padding:3px 8px;border-radius:12px;white-space:nowrap;font-weight:700;}
+.cat-stat{background:rgba(26,122,56,0.12);color:var(--good);border:1.5px solid rgba(26,122,56,0.3);}
+.cat-spirit{background:rgba(100,60,180,0.10);color:#5a28b0;border:1.5px solid rgba(100,60,180,0.25);}
+[data-theme="dark"] .cat-spirit{color:#b89adf;}
+.cat-growth{background:rgba(10,106,98,0.12);color:var(--teal);border:1.5px solid rgba(10,106,98,0.3);}
+.cat-team{background:rgba(154,104,0,0.12);color:var(--gold);border:1.5px solid rgba(154,104,0,0.3);}
+.cat-fun{background:rgba(176,90,0,0.12);color:var(--warn);border:1.5px solid rgba(176,90,0,0.3);}
+.award-body{padding:12px 14px;}
+.award-nominees{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.nominee-row{display:flex;align-items:flex-start;gap:10px;background:var(--panel2);border:1.5px solid var(--border2);border-radius:9px;padding:9px 11px;}
+.nominee-row.winner{border-color:var(--gold);}
+.nominee-medal{font-size:1.1rem;flex-shrink:0;width:22px;text-align:center;margin-top:2px;}
+.nominee-info{flex:1;}
+.nominee-name{font-weight:700;font-size:0.87rem;color:var(--ink);}
+.nominee-reason{font-size:0.7rem;color:var(--muted);margin-top:1px;font-weight:500;}
+.nominee-val{font-family:'Barlow Condensed',sans-serif;font-size:0.92rem;font-weight:800;color:var(--gold);white-space:nowrap;}
+.award-no-data{font-size:0.77rem;color:var(--muted);font-style:italic;padding:4px 0;}
+.award-writeup-section{margin-top:4px;}
+.award-writeup-label{font-family:'Barlow Condensed',sans-serif;font-size:0.67rem;letter-spacing:2px;color:var(--muted);display:block;margin-bottom:6px;font-weight:700;}
+.award-blurb{background:var(--award-blurb-bg);border:1.5px solid var(--award-blurb-border);border-radius:8px;padding:10px 12px;font-size:0.8rem;color:var(--ink2);line-height:1.65;font-weight:500;margin-bottom:8px;font-style:italic;}
+.award-blurb strong{color:var(--ink);font-style:normal;font-weight:700;}
+.award-blurb .sh{color:var(--good);font-weight:700;font-style:normal;}
+.qualitative-input{width:100%;background:var(--panel2);border:1.5px solid var(--border2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:'Barlow',sans-serif;font-size:0.8rem;resize:vertical;min-height:60px;font-weight:500;}
+.qualitative-input:focus{outline:none;border-color:var(--clay);}
+.qualitative-input::placeholder{color:var(--muted);}
+.gen-blurb-btn{background:var(--clay);color:#ffffff;border:none;border-radius:7px;padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;cursor:pointer;margin-top:6px;font-weight:700;transition:background 0.18s;}
+.gen-blurb-btn:hover{background:var(--clay-d);}
+.award-override{margin-top:8px;}
+.award-override label{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2px;color:var(--muted);display:block;margin-bottom:5px;font-weight:700;}
+.override-sel{background:var(--panel2);border:1.5px solid var(--border2);color:var(--ink);border-radius:7px;padding:7px 9px;width:100%;font-family:'Barlow',sans-serif;font-size:0.83rem;cursor:pointer;appearance:none;font-weight:600;}
+.override-sel:focus{outline:none;border-color:var(--clay);}
+
+.print-btn{width:100%;padding:15px;background:var(--clay);color:#ffffff;border:none;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:3px;cursor:pointer;margin-top:6px;font-weight:700;min-height:52px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.age-tag{display:inline-block;font-size:0.6rem;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:3px;vertical-align:middle;}
+.a10{background:rgba(154,104,0,0.15);color:var(--gold);}
+.a9{background:rgba(26,122,56,0.15);color:var(--good);}
+
+/* OFFLINE BANNER */
+.offline-banner{display:none;position:fixed;top:env(safe-area-inset-top,0);left:0;right:0;background:var(--warn);color:#fff;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;font-weight:700;padding:6px;z-index:9999;}
+.offline-banner.show{display:block;}
+
+/* Fallback font stack if Google Fonts don't load offline */
+:root{font-family:'Barlow','Arial Narrow',Arial,system-ui,sans-serif;}
+  .tabs,.steal-card,.print-btn,.suggest-btn,.gc-upload-card,.stats-clear-btn,.game-log-del,.award-override,.theme-toggle,.theme-icons,.qualitative-input,.gen-blurb-btn{display:none!important;}
+  .tab-content{display:block!important;}
+  .inning-body,.spc-body{display:block!important;}
+  body{background:white;}
+}
+</style>
+</head>
+<body>
+<div class="offline-banner" id="offlineBanner">⚡ OFFLINE MODE — ALL DATA SAVED LOCALLY</div>
+<header>
+  <div class="header-left">
+    <div class="logo-badge">⚾ TVL MINORS 10B</div>
+    <div class="header-title">TEAM <em>HAUNGS</em></div>
+    <div class="header-sub">COACH'S PLAYBOOK</div>
+    <span class="save-ind" id="saveInd">✓ SAVED</span>
+  </div>
+  <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark">
+    <div class="theme-icons"><span>☀️</span><span>🌙</span></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('batting',this)">⚡ BAT</button>
+  <button class="tab"        onclick="switchTab('defense',this)">🛡 DEF</button>
+  <button class="tab"        onclick="switchTab('settings',this)">⚙ ROSTER</button>
+  <button class="tab"        onclick="switchTab('stats',this)">📊 STATS</button>
+  <button class="tab"        onclick="switchTab('awards',this)">🏆 AWARDS</button>
+</div>
+
+<div id="tab-batting"  class="tab-content active"></div>
+<div id="tab-defense"  class="tab-content"></div>
+<div id="tab-settings" class="tab-content"></div>
+<div id="tab-stats"    class="tab-content"></div>
+<div id="tab-awards"   class="tab-content"></div>
+
+<script>
+// ══════════════════════════════════════════
+// CONSTANTS — exactly 10 field positions, 4 OF
+// ══════════════════════════════════════════
+const FIELD_POS = ['P','C','1B','2B','3B','SS','LF','LC','CF','RF'];
+const POS_PRI   = ['P','C','SS','3B','1B','2B','CF','LF','LC','RF'];
+const OF_POS    = new Set(['LF','LC','CF','RF']);
+const IF_POS    = new Set(['P','C','1B','2B','3B','SS']);
+
+// ══════════════════════════════════════════
+// ROSTER
+// ══════════════════════════════════════════
+let roster = [
+  {name:'Emory Moskowitz', age:9,  rank:1,  strengths:{C:2,SS:2,'2B':1,CF:1,LF:1,RF:1,LC:1}},
+  {name:'Geneva Haungs',   age:10, rank:2,  strengths:{SS:2,'3B':2,P:1,'1B':1,C:1,LF:1,CF:1,RF:1,LC:1}},
+  {name:'Sadie Swartz',    age:9,  rank:2,  strengths:{P:2,'1B':2,'3B':1,'2B':1,LF:1,CF:1,RF:1,LC:1}},
+  {name:'Shayna Levine',   age:9,  rank:4,  strengths:{P:2,'3B':2,SS:1,'2B':1,LF:1,CF:1,RF:1,LC:1}},
+  {name:'Mabel Davies',    age:10, rank:5,  strengths:{'3B':2,'1B':2,P:1,LF:1,CF:1,RF:1,LC:1}},
+  {name:'Genevieve Meehl', age:9,  rank:5,  strengths:{P:2,'3B':1,'1B':1,LF:2,CF:1,RF:1,LC:1}},
+  {name:'Quinn Scorzella',  age:10, rank:6,  strengths:{'2B':2,'3B':1,SS:1,LF:1,CF:1,RF:1,LC:1}},
+  {name:'Mackenzie Mello', age:9,  rank:7,  strengths:{P:1,C:1,SS:1,'2B':1,'3B':1,'1B':1,LF:1,CF:1,RF:1,LC:1}},
+  {name:'Hana Hafez',      age:10, rank:8,  strengths:{'1B':2,'2B':1,CF:2,LF:1,RF:1,LC:1}},
+  {name:'Isabelle Roch',   age:10, rank:8,  strengths:{C:2,'1B':1,CF:1,LF:1,RF:2,LC:1}},
+  {name:'Hayley Allia',    age:10, rank:10, strengths:{'2B':2,LF:2,CF:1,RF:1,LC:1}},
+];
+
+let awardOverrides={}, awardNotes={}, awardBlurbs={};
+let gameLog=[];
+let battingOrder=[
+  {idx:0,batPos:'C'},{idx:1,batPos:'SS'},{idx:2,batPos:'P'},
+  {idx:3,batPos:'3B'},{idx:4,batPos:'1B'},{idx:5,batPos:'LF'},
+  {idx:6,batPos:'2B'},{idx:7,batPos:'LC'},{idx:8,batPos:'CF'},
+  {idx:9,batPos:'RF'},{idx:10,batPos:'LF'}
+];
+let defBlocks=[
+  {benchIdx:10,assignments:{}},
+  {benchIdx:8, assignments:{}},
+  {benchIdx:9, assignments:{}},
+];
+let steals=[false,false,false];
+let dragIdx=null,touchDragIdx=null;
+
+// ══════════════════════════════════════════
+// PERSISTENCE — localStorage save/load
+// ══════════════════════════════════════════
+const STORE_KEY = 'haungs10b-state-v1';
+
+function saveState(){
+  try {
+    const state = {
+      roster,
+      battingOrder,
+      defBlocks,
+      gameLog,
+      awardOverrides,
+      awardNotes,
+      awardBlurbs,
+    };
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  } catch(e){ console.warn('Save failed:', e); }
+}
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return false;
+    const s = JSON.parse(raw);
+    if(s.roster)         roster         = s.roster;
+    if(s.battingOrder)   battingOrder   = s.battingOrder;
+    if(s.defBlocks)      defBlocks      = s.defBlocks;
+    if(s.gameLog)        gameLog        = s.gameLog;
+    if(s.awardOverrides) awardOverrides = s.awardOverrides;
+    if(s.awardNotes)     awardNotes     = s.awardNotes;
+    if(s.awardBlurbs)    awardBlurbs    = s.awardBlurbs;
+    return true;
+  } catch(e){ console.warn('Load failed:', e); return false; }
+}
+
+function clearState(){
+  try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+}
+
+// ══════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════
+function toggleTheme(){
+  const h=document.documentElement;
+  h.dataset.theme=h.dataset.theme==='light'?'dark':'light';
+  try{localStorage.setItem('tv10b-theme',h.dataset.theme);}catch(e){}
+}
+(function(){try{const s=localStorage.getItem('tv10b-theme');if(s)document.documentElement.dataset.theme=s;}catch(e){}})();
+
+// ══════════════════════════════════════════
+// STATS HELPERS
+// ══════════════════════════════════════════
+function getSeasonTotals(){return gameLog.length?gameLog[gameLog.length-1].cumTotals:{};}
+
+function getGameDelta(i){
+  const cur=gameLog[i].cumTotals,prev=i>0?gameLog[i-1].cumTotals:{};
+  const d={};
+  Object.keys(cur).forEach(pi=>{
+    const c=cur[pi],p=prev[pi]||{ab:0,h:0,bb:0,pa:0,s2:0,s3:0,hr:0,gp:0,sb:0};
+    const ab=(c.ab||0)-(p.ab||0),h=(c.h||0)-(p.h||0),bb=(c.bb||0)-(p.bb||0),pa=(c.pa||0)-(p.pa||0);
+    d[pi]={ab,h,bb,pa,s2:(c.s2||0)-(p.s2||0),s3:(c.s3||0)-(p.s3||0),hr:(c.hr||0)-(p.hr||0),
+      sb:(c.sb||0)-(p.sb||0),gp:(c.gp||0)-(p.gp||0),
+      avg:ab>0?h/ab:null,obp:pa>0?(h+bb)/pa:null};
+  });
+  return d;
+}
+
+function getRecentStats(n=3){
+  const r={},start=Math.max(0,gameLog.length-n);
+  for(let i=start;i<gameLog.length;i++){
+    const d=getGameDelta(i);
+    Object.keys(d).forEach(pi=>{
+      if(!r[pi])r[pi]={ab:0,h:0,bb:0,pa:0,s2:0,s3:0,hr:0,sb:0,gp:0};
+      ['ab','h','bb','pa','s2','s3','hr','sb','gp'].forEach(k=>r[pi][k]+=(d[pi][k]||0));
+    });
+  }
+  Object.keys(r).forEach(pi=>{
+    r[pi].avg=r[pi].ab>0?r[pi].h/r[pi].ab:null;
+    r[pi].obp=r[pi].pa>0?(r[pi].h+r[pi].bb)/r[pi].pa:null;
+  });
+  return r;
+}
+
+// Best AVG over ANY 3-consecutive-game window
+function getBestStretchStats(){
+  if(gameLog.length<1)return{};
+  const best={};
+  roster.forEach((_,ri)=>{
+    // Build per-game deltas array
+    const perGame=gameLog.map((_,i)=>getGameDelta(i)[ri]||{ab:0,h:0,bb:0,pa:0,sb:0,s2:0,s3:0,hr:0});
+    let bestAvg=-1,bestData=null,bestWindow='';
+    const windowSize=Math.min(3,gameLog.length);
+    for(let start=0;start<=gameLog.length-windowSize;start++){
+      let ab=0,h=0,bb=0,pa=0,sb=0,s2=0,s3=0,hr=0;
+      for(let j=start;j<start+windowSize;j++){
+        ab+=perGame[j].ab||0;h+=perGame[j].h||0;
+        bb+=perGame[j].bb||0;pa+=perGame[j].pa||0;
+        sb+=perGame[j].sb||0;s2+=perGame[j].s2||0;
+        s3+=perGame[j].s3||0;hr+=perGame[j].hr||0;
+      }
+      const avg=ab>0?h/ab:-1;
+      if(avg>bestAvg){bestAvg=avg;bestData={ab,h,bb,pa,sb,s2,s3,hr,avg,obp:pa>0?(h+bb)/pa:0};bestWindow=`G${start+1}–G${start+windowSize}`;}
+    }
+    if(bestData)best[ri]={...bestData,window:bestWindow};
+  });
+  return best;
+}
+
+function streakLabel(idx){
+  const s=getSeasonTotals()[idx],r=getRecentStats(3)[idx];
+  if(!s||!s.ab||s.ab<3||!r||!r.ab||r.ab<2)return null;
+  const diff=r.avg-s.avg;
+  if(diff>0.08)return{label:'🔥 Hot L3',cls:'hot'};
+  if(diff<-0.08)return{label:'❄️ Cold L3',cls:'cold'};
+  return null;
+}
+
+function effectiveRank(idx){
+  const r=getRecentStats(3)[idx];
+  if(!r||r.ab<2)return roster[idx].rank;
+  const boost=r.avg>0.4?-2:r.avg>0.3?-1:r.avg<0.15?2:0;
+  return roster[idx].rank+boost;
+}
+
+// ══════════════════════════════════════════
+// AUTO-SUGGEST — rotation-aware, majority position change
+// ══════════════════════════════════════════
+// Returns assignments object {pos->playerIdx} for a block
+// prevAssignments = assignments from prior block (for rotation logic)
+// prevPrevAssignments = two blocks ago (block 5-6 can mirror block 1-2)
+function buildSuggest(benchIdx, prevAssignments, prevPrevAssignments){
+  const pool=roster.map((_,i)=>i).filter(i=>i!==benchIdx);
+  const assigned={};
+  const used=new Set();
+
+  // Build a map of what each player played previously
+  // prev: playerIdx -> pos they played last block
+  const prevPlayerPos={};
+  if(prevAssignments){
+    Object.entries(prevAssignments).forEach(([pos,pi])=>{prevPlayerPos[pi]=pos;});
+  }
+  const prevPrevPlayerPos={};
+  if(prevPrevAssignments){
+    Object.entries(prevPrevAssignments).forEach(([pos,pi])=>{prevPrevPlayerPos[pi]=pos;});
+  }
+
+  const totalPlayers=pool.length; // 10
+  const targetChanges=Math.ceil(totalPlayers*0.5)+1; // majority = at least 6 of 10
+
+  // Score function: higher = better candidate for a position
+  function score(playerIdx, pos){
+    const fitScore=(roster[playerIdx].strengths[pos]||0)*10;
+    const rankScore=10-effectiveRank(playerIdx); // higher rank num = lower score
+    // Rotation bonus: if player played this exact pos last block, penalise
+    const sameAsPrev=prevPlayerPos[playerIdx]===pos?-8:0;
+    // If we have prevPrev (block 5-6 logic), allow same as block 1-2
+    const sameAsPrevPrev=prevPrevAssignments&&prevPrevPlayerPos[playerIdx]===pos?2:0;
+    return fitScore+rankScore+sameAsPrev+sameAsPrevPrev;
+  }
+
+  // Sort positions by strategic importance, fill greedily with rotation awareness
+  for(const pos of POS_PRI){
+    const candidates=pool.filter(i=>!used.has(i)).sort((a,b)=>score(b,pos)-score(a,pos));
+    if(candidates.length){assigned[pos]=candidates[0];used.add(candidates[0]);}
+  }
+
+  // Validate majority change: count how many changed from prev
+  if(prevAssignments){
+    let changed=0;
+    pool.forEach(pi=>{
+      const nowPos=Object.entries(assigned).find(([,v])=>v===pi)?.[0];
+      if(prevPlayerPos[pi]!==nowPos)changed++;
+    });
+    // If not majority changed, do a targeted swap of same-position players
+    if(changed<targetChanges){
+      const samePos=pool.filter(pi=>{
+        const nowPos=Object.entries(assigned).find(([,v])=>v===pi)?.[0];
+        return prevPlayerPos[pi]===nowPos;
+      });
+      // Try to swap pairs of same-position players between OF and IF
+      for(let i=0;i<samePos.length-1&&changed<targetChanges;i++){
+        const pi=samePos[i],pj=samePos[i+1];
+        const posI=Object.entries(assigned).find(([,v])=>v===pi)?.[0];
+        const posJ=Object.entries(assigned).find(([,v])=>v===pj)?.[0];
+        if(posI&&posJ&&posI!==posJ){
+          // Only swap if both can play the other's position (at least secondary)
+          const iFit=roster[pi].strengths[posJ]||0;
+          const jFit=roster[pj].strengths[posI]||0;
+          if(iFit>0&&jFit>0){
+            assigned[posI]=pj;assigned[posJ]=pi;changed+=2;
+          }
+        }
+      }
+    }
+  }
+  return assigned;
+}
+
+function autoSuggest(bi){
+  const bench=defBlocks[bi].benchIdx;
+  const prev=bi>0?defBlocks[bi-1].assignments:null;
+  const prevPrev=bi>1?defBlocks[bi-2].assignments:null; // for block 2 (5-6), can use block 0 (1-2)
+  defBlocks[bi].assignments=buildSuggest(bench,prev,prevPrev);
+}
+
+// ══════════════════════════════════════════
+// SYNC: DEF position change → batting tab
+// ══════════════════════════════════════════
+function syncBattingPos(playerIdx, newPos){
+  const b=battingOrder.find(b=>b.idx===playerIdx);
+  if(b)b.batPos=newPos;
+}
+
+// Manual def assign: swap displaced player into vacated spot
+function manualDefAssign(bi, pos, newPlayerIdx){
+  const block=defBlocks[bi];
+  const oldPlayerAtPos=block.assignments[pos]; // player being displaced
+  // Find where newPlayer currently is in this block
+  const newPlayerCurrentPos=Object.entries(block.assignments).find(([,v])=>v===newPlayerIdx)?.[0];
+  // Perform swap
+  if(newPlayerCurrentPos){
+    // newPlayer was elsewhere in this block — swap with oldPlayer
+    if(oldPlayerAtPos!==undefined){
+      block.assignments[newPlayerCurrentPos]=oldPlayerAtPos;
+      syncBattingPos(oldPlayerAtPos,newPlayerCurrentPos);
+    } else {
+      delete block.assignments[newPlayerCurrentPos];
+    }
+  }
+  block.assignments[pos]=newPlayerIdx;
+  syncBattingPos(newPlayerIdx,pos);
+  saveState(); renderDefGrid(bi);
+  // Re-render batting to reflect sync
+  renderBatting();
+}
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+const fn=i=>roster[i].name.split(' ')[0];
+const fitOf=(pi,pos)=>roster[pi].strengths[pos]||0;
+function showSaved(){const el=document.getElementById('saveInd');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800);}
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════
+// BATTING
+// Long-press handle → drag (Safari/iOS best practice)
+// ▲▼ arrow buttons as reliable tap fallback
+// ══════════════════════════════════════════
+
+// Long-press drag state
+let lpTimer=null, lpActive=false;
+
+function renderBatting(){
+  const tab=document.getElementById('tab-batting');
+  tab.innerHTML='';
+  const lbl=document.createElement('div');
+  lbl.className='slabel';
+  lbl.textContent='HOLD ⠿ HANDLE TO DRAG · OR USE ▲▼ ARROWS';
+  tab.appendChild(lbl);
+
+  const list=document.createElement('div');
+  list.className='batting-list';
+  list.id='battingList';
+  const total=battingOrder.length;
+
+  battingOrder.forEach((b,i)=>{
+    const p=roster[b.idx];
+    const season=getSeasonTotals()[b.idx];
+    const streak=streakLabel(b.idx);
+    const row=document.createElement('div');
+    row.className='batter-row';
+    row.draggable=true;
+    row.dataset.i=i;
+
+    const numCls=i<3?'bat-num gold':'bat-num';
+    const ageCls=p.age===10?'a10':'a9';
+    const statLine=season&&season.ab>0?`${season.avg.toFixed(3)} AVG · ${season.h}H/${season.ab}AB`:'No stats yet';
+    const statCls=season&&season.ab>0?'bstat':'bsub';
+    const streakHtml=streak?`<div class="bstreak ${streak.cls}">${streak.label}</div>`:'';
+    const posOpts=FIELD_POS.map(x=>`<option value="${x}" ${b.batPos===x?'selected':''}>${x}</option>`).join('');
+
+    row.innerHTML=`
+      <div class="drag-handle" data-handle="1">⠿</div>
+      <div class="${numCls}">${i+1}</div>
+      <div>
+        <div class="bname">${fn(b.idx)} <span class="age-tag ${ageCls}">${p.age}</span></div>
+        <div class="${statCls}">${statLine}</div>${streakHtml}
+      </div>
+      <select class="pos-select" onchange="updateBatPos(${i},this.value)">${posOpts}</select>
+      <div class="reorder-btns">
+        <button class="reorder-btn" ${i===0?'disabled':''} onclick="moveRow(${i},-1)" aria-label="Move up">▲</button>
+        <button class="reorder-btn" ${i===total-1?'disabled':''} onclick="moveRow(${i},1)" aria-label="Move down">▼</button>
+      </div>`;
+
+    // ── Mouse drag (desktop) ──
+    row.addEventListener('dragstart',e=>{
+      dragIdx=i;
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+    });
+    row.addEventListener('dragover',e=>{
+      e.preventDefault();
+      document.querySelectorAll('.batter-row').forEach(r=>r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('drop',e=>{e.preventDefault();doDrop(i);});
+    row.addEventListener('dragend',()=>{
+      document.querySelectorAll('.batter-row').forEach(r=>r.classList.remove('dragging','drag-over'));
+      dragIdx=null;
+    });
+
+    // ── Touch drag (iOS Safari) ──
+    // Long-press on the ⠿ handle activates drag mode, then slide to target row
+    const handle=row.querySelector('[data-handle]');
+
+    handle.addEventListener('touchstart',e=>{
+      e.stopPropagation();
+      lpActive=false;
+      lpTimer=setTimeout(()=>{
+        lpActive=true;
+        touchDragIdx=i;
+        row.style.opacity='0.45';
+        row.style.boxShadow='0 0 0 2px var(--clay)';
+        // Light haptic if available
+        if(navigator.vibrate) navigator.vibrate(30);
+      },350); // 350ms long-press threshold
+    },{passive:true});
+
+    handle.addEventListener('touchmove',e=>{
+      if(!lpActive){clearTimeout(lpTimer);return;}
+      e.preventDefault();
+      const t=e.touches[0];
+      const el=document.elementFromPoint(t.clientX,t.clientY);
+      const r=el&&el.closest('.batter-row');
+      document.querySelectorAll('.batter-row').forEach(x=>x.classList.remove('drag-over'));
+      if(r&&r!==row) r.classList.add('drag-over');
+    },{passive:false});
+
+    handle.addEventListener('touchend',e=>{
+      clearTimeout(lpTimer);
+      if(!lpActive){touchDragIdx=null;return;}
+      const t=e.changedTouches[0];
+      const el=document.elementFromPoint(t.clientX,t.clientY);
+      const r=el&&el.closest('.batter-row');
+      document.querySelectorAll('.batter-row').forEach(x=>{
+        x.classList.remove('drag-over');
+        x.style.opacity='';
+        x.style.boxShadow='';
+      });
+      if(r) doDrop(+r.dataset.i);
+      touchDragIdx=null;
+      lpActive=false;
+    });
+
+    handle.addEventListener('touchcancel',()=>{
+      clearTimeout(lpTimer);
+      document.querySelectorAll('.batter-row').forEach(x=>{x.style.opacity='';x.style.boxShadow='';x.classList.remove('drag-over');});
+      touchDragIdx=null;lpActive=false;
+    });
+
+    list.appendChild(row);
+  });
+
+  tab.appendChild(list);
+  tab.innerHTML+=`
+    <div class="steal-card">
+      <h3>STEAL TRACKER — 3 MAX PER INNING</h3>
+      <div class="steal-dots">
+        <div class="steal-dot" id="s1" onclick="toggleSteal(1)">1</div>
+        <div class="steal-dot" id="s2" onclick="toggleSteal(2)">2</div>
+        <div class="steal-dot" id="s3" onclick="toggleSteal(3)">3</div>
+        <span class="steal-count" id="stealCount">0 of 3 used</span>
+      </div>
+      <button class="steal-reset" onclick="resetSteals()">↺ Reset inning</button>
+    </div>
+    <button class="print-btn" onclick="window.print()">PRINT LINEUP CARD</button>`;
+  updateSteals();
+}
+
+function moveRow(i, dir){
+  const ti=i+dir;
+  if(ti<0||ti>=battingOrder.length) return;
+  const m=battingOrder.splice(i,1)[0];
+  battingOrder.splice(ti,0,m);
+  saveState(); renderBatting();
+  // Scroll moved row into view
+  setTimeout(()=>{
+    const rows=document.querySelectorAll('.batter-row');
+    if(rows[ti]) rows[ti].scrollIntoView({block:'nearest',behavior:'smooth'});
+  },60);
+}
+
+function doDrop(ti){
+  const src=dragIdx!==null?dragIdx:touchDragIdx;
+  if(src===null||src===ti) return;
+  const m=battingOrder.splice(src,1)[0];
+  battingOrder.splice(ti,0,m);
+  saveState(); renderBatting();
+}
+function updateBatPos(i,v){battingOrder[i].batPos=v;saveState();}
+
+// ══════════════════════════════════════════
+// DEFENSE
+// ══════════════════════════════════════════
+const blockLabels=['Innings 1–2','Innings 3–4','Innings 5–6'];
+function renderDefense(){
+  const tab=document.getElementById('tab-defense');
+  tab.innerHTML=`<div class="slabel">SELECT WHO SITS · SUGGEST ROTATES MAJORITY TO NEW SPOTS</div>`;
+  defBlocks.forEach((block,bi)=>{
+    if(Object.keys(block.assignments).length===0)autoSuggest(bi);
+    const wrap=document.createElement('div');wrap.className='inning-block';
+    const hdr=document.createElement('div');hdr.className='inning-hdr'+(bi===0?' open':'');
+    hdr.innerHTML=`<div class="inning-hdr-left"><div class="inning-title">${blockLabels[bi]}</div><div class="inning-bench-tag" id="btag-${bi}">BENCH: ${fn(block.benchIdx)}</div></div><span class="inning-chevron">▼</span>`;
+    const body=document.createElement('div');body.className='inning-body'+(bi===0?' open':'');body.id=`dbody-${bi}`;
+    hdr.addEventListener('click',()=>{hdr.classList.toggle('open');body.classList.toggle('open');});
+    const br=document.createElement('div');br.className='bench-row';
+    const bOpts=roster.map((p,i)=>`<option value="${i}" ${i===block.benchIdx?'selected':''}>${p.name}</option>`).join('');
+    br.innerHTML=`<span class="bench-lbl">BENCH</span><select class="bench-sel" onchange="setBench(${bi},+this.value)">${bOpts}</select><button class="suggest-btn" onclick="doSuggest(${bi})">✦ SUGGEST</button>`;
+    body.appendChild(br);
+    const leg=document.createElement('div');leg.className='fit-legend';
+    leg.innerHTML=`<span><span class="fit-dot fit-good"></span>Primary</span><span><span class="fit-dot fit-ok"></span>Secondary</span><span><span class="fit-dot fit-weak"></span>Stretch</span>`;
+    body.appendChild(leg);
+    const grid=document.createElement('div');grid.className='def-grid';grid.id=`dgrid-${bi}`;
+    body.appendChild(grid);renderDefGrid(bi);
+    wrap.appendChild(hdr);wrap.appendChild(body);tab.appendChild(wrap);
+  });
+}
+
+function countChanges(bi){
+  if(bi===0||!defBlocks[bi-1])return 10;
+  const prev=defBlocks[bi-1].assignments,cur=defBlocks[bi].assignments;
+  const prevMap={};
+  Object.entries(prev).forEach(([pos,pi])=>prevMap[pi]=pos);
+  let changed=0;
+  Object.entries(cur).forEach(([pos,pi])=>{if(prevMap[pi]!==pos)changed++;});
+  return changed;
+}
+
+function renderDefGrid(bi){
+  const grid=document.getElementById(`dgrid-${bi}`);if(!grid)return;grid.innerHTML='';
+  const block=defBlocks[bi];
+
+  // Rotation badge for blocks 1 and 2
+  if(bi>0){
+    const ch=countChanges(bi);
+    const total=Object.keys(block.assignments).length;
+    const isMajority=ch>total/2;
+    const badge=document.createElement('div');
+    badge.className='rotation-badge '+(isMajority?'rot-good':'rot-warn');
+    badge.textContent=isMajority?`✓ ${ch}/${total} POSITIONS ROTATED`:`⚠ ONLY ${ch}/${total} ROTATED — HIT SUGGEST`;
+    grid.parentElement.insertBefore(badge,grid);
+  }
+
+  const seen=new Set();
+  POS_PRI.forEach(pos=>{
+    const ai=block.assignments[pos];
+    const cell=document.createElement('div');cell.className='def-cell';
+    const fit=ai!==undefined?fitOf(ai,pos):0;
+    const dotCls=fit===2?'fit-dot fit-good':fit===1?'fit-dot fit-ok':'fit-dot fit-weak';
+    const isDup=ai!==undefined&&seen.has(ai);
+    if(ai!==undefined)seen.add(ai);
+    // Player dropdown excludes bench and already-used players (prevent duplicates)
+    const pOpts=roster.map((p,i)=>{
+      if(i===block.benchIdx)return'';
+      return`<option value="${i}" ${i===ai?'selected':''}>${fn(i)}</option>`;
+    }).join('');
+    cell.innerHTML=`<div class="def-pos" style="${isDup?'color:var(--bad)':''}">${pos}${isDup?' ⚠':''}</div><select class="def-name-sel" onchange="manualDefAssign(${bi},'${pos}',+this.value)">${pOpts}</select><div class="${dotCls}"></div>`;
+    grid.appendChild(cell);
+  });
+}
+
+function setBench(bi,pi){
+  const old=defBlocks[bi].benchIdx;
+  const taken=Object.entries(defBlocks[bi].assignments).find(([,v])=>v===pi);
+  if(taken){defBlocks[bi].assignments[taken[0]]=old;syncBattingPos(old,taken[0]);}
+  defBlocks[bi].benchIdx=pi;
+  const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(pi);
+  saveState(); renderDefGrid(bi);
+}
+function doSuggest(bi){
+  autoSuggest(bi);
+  const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);
+  if(bi===0){
+    Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBattingPos(pi,pos));
+    renderBatting();
+  }
+  saveState(); renderDefGrid(bi);
+}
+
+// ══════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════
+function renderSettings(){
+  const tab=document.getElementById('tab-settings');
+  tab.innerHTML=`<div class="slabel">EDIT RANK · AGE · POSITION STRENGTHS</div><div class="pos-legend"><span><span class="legend-dot" style="background:var(--clay)"></span>Primary ★</span><span><span class="legend-dot" style="background:var(--teal)"></span>Secondary ◎</span><span><span class="legend-dot" style="background:var(--border2)"></span>Off ○</span></div>`;
+  roster.forEach((p,idx)=>{
+    const card=document.createElement('div');card.className='spc';
+    const hdr=document.createElement('div');hdr.className='spc-hdr';
+    hdr.innerHTML=`<div class="spc-name">${p.name}</div><div class="spc-rank-badge">RANK #${p.rank}</div><div style="color:var(--muted);font-size:0.68rem;margin-left:6px;">▼</div>`;
+    const body=document.createElement('div');body.className='spc-body';
+    hdr.addEventListener('click',()=>body.classList.toggle('open'));
+    body.innerHTML=`<div class="settings-row"><label>DRAFT RANK</label><input class="num-input" type="number" min="1" max="20" value="${p.rank}" onchange="roster[${idx}].rank=+this.value;document.querySelectorAll('.spc-rank-badge')[${idx}].textContent='RANK #'+this.value;"/><label style="margin-left:10px;">AGE</label><input class="num-input" type="number" min="8" max="12" value="${p.age}" onchange="roster[${idx}].age=+this.value;"/></div><div class="slabel" style="margin-top:2px;">POSITIONS — TAP TO CYCLE</div><div class="pos-strength-grid" id="psg-${idx}"></div>`;
+    card.appendChild(hdr);card.appendChild(body);tab.appendChild(card);
+    renderPosGrid(idx);
+  });
+  const btn=document.createElement('button');btn.className='save-settings-btn';btn.textContent='✓ SAVE & APPLY TO LINEUP';
+  btn.onclick=()=>{defBlocks.forEach((_,bi)=>autoSuggest(bi));saveState();renderAll();showSaved();};
+  tab.appendChild(btn);
+
+  // Reset button
+  const resetBtn=document.createElement('button');
+  resetBtn.style.cssText='width:100%;padding:11px;background:transparent;color:var(--bad);border:1.5px solid var(--bad);border-radius:9px;font-family:"Barlow Condensed",sans-serif;font-size:0.85rem;letter-spacing:2px;cursor:pointer;margin-top:8px;font-weight:700;';
+  resetBtn.textContent='✕ RESET ALL APP DATA';
+  resetBtn.onclick=()=>{
+    if(confirm('This will clear your batting order, defense assignments, game stats, and awards. Roster stays. Are you sure?')){
+      // Reset to defaults
+      battingOrder=[
+        {idx:0,batPos:'C'},{idx:1,batPos:'SS'},{idx:2,batPos:'P'},
+        {idx:3,batPos:'3B'},{idx:4,batPos:'1B'},{idx:5,batPos:'LF'},
+        {idx:6,batPos:'2B'},{idx:7,batPos:'LC'},{idx:8,batPos:'CF'},
+        {idx:9,batPos:'RF'},{idx:10,batPos:'LF'}
+      ];
+      defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];
+      gameLog=[];
+      awardOverrides={};awardNotes={};awardBlurbs={};
+      steals=[false,false,false];
+      saveState();renderAll();showSaved();
+    }
+  };
+  tab.appendChild(resetBtn);
+}
+function renderPosGrid(idx){
+  const g=document.getElementById(`psg-${idx}`);if(!g)return;g.innerHTML='';
+  FIELD_POS.forEach(pos=>{
+    const s=roster[idx].strengths[pos]||0,cls=s===2?'pos-tog pri':s===1?'pos-tog sec':'pos-tog',lbl=s===2?'★':s===1?'◎':'○';
+    const el=document.createElement('div');el.className=cls;
+    el.innerHTML=`<span class="pos-tog-lbl">${lbl} ${pos}</span>`;
+    el.addEventListener('click',()=>{const cur=roster[idx].strengths[pos]||0,nxt=cur===0?2:cur===2?1:0;if(nxt===0)delete roster[idx].strengths[pos];else roster[idx].strengths[pos]=nxt;renderPosGrid(idx);});
+    g.appendChild(el);
+  });
+}
+
+// ══════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════
+function renderStats(){
+  const tab=document.getElementById('tab-stats');tab.innerHTML='';
+  const upCard=document.createElement('div');upCard.className='gc-upload-card';upCard.id='gc-drop';
+  upCard.innerHTML=`<div class="gc-upload-icon">📂</div><h3>${gameLog.length===0?'UPLOAD GAME 1 CSV':'UPLOAD NEXT GAME CSV'}</h3><p>${gameLog.length===0?'After your first game, export season stats from <strong>web.gc.com</strong> and upload here.':`${gameLog.length} game${gameLog.length>1?'s':''} loaded. Upload after each new game to track streaks.`}</p><label class="gc-upload-btn" for="gc-file">CHOOSE CSV FILE</label><input type="file" id="gc-file" accept=".csv" style="display:none" onchange="handleFile(this)">`;
+  upCard.addEventListener('dragover',e=>{e.preventDefault();upCard.classList.add('dragover');});
+  upCard.addEventListener('dragleave',()=>upCard.classList.remove('dragover'));
+  upCard.addEventListener('drop',e=>{e.preventDefault();upCard.classList.remove('dragover');if(e.dataTransfer.files[0])parseCSV(e.dataTransfer.files[0]);});
+  tab.appendChild(upCard);
+  if(gameLog.length>0){
+    const lc=document.createElement('div');lc.className='game-log-card';
+    lc.innerHTML=`<h4>GAME LOG — ${gameLog.length} GAME${gameLog.length>1?'S':''}</h4>`;
+    gameLog.forEach((g,i)=>{
+      const delta=getGameDelta(i);
+      const tH=Object.values(delta).reduce((s,d)=>s+(d.h||0),0),tAB=Object.values(delta).reduce((s,d)=>s+(d.ab||0),0);
+      const row=document.createElement('div');row.className='game-log-row';
+      row.innerHTML=`<span class="game-log-num">GAME ${i+1}</span><span class="game-log-label">${g.label}</span><span class="game-log-delta">${tH}H · ${tAB>0?(tH/tAB).toFixed(3):'—'}</span><button class="game-log-del" onclick="deleteGame(${i})">✕</button>`;
+      lc.appendChild(row);
+    });
+    tab.appendChild(lc);
+    const note=document.createElement('div');note.className='stats-note';
+    note.innerHTML=`<strong>✓ SEASON STATS LIVE</strong>Delta tracking active — each upload captures one game's stats. Best 3-game stretch powers the On Fire award.`;
+    tab.appendChild(note);
+    const cb=document.createElement('button');cb.className='stats-clear-btn';cb.textContent='✕ CLEAR ALL GAME DATA';
+    cb.onclick=()=>{if(confirm('Clear all game data?')){gameLog=[];saveState();renderAll();}};
+    tab.appendChild(cb);
+    const hrow=document.createElement('div');hrow.className='stats-header-row';
+    hrow.innerHTML=`<span>PLAYER</span><span>AVG</span><span>OBP</span><span>H</span><span>AB</span><span>SB</span><span>L3</span>`;
+    tab.appendChild(hrow);
+    const season=getSeasonTotals(),recent=getRecentStats(3);
+    const sorted=roster.map((_,i)=>i).filter(i=>season[i]&&season[i].ab>0).sort((a,b)=>(season[b].avg||0)-(season[a].avg||0));
+    const noStats=roster.map((_,i)=>i).filter(i=>!season[i]||!season[i].ab);
+    [...sorted,...noStats].forEach(ri=>{
+      const p=roster[ri],s=season[ri];
+      const row=document.createElement('div');row.className='stat-player-row';
+      const ageCls=p.age===10?'a10':'a9';
+      if(!s||!s.ab){row.innerHTML=`<div><div class="stat-pname">${fn(ri)} <span class="age-tag ${ageCls}">${p.age}</span></div><div class="stat-psub">No data</div></div><div class="stat-val lo">—</div><div class="stat-val lo">—</div><div class="stat-val lo">—</div><div class="stat-val lo">—</div><div class="stat-val lo">—</div><div class="stat-val lo">—</div>`;}
+      else{
+        const avgCls=s.avg>=0.35?'stat-val ba hi':s.avg>=0.25?'stat-val ba mid':'stat-val ba lo';
+        const obpCls=s.obp>=0.4?'stat-val hi':s.obp>=0.3?'stat-val mid':'stat-val lo';
+        const streak=streakLabel(ri);
+        const tHtml=streak?`<span class="stat-streak ${streak.cls}">${streak.label.split(' ')[0]}</span>`:`<span class="stat-val lo">—</span>`;
+        row.innerHTML=`<div><div class="stat-pname">${fn(ri)} <span class="age-tag ${ageCls}">${p.age}</span></div><div class="stat-psub">${s.gp} GP</div></div><div class="${avgCls}">${s.avg.toFixed(3)}</div><div class="${obpCls}">${s.obp.toFixed(3)}</div><div class="stat-val">${s.h}</div><div class="stat-val">${s.ab}</div><div class="stat-val">${s.sb||0}</div><div style="text-align:center">${tHtml}</div>`;
+      }
+      tab.appendChild(row);
+    });
+  }
+}
+
+function handleFile(input){if(input.files[0])parseCSV(input.files[0]);}
+function parseCSV(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const lines=e.target.result.trim().split('\n').map(l=>l.trim()).filter(l=>l);
+    if(lines.length<2){alert('CSV appears empty.');return;}
+    const header=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
+    const col=n=>header.indexOf(n);
+    const iLast=col('last'),iFirst=col('first'),iGP=col('gp'),iPA=col('pa'),iAB=col('ab'),iH=col('h'),
+          i2B=col('2b'),i3B=col('3b'),iHR=col('hr'),iBB=col('bb'),iSB=col('sb'),iAVG=col('avg'),iOBP=col('obp');
+    if(iLast===-1&&iFirst===-1){alert('Cannot read player names. Use GameChanger batting CSV export.');return;}
+    const cumTotals={};let matched=0;
+    for(let i=1;i<lines.length;i++){
+      const cols=lines[i].split(',').map(c=>c.trim().replace(/['"]/g,''));
+      if(cols.length<3)continue;
+      const last=(iLast>=0?cols[iLast]:'').toLowerCase(),first=(iFirst>=0?cols[iFirst]:'').toLowerCase();
+      let bestIdx=-1,bestScore=0;
+      roster.forEach((p,ri)=>{
+        const rFirst=p.name.split(' ')[0].toLowerCase(),rLast=p.name.split(' ').slice(1).join(' ').toLowerCase();
+        let score=0;
+        if(first&&rFirst===first)score+=4;else if(first&&rFirst.startsWith(first.slice(0,3)))score+=2;
+        if(last&&rLast===last)score+=4;else if(last&&rLast.startsWith(last.slice(0,3)))score+=1;
+        if(score>bestScore){bestScore=score;bestIdx=ri;}
+      });
+      if(bestIdx>=0&&bestScore>=2){
+        const gv=n=>n>=0&&cols[n]?parseFloat(cols[n])||0:0;
+        const ab=gv(iAB),h=gv(iH),bb=gv(iBB),pa=gv(iPA)||ab+bb;
+        cumTotals[bestIdx]={gp:gv(iGP),pa,ab,h,bb,s2:gv(i2B),s3:gv(i3B),hr:gv(iHR),sb:gv(iSB),
+          avg:iAVG>=0&&cols[iAVG]?parseFloat(cols[iAVG])||0:(ab>0?h/ab:0),
+          obp:iOBP>=0&&cols[iOBP]?parseFloat(cols[iOBP])||0:(pa>0?(h+bb)/pa:0)};
+        matched++;
+      }
+    }
+    if(matched===0){alert('No players matched. Check this is a GameChanger batting CSV.');return;}
+    const label=prompt('Name this game (e.g. "vs Phoenixville")',`Game ${gameLog.length+1}`)||`Game ${gameLog.length+1}`;
+    gameLog.push({label,cumTotals});
+    saveState(); renderAll(); showSaved();
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    document.getElementById('tab-stats').classList.add('active');
+    document.querySelectorAll('.tab')[3].classList.add('active');
+  };
+  reader.readAsText(file);
+}
+function deleteGame(i){if(!confirm(`Remove ${gameLog[i].label}?`))return;gameLog.splice(i,1);saveState();renderAll();}
+
+// ══════════════════════════════════════════
+// AWARDS
+// ══════════════════════════════════════════
+const AWARDS=[
+  {id:'batting_title',emoji:'🥎',name:'Batting Champion',
+   desc:'Highest batting average — min. 2 AB per game, 75% of total games played',
+   category:'cat-stat',catLabel:'STATS',
+   auto:()=>{
+     const s=getSeasonTotals(),totalGames=gameLog.length;
+     const minGP=Math.ceil(totalGames*0.75),minAB=minGP*2;
+     return roster.map((_,i)=>i)
+       .filter(i=>s[i]&&(s[i].gp||0)>=minGP&&(s[i].ab||0)>=minAB)
+       .sort((a,b)=>s[b].avg-s[a].avg).slice(0,3)
+       .map(i=>({idx:i,val:s[i].avg.toFixed(3),reason:`${s[i].h}H / ${s[i].ab}AB · ${s[i].gp} GP`}));
+   }},
+  {id:'obp_leader',emoji:'👁️',name:'On-Base Queen',
+   desc:'Highest on-base percentage — min. 6 plate appearances',
+   category:'cat-stat',catLabel:'STATS',
+   auto:()=>{
+     const s=getSeasonTotals();
+     return roster.map((_,i)=>i).filter(i=>s[i]&&s[i].pa>=6)
+       .sort((a,b)=>s[b].obp-s[a].obp).slice(0,3)
+       .map(i=>({idx:i,val:s[i].obp.toFixed(3),reason:`${s[i].h}H + ${s[i].bb||0}BB in ${s[i].pa} PA`}));
+   }},
+  {id:'power_hitter',emoji:'💥',name:'Extra Base Machine',
+   desc:'Most doubles, triples, and home runs combined',
+   category:'cat-stat',catLabel:'STATS',
+   auto:()=>{
+     const s=getSeasonTotals();
+     return roster.map((_,i)=>i).filter(i=>s[i]&&s[i].ab>0)
+       .sort((a,b)=>((s[b].s2||0)+(s[b].s3||0)+(s[b].hr||0))-((s[a].s2||0)+(s[a].s3||0)+(s[a].hr||0)))
+       .slice(0,3).map(i=>({idx:i,val:`${(s[i].s2||0)+(s[i].s3||0)+(s[i].hr||0)} XBH`,reason:`${s[i].s2||0} 2B · ${s[i].s3||0} 3B · ${s[i].hr||0} HR`}));
+   }},
+  {id:'stolen_bases',emoji:'💨',name:'Speed Demon',
+   desc:'Most stolen bases across the entire season',
+   category:'cat-stat',catLabel:'STATS',
+   auto:()=>{
+     const s=getSeasonTotals();
+     return roster.map((_,i)=>i).filter(i=>s[i]&&(s[i].sb||0)>0)
+       .sort((a,b)=>(s[b].sb||0)-(s[a].sb||0)).slice(0,3)
+       .map(i=>({idx:i,val:`${s[i].sb} SB`,reason:`${s[i].sb} stolen base${s[i].sb!==1?'s':''} in ${s[i].gp} games`}));
+   }},
+  {id:'hot_streak',emoji:'🔥',name:'On Fire Award',
+   desc:'Best batting average over any 3-game stretch this season',
+   category:'cat-stat',catLabel:'STATS',
+   auto:()=>{
+     const best=getBestStretchStats();
+     return roster.map((_,i)=>i).filter(i=>best[i]&&best[i].ab>=3&&best[i].avg!==null)
+       .sort((a,b)=>(best[b].avg||0)-(best[a].avg||0)).slice(0,3)
+       .map(i=>({idx:i,val:`${best[i].avg.toFixed(3)} (${best[i].window})`,reason:`${best[i].h}H in ${best[i].ab}AB over best 3-game stretch`}));
+   }},
+  {id:'most_improved',emoji:'📈',name:'Most Improved Hitter',
+   desc:'Biggest positive batting trend — recent games vs. season average',
+   category:'cat-growth',catLabel:'GROWTH',
+   auto:()=>{
+     if(gameLog.length<2)return[];
+     const season=getSeasonTotals(),recent=getRecentStats(3);
+     return roster.map((_,i)=>i)
+       .filter(i=>season[i]&&season[i].ab>=4&&recent[i]&&recent[i].ab>=2)
+       .map(i=>({i,diff:(recent[i].avg||0)-(season[i].avg||0)}))
+       .sort((a,b)=>b.diff-a.diff).slice(0,3)
+       .map(({i,diff})=>({idx:i,val:(diff>=0?'+':'')+diff.toFixed(3),reason:`Season ${season[i].avg.toFixed(3)} → Recent ${recent[i].avg.toFixed(3)}`}));
+   }},
+  {id:'defensive_mvp',emoji:'🧤',name:'Golden Glove',desc:'Most reliable defender — clean hands, smart positioning, big plays',category:'cat-stat',catLabel:'DEFENSE',auto:()=>[]},
+  {id:'team_spirit',emoji:'📣',name:'Spirit Award',desc:'Loudest dugout energy — cheers every teammate, never stops encouraging',category:'cat-spirit',catLabel:'SPIRIT',auto:()=>[]},
+  {id:'clutch',emoji:'⏱️',name:'Clutch Player',desc:'Comes through when it matters most — bases loaded, late innings, pressure',category:'cat-spirit',catLabel:'SPIRIT',auto:()=>[]},
+  {id:'coachability',emoji:'🎓',name:'Coach\'s Award',desc:'Best listener and fastest learner — takes feedback and applies it right away',category:'cat-growth',catLabel:'GROWTH',auto:()=>[]},
+  {id:'leadership',emoji:'⭐',name:'Team Captain',desc:'Natural leader — lifts teammates, sets the standard on and off the field',category:'cat-team',catLabel:'TEAM',auto:()=>[]},
+  {id:'hustle',emoji:'💨',name:'Hustle Award',desc:'Runs out every grounder, never gives up on a play, first one ready every practice',category:'cat-spirit',catLabel:'SPIRIT',auto:()=>[]},
+  {id:'best_glove_if',emoji:'🏟️',name:'Infield Rock',desc:'Most dependable infielder — clean fielding, smart reads, strong arm',category:'cat-stat',catLabel:'DEFENSE',auto:()=>[]},
+  {id:'best_glove_of',emoji:'🌅',name:'Outfield Hawk',desc:'Best outfielder — tracks fly balls, hits cutoffs, covers maximum ground',category:'cat-stat',catLabel:'DEFENSE',auto:()=>[]},
+  {id:'sportsmanship',emoji:'🤝',name:'Sportsmanship Award',desc:'Respectful to opponents, umpires, and teammates — win or lose, every game',category:'cat-team',catLabel:'TEAM',auto:()=>[]},
+  {id:'mvp',emoji:'🏆',name:'Team MVP',desc:'Most valuable player — batting, defense, and leadership combined',category:'cat-team',catLabel:'TEAM',auto:()=>[]},
+  {id:'rookie_star',emoji:'🌟',name:'Rookie Star',desc:'Best performance relative to experience — the season\'s biggest surprise',category:'cat-growth',catLabel:'GROWTH',auto:()=>[]},
+  {id:'fun_award',emoji:'😄',name:'Best Vibe',desc:'Made every practice and game more fun just by showing up',category:'cat-fun',catLabel:'FUN',auto:()=>[]},
+];
+const MEDALS=['🥇','🥈','🥉'];
+
+function generateBlurb(award,winnerIdx,note){
+  const first=fn(winnerIdx),season=getSeasonTotals()[winnerIdx],recent=getRecentStats(3)[winnerIdx];
+  let statPart='',notePart='';
+  if(season&&season.ab>0){
+    const xbh=(season.s2||0)+(season.s3||0)+(season.hr||0),streak=streakLabel(winnerIdx);
+    statPart=`This season, <strong>${first}</strong> batted <span class="sh">${season.avg.toFixed(3)}</span> with an on-base percentage of <span class="sh">${season.obp.toFixed(3)}</span>, recording ${season.h} hit${season.h!==1?'s':''} in ${season.ab} at-bats across ${season.gp} game${season.gp!==1?'s':''}.`;
+    if(season.sb>0)statPart+=` She also swiped <span class="sh">${season.sb}</span> base${season.sb!==1?'s':''}, showing she's a threat on the basepaths.`;
+    if(xbh>0)statPart+=` Her ${xbh} extra-base hit${xbh!==1?'s':''} showed real power at the plate.`;
+    if(streak&&streak.cls==='hot')statPart+=` Her last three games were her strongest of the season — she finished the year on a tear.`;
+  } else {
+    statPart=`<strong>${first}</strong> contributed all season with energy and effort that showed up every single game.`;
+  }
+  if(note&&note.trim())notePart=` ${note.trim().replace(/\.$/,'')} — the kind of impact that doesn't show up in any stat line.`;
+  return statPart+notePart;
+}
+
+function renderAwards(){
+  const tab=document.getElementById('tab-awards');tab.innerHTML='';
+  const hasStats=gameLog.length>0;
+  const badge=document.createElement('div');badge.className='awards-updated-badge';
+  badge.textContent=hasStats?`✦ AUTO-UPDATED · ${gameLog.length} GAME${gameLog.length>1?'S':''} OF DATA`:'✦ UPLOAD STATS TO ACTIVATE STAT AWARDS';
+  tab.appendChild(badge);
+  const intro=document.createElement('div');intro.className='awards-intro';
+  intro.innerHTML=`<p><strong>Stat awards</strong> auto-nominate top 3 from GameChanger data and update after every upload. <strong>Character awards</strong> are coach-nominated. Add a personal note to any award and hit <strong>Generate Write-Up</strong> for a ceremony-ready blurb.</p>`;
+  tab.appendChild(intro);
+  AWARDS.forEach(award=>{
+    const nominees=award.auto();
+    const override=awardOverrides[award.id];
+    const winnerIdx=override!==undefined?+override:(nominees.length>0?nominees[0].idx:null);
+    const card=document.createElement('div');card.className='award-card';
+    card.innerHTML=`<div class="award-header"><div class="award-emoji">${award.emoji}</div><div class="award-header-text"><div class="award-name">${award.name}</div><div class="award-desc">${award.desc}</div></div><span class="award-category ${award.category}">${award.catLabel}</span></div>`;
+    const body=document.createElement('div');body.className='award-body';
+    const nomDiv=document.createElement('div');nomDiv.className='award-nominees';
+    if(nominees.length>0){
+      nominees.forEach((n,rank)=>{
+        const isWinner=override===undefined?rank===0:+override===n.idx;
+        const row=document.createElement('div');row.className='nominee-row'+(isWinner?' winner':'');
+        row.innerHTML=`<div class="nominee-medal">${MEDALS[rank]||'·'}</div><div class="nominee-info"><div class="nominee-name">${fn(n.idx)}</div><div class="nominee-reason">${n.reason}</div></div><div class="nominee-val">${n.val}</div>`;
+        nomDiv.appendChild(row);
+      });
+    } else if(override!==undefined){
+      const row=document.createElement('div');row.className='nominee-row winner';
+      row.innerHTML=`<div class="nominee-medal">🥇</div><div class="nominee-info"><div class="nominee-name">${fn(+override)}</div><div class="nominee-reason">Coach's pick</div></div><div class="nominee-val">✓</div>`;
+      nomDiv.appendChild(row);
+    } else {
+      const empty=document.createElement('div');empty.className='award-no-data';
+      empty.textContent=hasStats?'Use the dropdown to nominate':'Upload stats to auto-nominate · or use dropdown';
+      nomDiv.appendChild(empty);
+    }
+    body.appendChild(nomDiv);
+    // Write-up
+    const wu=document.createElement('div');wu.className='award-writeup-section';
+    if(awardBlurbs[award.id]){const bd=document.createElement('div');bd.className='award-blurb';bd.innerHTML=awardBlurbs[award.id];wu.appendChild(bd);}
+    wu.innerHTML+=`<label class="award-writeup-label">PERSONAL NOTE (included in write-up)</label>`;
+    const ni=document.createElement('textarea');ni.className='qualitative-input';
+    ni.placeholder=`e.g. "${winnerIdx!==null?fn(winnerIdx):'She'} always encouraged teammates and never complained about her spot in the order..."`;
+    ni.value=awardNotes[award.id]||'';
+    ni.oninput=()=>{awardNotes[award.id]=ni.value;saveState();};
+    wu.appendChild(ni);
+    const gb=document.createElement('button');gb.className='gen-blurb-btn';gb.textContent='✦ GENERATE WRITE-UP';
+    gb.onclick=()=>{
+      const wi=awardOverrides[award.id]!==undefined?+awardOverrides[award.id]:(nominees.length>0?nominees[0].idx:null);
+      if(wi===null){alert('Pick a player first using the dropdown below.');return;}
+      awardBlurbs[award.id]=generateBlurb(award,wi,awardNotes[award.id]||'');
+      saveState(); renderAwards();setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+    };
+    wu.appendChild(gb);
+    body.appendChild(wu);
+    // Override
+    const ov=document.createElement('div');ov.className='award-override';
+    const ovOpts=`<option value="">— Coach pick (optional) —</option>`+roster.map((p,i)=>`<option value="${i}" ${override===String(i)?'selected':''}>${p.name}</option>`).join('');
+    ov.innerHTML=`<label>COACH'S PICK — OVERRIDES AUTO-NOMINATION</label>`;
+    const os=document.createElement('select');os.className='override-sel';os.innerHTML=ovOpts;
+    os.onchange=()=>{if(os.value==='')delete awardOverrides[award.id];else awardOverrides[award.id]=os.value;delete awardBlurbs[award.id];saveState();renderAwards();};
+    ov.appendChild(os);body.appendChild(ov);card.appendChild(body);tab.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════
+// STEALS
+// ══════════════════════════════════════════
+function toggleSteal(n){steals[n-1]=!steals[n-1];saveState();updateSteals();}
+function resetSteals(){steals=[false,false,false];saveState();updateSteals();}
+function updateSteals(){
+  steals.forEach((s,i)=>{const el=document.getElementById('s'+(i+1));if(el)el.classList.toggle('used',s);});
+  const ct=document.getElementById('stealCount');if(ct)ct.textContent=steals.filter(Boolean).length+' of 3 used';
+}
+
+// ══════════════════════════════════════════
+// INIT — load persisted state then render
+// ══════════════════════════════════════════
+function renderAll(){renderBatting();renderDefense();renderSettings();renderStats();renderAwards();}
+
+// Load saved state — if it exists, restore everything; otherwise use defaults
+const didLoad = loadState();
+
+// If loaded, make sure defBlocks assignments are re-suggested if empty
+if(didLoad){
+  defBlocks.forEach((b,bi)=>{
+    if(Object.keys(b.assignments).length===0) autoSuggest(bi);
+  });
+}
+
+renderAll();
+
+// Offline/online indicator
+function updateOnlineStatus(){
+  const b=document.getElementById('offlineBanner');
+  if(b) b.classList.toggle('show',!navigator.onLine);
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+</script>
+</body>
+</html>
