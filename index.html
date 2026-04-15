@@ -886,69 +886,78 @@ function exportPDF(){
 // ── EXPORT DUGOUT CARD ────────────────────────────────────────────────────────
 // Page 1: table list  |  Page 2: softball field diagrams (3 innings)
 function makeDiagramSVG(block, blockLabel){
-  // Position coordinates on a 340x300 viewBox softball diamond
-  // Infield at bottom, outfield at top — standard softball orientation
+  // Clean coordinate system: viewBox 0 0 400 340
+  // Home plate at bottom-center, outfield spreads toward top
   const coords={
-    'P': {x:170,y:178},
-    'C': {x:170,y:256},
-    '1B':{x:228,y:193},
-    '2B':{x:200,y:148},
-    '3B':{x:112,y:193},
-    'SS':{x:140,y:148},
-    'LF':{x:72,y:88},
-    'LC':{x:130,y:60},
-    'CF':{x:170,y:44},
-    'RF':{x:265,y:88},
+    'CF':{x:200, y:38},
+    'LC':{x:132, y:68},
+    'RF':{x:310, y:90},
+    'LF':{x:68,  y:90},
+    'SS':{x:152, y:148},
+    '2B':{x:238, y:148},
+    '3B':{x:118, y:210},
+    '1B':{x:282, y:210},
+    'P': {x:200, y:195},
+    'C': {x:200, y:292},
   };
 
   const posEntries=Object.entries(block.assignments);
   const benchName=roster[block.benchIdx].name.split(' ')[0];
 
-  // Build player label elements
   const labels=posEntries.map(([pos,pi])=>{
-    const c=coords[pos];if(!c)return'';
+    const c=coords[pos]; if(!c) return '';
     const name=roster[pi].name.split(' ')[0];
+    // Label pill: 52px wide, 17px tall
     return `<g>
-      <rect x="${c.x-22}" y="${c.y-10}" width="44" height="16" rx="3" fill="white" fill-opacity="0.92" stroke="#C22818" stroke-width="1"/>
-      <text x="${c.x}" y="${c.y+2}" text-anchor="middle" font-family="Arial Narrow,sans-serif" font-size="7.5" font-weight="800" fill="#111">${name}</text>
-      <text x="${c.x}" y="${c.y-13}" text-anchor="middle" font-family="Arial Narrow,sans-serif" font-size="5.5" font-weight="700" fill="#C22818" letter-spacing="0.5">${pos}</text>
+      <rect x="${c.x-26}" y="${c.y-8}" width="52" height="17" rx="3"
+            fill="white" fill-opacity="0.93" stroke="#C22818" stroke-width="1.2"/>
+      <text x="${c.x}" y="${c.y+5}" text-anchor="middle"
+            font-family="Arial Narrow,sans-serif" font-size="8.5" font-weight="800" fill="#111">${name}</text>
+      <text x="${c.x}" y="${c.y-11}" text-anchor="middle"
+            font-family="Arial Narrow,sans-serif" font-size="6" font-weight="700" fill="#C22818" letter-spacing="0.5">${pos}</text>
     </g>`;
   }).join('');
 
-  return `<svg viewBox="-20 -10 380 315" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
-    <!-- Sky / outfield grass -->
-    <rect width="340" height="292" fill="#4a8a3a"/>
-    <!-- Outfield arc -->
-    <path d="M 30,250 Q 170,10 310,250 Z" fill="#3d7a30"/>
-    <!-- Infield dirt -->
-    <polygon points="170,246 228,182 170,118 112,182" fill="#c8915a"/>
+  return `<svg viewBox="0 0 400 340" xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid meet"
+          style="width:100%;height:auto;display:block;">
+    <!-- Background grass -->
+    <rect width="400" height="340" fill="#4a9040"/>
+    <!-- Outfield sector (darker green) -->
+    <path d="M 20,320 Q 200,5 380,320 Z" fill="#3a7832"/>
+    <!-- Infield dirt diamond -->
+    <polygon points="200,278 282,210 200,142 118,210" fill="#c8905a"/>
     <!-- Base paths -->
-    <line x1="170" y1="246" x2="228" y2="182" stroke="#e8d8b0" stroke-width="1.5"/>
-    <line x1="228" y1="182" x2="170" y2="118" stroke="#e8d8b0" stroke-width="1.5"/>
-    <line x1="170" y1="118" x2="112" y2="182" stroke="#e8d8b0" stroke-width="1.5"/>
-    <line x1="112" y1="182" x2="170" y2="246" stroke="#e8d8b0" stroke-width="1.5"/>
+    <line x1="200" y1="278" x2="282" y2="210" stroke="#e8d8b0" stroke-width="2"/>
+    <line x1="282" y1="210" x2="200" y2="142" stroke="#e8d8b0" stroke-width="2"/>
+    <line x1="200" y1="142" x2="118" y2="210" stroke="#e8d8b0" stroke-width="2"/>
+    <line x1="118" y1="210" x2="200" y2="278" stroke="#e8d8b0" stroke-width="2"/>
+    <!-- Foul lines from home -->
+    <line x1="200" y1="284" x2="15"  y2="330" stroke="white" stroke-width="1.2" opacity="0.55"/>
+    <line x1="200" y1="284" x2="385" y2="330" stroke="white" stroke-width="1.2" opacity="0.55"/>
+    <!-- Grass lines (depth cues) -->
+    <line x1="20"  y1="320" x2="200" y2="8"   stroke="#2d6020" stroke-width="0.6" opacity="0.4"/>
+    <line x1="380" y1="320" x2="200" y2="8"   stroke="#2d6020" stroke-width="0.6" opacity="0.4"/>
     <!-- Bases -->
-    <rect x="164" y="240" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
-    <rect x="222" y="176" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
-    <rect x="164" y="112" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
-    <rect x="106" y="176" width="12" height="12" rx="1" fill="white" stroke="#ccc" stroke-width="0.5"/>
-    <!-- Pitcher circle -->
-    <circle cx="170" cy="184" r="10" fill="#b07840" stroke="#9a6830" stroke-width="1"/>
-    <!-- Pitcher plate -->
-    <rect x="164" y="182" width="12" height="4" rx="1" fill="white"/>
-    <!-- Outfield grass lines -->
-    <line x1="30" y1="240" x2="170" y2="10" stroke="#2d6020" stroke-width="0.5" opacity="0.5"/>
-    <line x1="310" y1="240" x2="170" y2="10" stroke="#2d6020" stroke-width="0.5" opacity="0.5"/>
-    <!-- Foul lines -->
-    <line x1="170" y1="252" x2="30" y2="275" stroke="white" stroke-width="1" opacity="0.6"/>
-    <line x1="170" y1="252" x2="310" y2="275" stroke="white" stroke-width="1" opacity="0.6"/>
+    <rect x="194" y="272" width="12" height="12" rx="1.5" fill="white" stroke="#bbb" stroke-width="0.8"/>
+    <rect x="276" y="204" width="12" height="12" rx="1.5" fill="white" stroke="#bbb" stroke-width="0.8"/>
+    <rect x="194" y="136" width="12" height="12" rx="1.5" fill="white" stroke="#bbb" stroke-width="0.8"/>
+    <rect x="112" y="204" width="12" height="12" rx="1.5" fill="white" stroke="#bbb" stroke-width="0.8"/>
+    <!-- Pitcher mound -->
+    <circle cx="200" cy="202" r="12" fill="#b87840" stroke="#9a6830" stroke-width="1.2"/>
+    <rect x="193" y="200" width="14" height="4" rx="1" fill="white"/>
+    <!-- Catcher box -->
+    <rect x="188" y="284" width="24" height="14" rx="2" fill="#b87840" stroke="#9a6830" stroke-width="0.8"/>
     <!-- Player labels -->
     ${labels}
-    <!-- Bench label -->
-    <rect x="2" y="274" width="336" height="18" rx="0" fill="rgba(194,40,24,0.85)"/>
-    <text x="170" y="286" text-anchor="middle" font-family="Arial Narrow,sans-serif" font-size="8" font-weight="800" fill="white" letter-spacing="1">BENCH: ${benchName}</text>
+    <!-- Bench strip -->
+    <rect x="0" y="318" width="400" height="22" fill="rgba(194,40,24,0.88)"/>
+    <text x="200" y="333" text-anchor="middle"
+          font-family="Arial Narrow,sans-serif" font-size="9" font-weight="800"
+          fill="white" letter-spacing="1">BENCH: ${benchName}</text>
   </svg>`;
 }
+
 
 function exportDugout(){
   const card=document.getElementById('pdf-card');
@@ -977,13 +986,14 @@ function exportDugout(){
 
   // ── PAGE 2: field diagrams ────────────────────────────────────────────────
   const diagrams=defBlocks.map((block,bi)=>{
-    const label=['INNINGS 1–2','INNINGS 3–4','INNINGS 5–6'][bi];
+    const label=['INN 1–2','INN 3–4','INN 5–6'][bi];
     const svg=makeDiagramSVG(block,label);
-    // Each field: label ~18px + SVG. Three fields + header + gaps must fit one landscape page.
-    // Landscape letter ~7.8in usable height. Header ~52px. 3 fields share rest.
-    // Use max-height on the SVG container so it scales proportionally and never overflows.
-    return `<div style="display:flex;flex-direction:row;align-items:center;gap:10px;page-break-inside:avoid;max-height:158px;">
-      <div style="font-family:Arial Narrow,sans-serif;font-size:8pt;font-weight:900;color:#C22818;letter-spacing:2px;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;padding:0 2px;">${label}</div>
+    return `<div style="display:flex;flex-direction:row;align-items:stretch;gap:6px;">
+      <div style="font-family:Arial Narrow,sans-serif;font-size:7.5pt;font-weight:900;
+                  color:#C22818;letter-spacing:2px;writing-mode:vertical-rl;
+                  transform:rotate(180deg);white-space:nowrap;
+                  border-right:2px solid #C22818;padding-right:4px;
+                  display:flex;align-items:center;justify-content:center;">${label}</div>
       <div style="flex:1;border:1.5px solid #ccc;border-radius:4px;overflow:hidden;line-height:0;">
         ${svg}
       </div>
@@ -1015,7 +1025,7 @@ function exportDugout(){
             <td style="text-align:right;padding-bottom:5px;font-size:9pt;font-weight:700;">${today}</td>
           </tr>
         </table>
-        <div style="display:flex;flex-direction:column;gap:8px;">${diagrams}</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">${diagrams}</div>
       </div>
 
     </div>`;
