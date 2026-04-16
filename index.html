@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
@@ -59,10 +60,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .tab-scroll{padding:14px 14px max(env(safe-area-inset-bottom),30px);}
 .slabel{font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:3px;color:var(--muted);margin-bottom:9px;font-weight:700;}
 .batting-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
-.brow{display:grid;grid-template-columns:34px 32px 1fr 64px 36px;align-items:center;gap:7px;background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:9px 10px;box-shadow:0 1px 4px var(--shadow);user-select:none;-webkit-user-select:none;}
+.brow{display:grid;grid-template-columns:44px 30px 1fr 58px 36px;align-items:center;gap:6px;background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:9px 9px 9px 4px;box-shadow:0 1px 4px var(--shadow);user-select:none;-webkit-user-select:none;}
 .brow.drag-over{border-color:var(--clay);box-shadow:0 0 0 2px var(--clay);}
 .brow.dragging{opacity:0.4;}
-.drag-handle{font-size:1.1rem;color:var(--muted);text-align:center;cursor:grab;touch-action:none;padding:6px 2px;min-height:44px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.drag-handle{font-size:1.25rem;color:var(--muted);text-align:center;cursor:grab;touch-action:none;padding:6px 4px;min-height:48px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;border-radius:7px;}
+.drag-handle:active{background:rgba(194,40,24,0.08);color:var(--clay);}
 .bnum{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:var(--clay);text-align:center;line-height:1;}
 .bnum.gold{color:var(--gold);}
 .bname{font-weight:700;font-size:0.9rem;color:var(--ink);line-height:1.2;}
@@ -86,11 +88,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .brow.dragging{opacity:0.22;transform:scale(0.97);}
 .brow.shift-down{transform:translateY(calc(var(--row-h,72px) + 6px));}
 .brow.shift-up{transform:translateY(calc(-1 * (var(--row-h,72px) + 6px)));}
-.steal-card{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:13px 14px;margin-bottom:14px;box-shadow:0 2px 6px var(--shadow);}
-.steal-dots{display:flex;gap:10px;align-items:center;margin-bottom:6px;}
-.sdot{width:46px;height:46px;border-radius:50%;border:2.5px solid var(--border2);background:var(--panel2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:all 0.18s;}
-.sdot.used{background:var(--clay);border-color:var(--clay);color:#fff;}
-.sreset{font-size:0.75rem;color:var(--clay);background:none;border:none;padding:4px 0;text-decoration:underline;font-weight:700;cursor:pointer;display:block;margin-top:4px;}
 .iblock{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;margin-bottom:9px;overflow:hidden;box-shadow:0 2px 6px var(--shadow);}
 .iblock-hdr{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--panel2);border-bottom:1.5px solid var(--border2);cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .iblock-hdr-left{flex:1;}
@@ -137,6 +134,34 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .spc-hdr{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--panel2);border-bottom:1.5px solid var(--border2);cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .spc-name{font-family:'Barlow Condensed',sans-serif;font-size:0.98rem;font-weight:800;color:var(--ink);flex:1;}
 .spc-rank{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--gold);background:rgba(154,104,0,0.12);border:1.5px solid rgba(154,104,0,0.3);border-radius:5px;padding:2px 8px;font-weight:700;}
+
+/* Dual-rank badges on roster cards */
+.spc-ranks{display:flex;gap:4px;}
+.spc-rank-badge{font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:0.5px;display:inline-flex;align-items:center;gap:3px;}
+.spc-rank-manual{color:var(--gold);background:rgba(154,104,0,0.12);border:1.5px solid rgba(154,104,0,0.3);}
+.spc-rank-stat{color:var(--teal);background:rgba(10,106,98,0.12);border:1.5px solid rgba(10,106,98,0.3);}
+.spc-rank-stat.no-data{color:var(--muted);background:var(--panel);border:1.5px solid var(--border2);}
+
+/* Roster name edit field */
+.name-edit{background:var(--panel2);border:1.5px solid var(--border2);color:var(--ink);border-radius:7px;padding:6px 10px;font-family:'Barlow',sans-serif;font-size:0.88rem;font-weight:700;width:100%;}
+.name-edit:focus{outline:none;border-color:var(--clay);}
+
+/* Remove player button */
+.btn-remove-player{background:transparent;border:1.5px solid var(--bad);color:var(--bad);border-radius:7px;padding:6px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;cursor:pointer;font-weight:700;margin-top:8px;-webkit-tap-highlight-color:transparent;}
+
+/* Add player */
+.add-player-card{background:var(--panel);border:2px dashed var(--border2);border-radius:11px;padding:12px 14px;margin-bottom:8px;}
+.add-player-title{font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:2px;color:var(--muted);font-weight:800;margin-bottom:8px;}
+.add-player-row{display:grid;grid-template-columns:1fr 70px 72px;gap:6px;align-items:center;}
+.btn-add{background:var(--grass);color:#fff;border:none;border-radius:7px;padding:9px 6px;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:1.5px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;}
+.btn-add:active{background:var(--grass-l);}
+
+/* Backup / Restore buttons */
+.br-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.btn-backup{background:var(--teal);color:#fff;border:none;border-radius:9px;padding:11px 10px;font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;letter-spacing:2px;cursor:pointer;font-weight:700;-webkit-tap-highlight-color:transparent;min-height:44px;}
+.btn-restore{background:var(--panel);color:var(--teal);border:1.5px solid var(--teal);border-radius:9px;padding:11px 10px;font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;letter-spacing:2px;cursor:pointer;font-weight:700;-webkit-tap-highlight-color:transparent;min-height:44px;}
+.btn-backup:active,.btn-restore:active{transform:scale(0.97);}
+.br-note{font-size:0.7rem;color:var(--muted);margin-bottom:12px;line-height:1.4;text-align:center;}
 .spc-body{display:none;padding:11px 13px;}
 .spc-body.open{display:block;}
 .srow{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
@@ -228,47 +253,45 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 body>*{display:none!important;}
 #pdf-card{display:block!important;}
 @page{
-  size:letter portrait;
-  margin:0.35in;
-  @top-left{content:none;}
-  @top-center{content:none;}
-  @top-right{content:none;}
-  @bottom-left{content:none;}
-  @bottom-center{content:none;}
-  @bottom-right{content:none;}
+size:letter portrait;
+margin:0.35in;
+@top-left{content:none;}
+@top-center{content:none;}
+@top-right{content:none;}
+@bottom-left{content:none;}
+@bottom-center{content:none;}
+@bottom-right{content:none;}
 }
-#pdf-card{font-family:'Barlow Condensed',Arial Narrow,sans-serif;color:#000;background:#fff;width:100%;padding:0;font-size:9pt;}
-.pdf-hdr{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid #C22818;padding-bottom:5px;margin-bottom:10px;}
-.pdf-team{font-size:20pt;font-weight:900;letter-spacing:1px;color:#C22818;line-height:1;}
-.pdf-sub{font-size:7.5pt;letter-spacing:3px;color:#555;margin-top:2px;}
-.pdf-meta{text-align:right;font-size:8pt;color:#333;line-height:1.6;}
-.pdf-body{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.pdf-section-title{font-size:6.5pt;letter-spacing:3px;color:#C22818;font-weight:900;border-bottom:1.5px solid #C22818;padding-bottom:2px;margin-bottom:6px;}
+#pdf-card{font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;width:100%;padding:0;font-size:10pt;}
+.pdf-hdr{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid #C22818;padding-bottom:6px;margin-bottom:11px;}
+.pdf-team{font-size:22pt;font-weight:900;letter-spacing:1px;color:#C22818;line-height:1;}
+.pdf-sub{font-size:8pt;letter-spacing:3px;color:#555;margin-top:3px;}
+.pdf-meta{text-align:right;font-size:9pt;color:#333;line-height:1.7;}
+.pdf-body{display:grid;grid-template-columns:1.15fr 1fr;gap:18px;}
+.pdf-section-title{font-size:7.5pt;letter-spacing:3px;color:#C22818;font-weight:900;border-bottom:1.5px solid #C22818;padding-bottom:3px;margin-bottom:8px;}
 .pdf-bat-table{width:100%;border-collapse:collapse;}
-.pdf-bat-table th{font-size:6pt;letter-spacing:2px;color:#888;padding:0 4px 3px;text-align:left;border-bottom:1px solid #ddd;font-weight:700;}
+.pdf-bat-table th{font-size:6.5pt;letter-spacing:2px;color:#888;padding:0 5px 4px;text-align:left;border-bottom:1px solid #ccc;font-weight:700;}
 .pdf-bat-table th.c{text-align:center;}
-.pdf-bat-table td{font-size:8.5pt;font-weight:600;padding:4px 4px;border-bottom:0.5px solid #eee;vertical-align:middle;}
-.pdf-bat-table td.num{font-size:12pt;font-weight:900;color:#C22818;text-align:center;width:18px;}
+.pdf-bat-table td{font-size:11pt;font-weight:700;padding:6px 5px;border-bottom:0.5px solid #eee;vertical-align:middle;line-height:1.15;}
+.pdf-bat-table td.num{font-size:14pt;font-weight:900;color:#C22818;text-align:center;width:22px;}
 .pdf-bat-table td.top3{color:#9a6800;}
-.pdf-bat-table td.pos{text-align:center;font-size:7.5pt;font-weight:800;color:#333;width:28px;}
-.pdf-bat-table td.stat{font-size:6.5pt;color:#777;font-weight:600;}
+.pdf-bat-table td.pos{text-align:center;font-size:10pt;font-weight:900;color:#222;width:34px;background:#f5f5f5;}
+.pdf-bat-table td.stat{font-size:7.5pt;color:#666;font-weight:600;white-space:nowrap;}
 .pdf-bat-table tr:last-child td{border-bottom:none;}
-.pdf-def-block{margin-bottom:7px;}
-.pdf-def-label{font-size:6.5pt;letter-spacing:2px;color:#555;font-weight:700;margin-bottom:3px;}
+.pdf-def-block{margin-bottom:9px;}
+.pdf-def-label{font-size:7pt;letter-spacing:2px;color:#C22818;font-weight:900;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid #ddd;}
 .pdf-def-table{width:100%;border-collapse:collapse;}
-.pdf-def-table td{font-size:8pt;font-weight:700;padding:3px 5px;border-bottom:0.5px solid #eee;}
-.pdf-def-table td.dpos{color:#C22818;font-size:7.5pt;font-weight:900;width:26px;}
+.pdf-def-table td{font-size:9.5pt;font-weight:700;padding:4px 6px;border-bottom:0.5px solid #eee;}
+.pdf-def-table td.dpos{color:#C22818;font-size:9pt;font-weight:900;width:32px;}
 .pdf-def-table tr:last-child td{border-bottom:none;}
-.pdf-rules{background:#fafafa;border:1.5px solid #ddd;border-radius:4px;padding:6px 9px;margin-top:7px;}
-.pdf-rules-title{font-size:6pt;letter-spacing:3px;color:#C22818;font-weight:900;margin-bottom:4px;}
-.pdf-rule{font-size:7pt;color:#333;margin-bottom:2px;padding-left:11px;position:relative;}
-.pdf-rule::before{content:'→';position:absolute;left:0;color:#C22818;}
-.pdf-steal{display:flex;gap:5px;align-items:center;border:1.5px solid #C22818;border-radius:4px;padding:5px 9px;margin-top:6px;}
-.pdf-steal-label{font-size:6pt;letter-spacing:2px;font-weight:900;color:#C22818;}
-.pdf-steal-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid #C22818;display:inline-flex;align-items:center;justify-content:center;font-size:6.5pt;font-weight:800;color:#C22818;}
-.pdf-footer{margin-top:8px;border-top:1px solid #ddd;padding-top:4px;display:flex;justify-content:space-between;font-size:6pt;color:#aaa;letter-spacing:1px;}
+.pdf-rules{background:#fafafa;border:1.5px solid #ddd;border-radius:4px;padding:7px 10px;margin-top:8px;}
+.pdf-rules-title{font-size:6.5pt;letter-spacing:3px;color:#C22818;font-weight:900;margin-bottom:5px;}
+.pdf-rule{font-size:8pt;color:#222;margin-bottom:3px;padding-left:13px;position:relative;line-height:1.35;}
+.pdf-rule::before{content:'→';position:absolute;left:0;color:#C22818;font-weight:900;}
+.pdf-footer{margin-top:10px;border-top:1px solid #ddd;padding-top:5px;display:flex;justify-content:space-between;font-size:6.5pt;color:#aaa;letter-spacing:1px;}
 }
 </style>
+
 </head>
 <body>
 <div class="offline-bar" id="offlineBar">⚡ OFFLINE MODE — DATA SAVED LOCALLY</div>
@@ -331,7 +354,6 @@ let battingOrder=[
 ];
 let defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];
 let fairPlayMode=false;
-let steals=[false,false,false];
 let lpTimer=null,lpActive=false,touchDragIdx=null,dragIdx=null;
 let ghostEl=null,ghostOffsetY=0,saveTimer=null;
 let dragRowH=72,rafPending=false,lastDestIdx=null,rowRects=[];
@@ -401,7 +423,43 @@ function streakLabel(idx){
   if(d<-0.08)return{label:'❄️ Cold L3',cls:'cold'};
   return null;
 }
-function effRank(idx){const r=recentStats(3)[idx];if(!r||r.ab<2)return roster[idx].rank;const b=r.avg>0.4?-2:r.avg>0.3?-1:r.avg<0.15?2:0;return roster[idx].rank+b;}
+
+// ── STAT-DERIVED RANK ─────────────────────────────────────────────────────
+// Returns: {rank: 1..N, hasData: bool, score: number}
+// Score = weighted combination of OBP (primary), AVG, XBH rate, and SB rate.
+// Players without qualifying plate appearances fall to the bottom but keep
+// relative ordering by draft rank among themselves.
+function statRanks(){
+  const totals=seasonTotals();
+  const scored=roster.map((p,i)=>{
+    const s=totals[i];
+    const qualifies=s&&(s.pa||0)>=4&&(s.ab||0)>=3;
+    if(!qualifies)return{idx:i,hasData:false,score:-1,manualRank:p.rank};
+    const xbh=(s.s2||0)+(s.s3||0)+(s.hr||0);
+    const xbhRate=s.ab>0?xbh/s.ab:0;
+    const sbRate=s.gp>0?(s.sb||0)/s.gp:0;
+    // OBP gets 55%, AVG 25%, XBH rate 15%, SB rate 5%
+    const score=((s.obp||0)*0.55)+((s.avg||0)*0.25)+(xbhRate*0.15)+(Math.min(sbRate,2)*0.05);
+    return{idx:i,hasData:true,score,manualRank:p.rank};
+  });
+  // Rank players with data by score desc; players without data go after, ordered by manual rank
+  const withData=scored.filter(x=>x.hasData).sort((a,b)=>b.score-a.score);
+  const noData=scored.filter(x=>!x.hasData).sort((a,b)=>a.manualRank-b.manualRank);
+  const result={};
+  let rk=1;
+  withData.forEach(x=>{result[x.idx]={rank:rk++,hasData:true,score:x.score};});
+  noData.forEach(x=>{result[x.idx]={rank:rk++,hasData:false,score:null};});
+  return result;
+}
+
+// effRank — used by defense auto-suggest to prefer stronger hitters at priority
+// positions. Uses statRank when available; falls back to manual rank otherwise.
+// Lower = better (1 is best).
+function effRank(idx){
+  const sr=statRanks()[idx];
+  if(sr&&sr.hasData)return sr.rank;
+  return roster[idx].rank;
+}
 
 // ── AUTO-SUGGEST DEFENSE ──────────────────────────────────────────────────────
 const IF_POS=new Set(['P','C','1B','2B','3B','SS']);
@@ -467,6 +525,166 @@ function manualDefAssign(bi,pos,newPi){
   Object.keys(block.assignments).forEach(p=>{if(p!==pos&&block.assignments[p]===newPi)delete block.assignments[p];});
   block.assignments[pos]=newPi;syncBatPos(newPi,pos);
   save();renderDefGrid(bi);renderBatting();
+}
+
+// ── ROSTER MANAGEMENT ─────────────────────────────────────────────────────
+// All roster edits flow through these helpers so downstream references
+// (batting order, defense assignments, bench, awards, game log) stay consistent.
+
+function renamePlayer(idx,newName){
+  if(!roster[idx])return;
+  roster[idx].name=(newName||'').trim()||roster[idx].name;
+  save();
+}
+
+function updatePlayerRank(idx,newRank){
+  if(!roster[idx])return;
+  roster[idx].rank=Math.max(1,parseInt(newRank,10)||roster[idx].rank);
+  save();
+}
+
+function updatePlayerAge(idx,newAge){
+  if(!roster[idx])return;
+  roster[idx].age=Math.max(6,Math.min(14,parseInt(newAge,10)||roster[idx].age));
+  save();
+}
+
+function addPlayer(name,rank,age){
+  name=(name||'').trim();
+  if(!name){alert('Please enter a name.');return false;}
+  if(roster.length>=20){alert('Roster is full (20 max).');return false;}
+  const newIdx=roster.length;
+  roster.push({
+    name,
+    rank:Math.max(1,parseInt(rank,10)||(roster.length+1)),
+    age:Math.max(6,Math.min(14,parseInt(age,10)||10)),
+    strengths:{} // blank — coach sets in the position grid
+  });
+  // Append to batting order at the end
+  battingOrder.push({idx:newIdx,batPos:'P'});
+  save();
+  return true;
+}
+
+function removePlayer(idx){
+  if(roster.length<=9){
+    alert('Cannot remove — you need at least 9 players for a full defense.');
+    return;
+  }
+  if(!confirm(`Remove ${roster[idx].name} from the roster?\n\nThis will also remove them from the batting order, defense assignments, and clear any award nominations. Stats will remain in the game log but won't display.`))return;
+
+  // Remove from roster
+  roster.splice(idx,1);
+
+  // Reindex batting order: drop the removed player, shift all higher idx down by 1
+  battingOrder=battingOrder.filter(b=>b.idx!==idx).map(b=>({...b,idx:b.idx>idx?b.idx-1:b.idx}));
+
+  // Reindex defense blocks
+  defBlocks=defBlocks.map(block=>{
+    const newBench=block.benchIdx===idx
+      ? (roster.length>0?Math.min(block.benchIdx,roster.length-1):0)
+      : (block.benchIdx>idx?block.benchIdx-1:block.benchIdx);
+    const newAssignments={};
+    Object.entries(block.assignments).forEach(([pos,pi])=>{
+      if(pi===idx)return; // drop assignment to removed player
+      newAssignments[pos]=pi>idx?pi-1:pi;
+    });
+    return{benchIdx:newBench,assignments:newAssignments};
+  });
+
+  // Clear award overrides that pointed to the removed player; shift others
+  const newOverrides={};
+  Object.entries(awardOverrides).forEach(([aid,val])=>{
+    const v=parseInt(val,10);
+    if(v===idx)return; // drop — coach will re-pick
+    newOverrides[aid]=String(v>idx?v-1:v);
+  });
+  awardOverrides=newOverrides;
+
+  // Reindex game log cumulative totals
+  gameLog=gameLog.map(g=>{
+    const newCum={};
+    Object.entries(g.cumTotals||{}).forEach(([pi,stats])=>{
+      const p=parseInt(pi,10);
+      if(p===idx)return; // drop stats for removed player
+      newCum[p>idx?p-1:p]=stats;
+    });
+    return{...g,cumTotals:newCum};
+  });
+
+  save();renderAll();showSaved();
+}
+
+// ── BACKUP / RESTORE ──────────────────────────────────────────────────────
+function backupData(){
+  const payload={
+    exportedAt:new Date().toISOString(),
+    exportVersion:1,
+    appVersion:'haungs-10b-v1',
+    data:{roster,battingOrder,defBlocks,gameLog,awardOverrides,awardNotes,awardBlurbs,fairPlayMode}
+  };
+  const json=JSON.stringify(payload,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const d=new Date();
+  const stamp=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const fname=`team-haungs-backup-${stamp}.json`;
+
+  // Try native share sheet first (iOS/Android), fall back to download
+  if(navigator.share&&navigator.canShare){
+    try{
+      const file=new File([blob],fname,{type:'application/json'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:'Team Haungs Backup',text:`Backup from ${stamp}`})
+          .catch(()=>{triggerDownload(url,fname);});
+        setTimeout(()=>URL.revokeObjectURL(url),60000);
+        return;
+      }
+    }catch(e){}
+  }
+  triggerDownload(url,fname);
+}
+
+function triggerDownload(url,fname){
+  const a=document.createElement('a');a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+}
+
+function restoreData(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      const d=parsed.data||parsed; // allow raw or wrapped
+      if(!d.roster||!Array.isArray(d.roster)){
+        alert('This does not look like a valid Team Haungs backup file.');
+        return;
+      }
+      const playerCount=d.roster.length;
+      const gameCount=(d.gameLog||[]).length;
+      if(!confirm(`Restore backup?\n\n• ${playerCount} players\n• ${gameCount} game${gameCount!==1?'s':''} of stats\n• All current data will be REPLACED.\n\nA safety backup of your current data will download first.`))return;
+      // Safety backup of current state first
+      backupData();
+      setTimeout(()=>{
+        if(d.roster)roster=d.roster;
+        if(d.battingOrder)battingOrder=d.battingOrder;
+        if(d.defBlocks)defBlocks=d.defBlocks;
+        if(d.gameLog)gameLog=d.gameLog;
+        if(d.awardOverrides)awardOverrides=d.awardOverrides;
+        if(d.awardNotes)awardNotes=d.awardNotes;
+        if(d.awardBlurbs)awardBlurbs=d.awardBlurbs;
+        if(typeof d.fairPlayMode==='boolean')fairPlayMode=d.fairPlayMode;
+        save();renderAll();showSaved();
+        alert('✓ Backup restored.');
+      },600);
+    }catch(err){
+      alert('Could not read backup file: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value=''; // reset so same file can be re-picked
 }
 
 // ── BATTING TAB ───────────────────────────────────────────────────────────────
@@ -569,12 +787,7 @@ function renderBatting(){
   });
   sc.appendChild(list);
 
-  // Steal tracker
-  const steal=document.createElement('div');steal.className='steal-card';
-  steal.innerHTML=`<div class="slabel" style="margin-bottom:10px;">STEAL TRACKER — 3 MAX PER INNING</div><div class="steal-dots"><div class="sdot" id="sd1" onclick="toggleSteal(1)">1</div><div class="sdot" id="sd2" onclick="toggleSteal(2)">2</div><div class="sdot" id="sd3" onclick="toggleSteal(3)">3</div><span style="font-size:0.78rem;color:var(--muted);margin-left:6px;font-weight:600;" id="scnt">0 of 3 used</span></div><button class="sreset" onclick="resetSteals()">↺ Reset inning</button>`;
-  sc.appendChild(steal);
   const printBtn=document.createElement('button');printBtn.className='btn-print';printBtn.textContent='📄 EXPORT LINEUP AS PDF';printBtn.onclick=exportPDF;sc.appendChild(printBtn);
-  updateSteals();
 }
 
 function doDrop(ti){const src=dragIdx!==null?dragIdx:touchDragIdx;if(src===null||src===ti)return;const m=battingOrder.splice(src,1)[0];battingOrder.splice(ti,0,m);save();renderBatting();}
@@ -678,19 +891,81 @@ function refreshComplianceChips(){
 // ── SETTINGS TAB ──────────────────────────────────────────────────────────────
 function renderSettings(){
   const sc=document.getElementById('sc-settings');sc.innerHTML='';
-  sc.appendChild(Object.assign(document.createElement('div'),{className:'slabel',textContent:'EDIT RANK · AGE · POSITION STRENGTHS'}));
+
+  // ── Backup / Restore (top — protect the coach's work first) ──
+  const brLabel=document.createElement('div');brLabel.className='slabel';brLabel.textContent='BACKUP · RESTORE · KEEP YOUR SEASON SAFE';sc.appendChild(brLabel);
+  const brRow=document.createElement('div');brRow.className='br-row';
+  const bkBtn=document.createElement('button');bkBtn.className='btn-backup';bkBtn.textContent='💾 BACKUP';bkBtn.onclick=backupData;
+  const rsBtn=document.createElement('button');rsBtn.className='btn-restore';rsBtn.textContent='📥 RESTORE';
+  const rsInput=document.createElement('input');rsInput.type='file';rsInput.accept='.json,application/json';rsInput.style.display='none';rsInput.onchange=()=>restoreData(rsInput);
+  rsBtn.onclick=()=>rsInput.click();
+  brRow.appendChild(bkBtn);brRow.appendChild(rsBtn);brRow.appendChild(rsInput);
+  sc.appendChild(brRow);
+  const brNote=document.createElement('div');brNote.className='br-note';brNote.textContent='Backup saves everything. Restore auto-saves a safety copy first.';
+  sc.appendChild(brNote);
+
+  // ── Roster header + legend ──
+  sc.appendChild(Object.assign(document.createElement('div'),{className:'slabel',textContent:`ROSTER · ${roster.length} PLAYER${roster.length!==1?'S':''} · EDIT OR REMOVE`}));
   const leg=document.createElement('div');leg.className='pos-legend';leg.innerHTML=`<span><span class="ldot" style="background:var(--clay)"></span>Primary ★</span><span><span class="ldot" style="background:var(--teal)"></span>Secondary ◎</span><span><span class="ldot" style="background:var(--border2)"></span>Off ○</span>`;sc.appendChild(leg);
+
+  // Precompute stat ranks once for the whole roster
+  const sRanks=statRanks();
+
   roster.forEach((p,idx)=>{
     const card=document.createElement('div');card.className='spc';
     const hdr=document.createElement('div');hdr.className='spc-hdr';
-    hdr.innerHTML=`<div class="spc-name">${p.name}</div><div class="spc-rank" id="srank-${idx}">RANK #${p.rank}</div><div style="color:var(--muted);font-size:0.68rem;margin-left:6px;">▼</div>`;
+    const sr=sRanks[idx];
+    const statBadge=sr&&sr.hasData
+      ? `<span class="spc-rank-badge spc-rank-stat" title="Based on OBP, AVG, XBH, SB">📊 #${sr.rank}</span>`
+      : `<span class="spc-rank-badge spc-rank-stat no-data" title="Needs more plate appearances">📊 —</span>`;
+    const manualBadge=`<span class="spc-rank-badge spc-rank-manual" title="Manual draft rank">⭐ #${p.rank}</span>`;
+    hdr.innerHTML=`<div class="spc-name">${p.name}</div><div class="spc-ranks">${manualBadge}${statBadge}</div><div style="color:var(--muted);font-size:0.68rem;margin-left:6px;">▼</div>`;
     const body=document.createElement('div');body.className='spc-body';
     hdr.addEventListener('click',()=>body.classList.toggle('open'));
-    body.innerHTML=`<div class="srow"><label>DRAFT RANK</label><input class="ninput" type="number" min="1" max="20" value="${p.rank}" onchange="roster[${idx}].rank=+this.value;document.getElementById('srank-${idx}').textContent='RANK #'+this.value;"/><label style="margin-left:10px;">AGE</label><input class="ninput" type="number" min="8" max="12" value="${p.age}" onchange="roster[${idx}].age=+this.value;"/></div><div class="slabel" style="margin-top:2px;">POSITIONS — TAP TO CYCLE</div><div class="pos-grid" id="pg-${idx}"></div>`;
+
+    // Editable fields
+    const bodyInner=document.createElement('div');
+    bodyInner.innerHTML=`
+      <div class="slabel" style="margin-top:0;margin-bottom:5px;">PLAYER NAME</div>
+      <input class="name-edit" type="text" value="${p.name.replace(/"/g,'&quot;')}" placeholder="Full name" onchange="renamePlayer(${idx},this.value);renderSettings();">
+      <div class="srow" style="margin-top:10px;">
+        <label>MANUAL RANK</label>
+        <input class="ninput" type="number" min="1" max="20" value="${p.rank}" onchange="updatePlayerRank(${idx},this.value);renderSettings();">
+        <label style="margin-left:10px;">AGE</label>
+        <input class="ninput" type="number" min="6" max="14" value="${p.age}" onchange="updatePlayerAge(${idx},this.value);">
+      </div>
+      <div class="slabel" style="margin-top:6px;">POSITIONS — TAP TO CYCLE</div>
+      <div class="pos-grid" id="pg-${idx}"></div>
+      <button class="btn-remove-player" onclick="removePlayer(${idx})">✕ REMOVE ${p.name.split(' ')[0].toUpperCase()}</button>
+    `;
+    body.appendChild(bodyInner);
     card.appendChild(hdr);card.appendChild(body);sc.appendChild(card);renderPosGrid(idx);
   });
+
+  // ── Add player card ──
+  const addCard=document.createElement('div');addCard.className='add-player-card';
+  addCard.innerHTML=`
+    <div class="add-player-title">+ ADD A PLAYER</div>
+    <div class="add-player-row">
+      <input class="name-edit" type="text" id="newPlayerName" placeholder="Full name">
+      <input class="ninput" type="number" id="newPlayerRank" placeholder="Rank" min="1" max="20" value="${roster.length+1}" style="width:100%;">
+      <button class="btn-add" onclick="handleAddPlayer()">+ ADD</button>
+    </div>
+    <div style="font-size:0.68rem;color:var(--muted);margin-top:7px;line-height:1.4;">New players are added to the end of the batting order. Set position strengths after adding.</div>
+  `;
+  sc.appendChild(addCard);
+
+  // ── Save & reset buttons ──
   const sb=document.createElement('button');sb.className='btn-green';sb.textContent='✓ SAVE & APPLY TO LINEUP';sb.onclick=()=>{defBlocks.forEach((_,bi)=>autoSuggest(bi));save();renderAll();showSaved();};sc.appendChild(sb);
-  const rb=document.createElement('button');rb.className='btn-red-outline';rb.textContent='✕ RESET ALL APP DATA';rb.onclick=()=>{if(!confirm('Clear batting order, defense, stats, and awards? Roster stays.'))return;battingOrder=[{idx:0,batPos:'C'},{idx:1,batPos:'SS'},{idx:2,batPos:'P'},{idx:3,batPos:'3B'},{idx:4,batPos:'1B'},{idx:5,batPos:'LF'},{idx:6,batPos:'2B'},{idx:7,batPos:'LC'},{idx:8,batPos:'CF'},{idx:9,batPos:'RF'},{idx:10,batPos:'EH'}];defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];gameLog=[];awardOverrides={};awardNotes={};awardBlurbs={};steals=[false,false,false];save();renderAll();showSaved();};sc.appendChild(rb);
+  const rb=document.createElement('button');rb.className='btn-red-outline';rb.textContent='✕ RESET ALL APP DATA';rb.onclick=()=>{if(!confirm('Clear batting order, defense, stats, and awards? Roster stays. (Tip: hit BACKUP first if you want a safety copy.)'))return;battingOrder=roster.map((_,i)=>({idx:i,batPos:'P'}));const n=roster.length;defBlocks=[{benchIdx:Math.max(0,n-1),assignments:{}},{benchIdx:Math.max(0,n-3),assignments:{}},{benchIdx:Math.max(0,n-2),assignments:{}}];gameLog=[];awardOverrides={};awardNotes={};awardBlurbs={};save();renderAll();showSaved();};sc.appendChild(rb);
+}
+
+function handleAddPlayer(){
+  const nameInput=document.getElementById('newPlayerName');
+  const rankInput=document.getElementById('newPlayerRank');
+  if(!nameInput)return;
+  const ok=addPlayer(nameInput.value,rankInput.value,10);
+  if(ok){save();renderAll();showSaved();}
 }
 function renderPosGrid(idx){const g=document.getElementById(`pg-${idx}`);if(!g)return;g.innerHTML='';FIELD_POS.forEach(pos=>{const s=roster[idx].strengths[pos]||0,cls=s===2?'ptog pri':s===1?'ptog sec':'ptog',lbl=s===2?'★':s===1?'◎':'○';const el=document.createElement('div');el.className=cls;el.innerHTML=`<span class="ptog-lbl">${lbl} ${pos}</span>`;el.addEventListener('click',()=>{const c=roster[idx].strengths[pos]||0,n=c===0?2:c===2?1:0;if(!n)delete roster[idx].strengths[pos];else roster[idx].strengths[pos]=n;renderPosGrid(idx);});g.appendChild(el);});}
 
@@ -843,16 +1118,11 @@ function exportPDF(){
           <thead><tr><th class="c">#</th><th>PLAYER</th><th class="c">POS</th><th>AVG / OBP</th></tr></thead>
           <tbody>${batRows}</tbody>
         </table>
-        <div class="pdf-steal">
-          <span class="pdf-steal-label">STEALS&nbsp;</span>
-          <div class="pdf-steal-dot">1</div><div class="pdf-steal-dot">2</div><div class="pdf-steal-dot">3</div>
-          <span style="font-size:6.5pt;color:#C22818;margin-left:5px;font-weight:700;">MAX 3 / INNING</span>
-        </div>
         <div class="pdf-rules">
           <div class="pdf-rules-title">10B RULES — KNOW COLD</div>
-          <div class="pdf-rule">3 steals max/inning · No stealing home · Overthrow: runners stay</div>
-          <div class="pdf-rule">Ball 4 loaded → coach pitches, count carries over</div>
-          <div class="pdf-rule">1 bunt/inning max · No slash bunting · 4-run/inning cap</div>
+          <div class="pdf-rule">Ball 4 with bases loaded → coach pitches, count carries over</div>
+          <div class="pdf-rule">No stealing home · Overthrow: runners stay put on steals</div>
+          <div class="pdf-rule">1 bunt per inning max · No slash bunting · 4-run/inning cap</div>
           <div class="pdf-rule">Pitchers: 3-inning limit · 10 fielders · No infield fly</div>
         </div>
       </div>
@@ -1034,11 +1304,6 @@ function exportDugout(){
 
 function _setPrintPage(orientation){const e=document.getElementById('_print_page_style');if(e)e.remove();const s=document.createElement('style');s.id='_print_page_style';s.textContent=`@media print { @page { size: letter ${orientation}; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} } }`;document.head.appendChild(s);}
 
-// ── STEALS ────────────────────────────────────────────────────────────────────
-function toggleSteal(n){steals[n-1]=!steals[n-1];save();updateSteals();}
-function resetSteals(){steals=[false,false,false];save();updateSteals();}
-function updateSteals(){steals.forEach((s,i)=>{const e=document.getElementById('sd'+(i+1));if(e)e.classList.toggle('used',s);});const ct=document.getElementById('scnt');if(ct)ct.textContent=steals.filter(Boolean).length+' of 3 used';}
-
 // ── OFFLINE ───────────────────────────────────────────────────────────────────
 function updateOnline(){const b=document.getElementById('offlineBar');if(b)b.classList.toggle('show',!navigator.onLine);}
 window.addEventListener('online',updateOnline);window.addEventListener('offline',updateOnline);
@@ -1057,5 +1322,6 @@ defBlocks.forEach((b,bi)=>{if(!Object.keys(b.assignments).length)autoSuggest(bi)
 renderAll();
 updateOnline();
 </script>
+
 </body>
 </html>
