@@ -50,8 +50,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .theme-btn::before{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--clay);transition:transform 0.22s;}
 [data-theme="dark"] .theme-btn::before{transform:translateX(24px);}
 .theme-icons{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 5px;font-size:0.7rem;pointer-events:none;}
-.tab-bar{display:grid;grid-template-columns:repeat(5,1fr);background:var(--tab-bg);border-radius:10px;padding:4px;gap:2px;margin:8px 0 0;border:1.5px solid var(--border2);box-shadow:0 2px 6px var(--shadow);}
-.tab-btn{padding:9px 2px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:1.5px;color:var(--tab-text);cursor:pointer;border-radius:8px;border:none;background:none;font-weight:700;min-height:44px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:all 0.18s;}
+.tab-bar{display:grid;grid-template-columns:repeat(6,1fr);background:var(--tab-bg);border-radius:10px;padding:3px;gap:1px;margin:8px 0 0;border:1.5px solid var(--border2);box-shadow:0 2px 6px var(--shadow);}
+.tab-btn{padding:9px 1px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:0.66rem;letter-spacing:1px;color:var(--tab-text);cursor:pointer;border-radius:7px;border:none;background:none;font-weight:700;min-height:44px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:all 0.18s;}
 .tab-btn.active{background:var(--clay);color:#fff;}
 .offline-bar{display:none;background:var(--warn);color:#fff;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;font-weight:700;padding:6px 14px;}
 .offline-bar.show{display:block;}
@@ -102,6 +102,113 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .bench-sel{flex:1;background:transparent;border:none;color:var(--clay);font-family:'Barlow',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;appearance:none;}
 .suggest-btn{background:var(--clay);color:#fff;border:none;border-radius:6px;padding:7px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:2px;cursor:pointer;font-weight:700;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .suggest-btn:active{background:var(--clay-d);}
+
+/* BAT tab top action bar (Suggest Order + Game Day toggle) */
+.bat-action-bar{display:flex;gap:7px;margin-bottom:10px;}
+.suggest-order-btn{flex:1;background:var(--clay);color:#fff;border:none;border-radius:9px;padding:10px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:2px;cursor:pointer;font-weight:700;-webkit-tap-highlight-color:transparent;min-height:42px;}
+.suggest-order-btn:active{background:var(--clay-d);}
+.gameday-btn{background:var(--panel);color:var(--ink);border:1.5px solid var(--border2);border-radius:9px;padding:10px 14px;font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:2px;cursor:pointer;font-weight:700;-webkit-tap-highlight-color:transparent;min-height:42px;white-space:nowrap;}
+.gameday-btn.on{background:var(--grass);border-color:var(--grass-l);color:#fff;}
+.gameday-btn:active{transform:scale(0.97);}
+
+/* Suggestion preview panel */
+.suggest-preview{background:var(--panel);border:2px solid var(--clay);border-radius:11px;padding:12px 13px;margin-bottom:12px;box-shadow:0 3px 12px rgba(194,40,24,0.18);}
+.suggest-preview-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.suggest-preview-title{font-family:'Barlow Condensed',sans-serif;font-size:0.82rem;letter-spacing:2px;color:var(--clay);font-weight:800;}
+.suggest-preview-rationale{font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.4;font-style:italic;}
+.suggest-preview-list{display:flex;flex-direction:column;gap:3px;margin-bottom:10px;}
+.spv-row{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;background:var(--panel2);border-radius:6px;padding:5px 9px;font-size:0.82rem;}
+.spv-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--clay);}
+.spv-name{font-weight:700;color:var(--ink);}
+.spv-role{font-size:0.66rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-weight:700;text-align:right;}
+.suggest-preview-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.spv-apply{background:var(--grass);color:#fff;border:none;border-radius:7px;padding:9px;font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:2px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;}
+.spv-cancel{background:transparent;color:var(--muted);border:1.5px solid var(--border2);border-radius:7px;padding:9px;font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:2px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;}
+
+/* Rally killer warning chip (on batting rows) */
+.rally-warn{display:inline-flex;align-items:center;gap:3px;font-family:'Barlow Condensed',sans-serif;font-size:0.58rem;letter-spacing:1px;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:4px;background:rgba(176,90,0,0.16);color:var(--warn);vertical-align:middle;border:1px solid rgba(176,90,0,0.4);}
+
+/* Game Day Mode */
+body.gameday .tab-bar{grid-template-columns:repeat(3,1fr);}
+body.gameday .tab-btn.gd-hide{display:none;}
+body.gameday .sticky-bottom-quickref{display:flex;}
+body.gameday .tab-scroll{padding-bottom:80px;}
+.sticky-bottom-quickref{display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;background:var(--panel);border-top:2px solid var(--clay);padding:8px 14px max(env(safe-area-inset-bottom),10px);z-index:190;box-shadow:0 -4px 14px var(--shadow);align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;}
+.qr-label{font-family:'Barlow Condensed',sans-serif;font-size:0.6rem;letter-spacing:2px;color:var(--clay);font-weight:800;white-space:nowrap;}
+.qr-text{font-size:0.7rem;color:var(--ink2);line-height:1.3;font-weight:600;}
+.qr-text strong{color:var(--clay);}
+
+/* CSV Preview Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:flex-end;justify-content:center;padding:0;}
+.modal-overlay.show{display:flex;}
+.modal-sheet{background:var(--panel);width:100%;max-width:430px;max-height:88vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;box-shadow:0 -8px 32px rgba(0,0,0,0.4);}
+.modal-hdr{padding:14px 16px 10px;border-bottom:1.5px solid var(--border2);}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:1px;color:var(--ink);}
+.modal-sub{font-size:0.74rem;color:var(--muted);margin-top:3px;line-height:1.45;}
+.modal-body{flex:1;overflow-y:auto;padding:12px 16px;-webkit-overflow-scrolling:touch;}
+.modal-footer{padding:10px 16px max(env(safe-area-inset-bottom),14px);border-top:1.5px solid var(--border2);display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--panel2);}
+.match-row{display:grid;grid-template-columns:1fr 18px 1fr;gap:6px;align-items:center;padding:7px 9px;background:var(--panel2);border:1.5px solid var(--border2);border-radius:9px;margin-bottom:5px;}
+.match-row.unmatched{border-color:var(--bad);background:rgba(176,24,24,0.07);}
+.match-row.perfect{border-color:var(--good);}
+.match-roster{font-size:0.82rem;font-weight:700;color:var(--ink);}
+.match-roster-sub{font-size:0.66rem;color:var(--muted);margin-top:1px;}
+.match-arrow{color:var(--muted);text-align:center;font-size:0.75rem;}
+.match-csv{background:transparent;border:none;color:var(--ink);font-size:0.82rem;font-weight:700;cursor:pointer;appearance:none;padding:4px 2px;width:100%;}
+.match-csv.unmatched{color:var(--bad);}
+.match-quality{display:inline-block;font-size:0.56rem;font-weight:800;padding:1px 4px;border-radius:3px;margin-left:4px;letter-spacing:1px;vertical-align:middle;}
+.mq-perfect{background:rgba(26,122,56,0.18);color:var(--good);}
+.mq-fuzzy{background:rgba(176,90,0,0.18);color:var(--warn);}
+.mq-manual{background:rgba(10,106,98,0.18);color:var(--teal);}
+.mq-none{background:rgba(176,24,24,0.18);color:var(--bad);}
+
+/* Award reroll button */
+.award-btns-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.btn-reroll{background:var(--panel2);color:var(--ink);border:1.5px solid var(--border2);border-radius:7px;padding:7px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:1.5px;cursor:pointer;font-weight:700;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.btn-reroll:active{background:var(--border);}
+
+/* GAME tab — absence controls */
+.gd-intro{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;padding:12px 14px;margin-bottom:10px;font-size:0.8rem;color:var(--ink2);line-height:1.55;box-shadow:0 2px 6px var(--shadow);}
+.gd-intro strong{color:var(--ink);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+
+.gd-status{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.gd-status-cell{background:var(--panel);border:1.5px solid var(--border2);border-radius:9px;padding:8px 6px;text-align:center;box-shadow:0 1px 4px var(--shadow);}
+.gd-status-cell.warn{border-color:var(--bad);background:rgba(176,24,24,0.06);}
+.gd-status-cell.ok{border-color:var(--good);}
+.gd-status-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.62rem;letter-spacing:2px;color:var(--muted);font-weight:700;}
+.gd-status-num{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;color:var(--ink);line-height:1;margin-top:3px;}
+.gd-status-cell.warn .gd-status-num{color:var(--bad);}
+.gd-status-cell.ok .gd-status-num{color:var(--good);}
+.gd-status-sub{font-size:0.58rem;color:var(--muted);margin-top:2px;}
+
+/* Absence row — compact player + 4 options */
+.absence-row{background:var(--panel);border:1.5px solid var(--border2);border-radius:10px;padding:8px 10px;margin-bottom:6px;box-shadow:0 1px 3px var(--shadow);}
+.absence-name{font-weight:700;font-size:0.9rem;color:var(--ink);margin-bottom:6px;}
+.absence-name .abs-status{font-family:'Barlow Condensed',sans-serif;font-size:0.62rem;letter-spacing:1.5px;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:800;vertical-align:middle;}
+.abs-status.playing{color:var(--good);background:rgba(26,122,56,0.12);}
+.abs-status.late{color:var(--warn);background:rgba(176,90,0,0.14);}
+.abs-status.out{color:var(--bad);background:rgba(176,24,24,0.12);}
+.absence-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+.abs-opt{background:var(--panel2);border:1.5px solid var(--border2);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:0.62rem;letter-spacing:1px;font-weight:700;padding:6px 2px;border-radius:6px;cursor:pointer;min-height:34px;text-align:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:flex;align-items:center;justify-content:center;line-height:1.1;}
+.abs-opt:active{transform:scale(0.97);}
+.abs-opt.sel-playing{background:var(--good);border-color:var(--good);color:#fff;}
+.abs-opt.sel-late{background:var(--warn);border-color:var(--warn);color:#fff;}
+.abs-opt.sel-out{background:var(--bad);border-color:var(--bad);color:#fff;}
+
+/* Preview panel for the game-day rebuild */
+.gd-preview{background:var(--panel);border:2px solid var(--clay);border-radius:11px;padding:12px 13px;margin-bottom:12px;box-shadow:0 3px 12px rgba(194,40,24,0.18);}
+.gd-preview-title{font-family:'Barlow Condensed',sans-serif;font-size:0.82rem;letter-spacing:2px;color:var(--clay);font-weight:800;margin-bottom:7px;}
+.gd-preview-section{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2px;color:var(--muted);font-weight:800;margin:9px 0 4px;}
+.gd-preview-list{font-size:0.78rem;color:var(--ink2);line-height:1.5;margin-bottom:3px;}
+.gd-preview-list strong{color:var(--ink);}
+
+/* Banner on BAT tab when absences are active */
+.absence-banner{display:flex;align-items:center;gap:8px;background:rgba(176,90,0,0.10);border:1.5px solid rgba(176,90,0,0.35);border-radius:9px;padding:8px 11px;margin-bottom:10px;}
+.absence-banner-icon{font-size:1rem;flex-shrink:0;}
+.absence-banner-text{font-size:0.76rem;color:var(--warn);font-weight:700;line-height:1.3;}
+.absence-banner-text strong{color:var(--ink);}
+
+/* Clear button */
+.btn-clear-abs{background:transparent;border:1.5px solid var(--border2);color:var(--muted);border-radius:7px;padding:8px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:2px;cursor:pointer;font-weight:700;margin-top:8px;width:100%;-webkit-tap-highlight-color:transparent;}
 .def-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 .def-cell{display:flex;align-items:center;gap:7px;background:var(--panel2);border:1.5px solid var(--border2);border-radius:8px;padding:7px 10px;}
 .def-pos{font-family:'Barlow Condensed',sans-serif;font-size:0.82rem;color:var(--clay);min-width:26px;letter-spacing:1px;font-weight:800;}
@@ -289,6 +396,22 @@ margin:0.35in;
 .pdf-rule{font-size:8pt;color:#222;margin-bottom:3px;padding-left:13px;position:relative;line-height:1.35;}
 .pdf-rule::before{content:'→';position:absolute;left:0;color:#C22818;font-weight:900;}
 .pdf-footer{margin-top:10px;border-top:1px solid #ddd;padding-top:5px;display:flex;justify-content:space-between;font-size:6.5pt;color:#aaa;letter-spacing:1px;}
+
+/* Awards Ceremony PDF */
+.pdf-ceremony{font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;padding:0;font-size:10pt;}
+.pdf-ceremony-hdr{text-align:center;border-bottom:4px double #C22818;padding-bottom:10px;margin-bottom:16px;}
+.pdf-ceremony-title{font-size:24pt;font-weight:900;letter-spacing:2px;color:#C22818;line-height:1;}
+.pdf-ceremony-sub{font-size:9pt;letter-spacing:4px;color:#333;margin-top:5px;font-weight:700;}
+.pdf-ceremony-year{font-size:8pt;letter-spacing:2px;color:#666;margin-top:3px;}
+.pdf-ceremony-section{font-size:7.5pt;letter-spacing:4px;color:#9a6800;font-weight:900;margin:12px 0 6px;padding-bottom:3px;border-bottom:1.5px solid #d4a84b;}
+.pdf-award-row{display:flex;align-items:flex-start;gap:10px;padding:8px 4px;border-bottom:0.5px dashed #ddd;page-break-inside:avoid;}
+.pdf-award-emoji{font-size:16pt;line-height:1;width:24px;text-align:center;flex-shrink:0;margin-top:2px;}
+.pdf-award-body{flex:1;}
+.pdf-award-name{font-size:10.5pt;font-weight:900;letter-spacing:0.5px;color:#111;line-height:1.1;}
+.pdf-award-winner{font-size:12pt;font-weight:900;color:#C22818;margin-top:2px;line-height:1;}
+.pdf-award-blurb{font-size:9pt;color:#333;margin-top:4px;line-height:1.5;font-style:italic;}
+.pdf-award-blurb strong{font-weight:900;color:#111;font-style:normal;}
+.pdf-award-blurb .sh{color:#C22818;font-weight:900;font-style:normal;}
 }
 </style>
 
@@ -311,16 +434,41 @@ margin:0.35in;
   <div class="tab-bar">
     <button class="tab-btn active" onclick="showTab('batting',this)">⚡ BAT</button>
     <button class="tab-btn"        onclick="showTab('defense',this)">🛡 DEF</button>
-    <button class="tab-btn"        onclick="showTab('settings',this)">⚙ ROSTER</button>
-    <button class="tab-btn"        onclick="showTab('stats',this)">📊 STATS</button>
-    <button class="tab-btn"        onclick="showTab('awards',this)">🏆 AWARDS</button>
+    <button class="tab-btn"        onclick="showTab('gameday',this)">🏟 GAME</button>
+    <button class="tab-btn gd-hide" onclick="showTab('settings',this)">⚙ ROSTER</button>
+    <button class="tab-btn gd-hide" onclick="showTab('stats',this)">📊 STATS</button>
+    <button class="tab-btn gd-hide" onclick="showTab('awards',this)">🏆 AWARDS</button>
   </div>
 </div>
 <div id="tab-batting"  class="tab-content active"><div class="tab-scroll" id="sc-batting"></div></div>
 <div id="tab-defense"  class="tab-content"><div class="tab-scroll" id="sc-defense"></div></div>
+<div id="tab-gameday"  class="tab-content"><div class="tab-scroll" id="sc-gameday"></div></div>
 <div id="tab-settings" class="tab-content"><div class="tab-scroll" id="sc-settings"></div></div>
 <div id="tab-stats"    class="tab-content"><div class="tab-scroll" id="sc-stats"></div></div>
 <div id="tab-awards"   class="tab-content"><div class="tab-scroll" id="sc-awards"></div></div>
+
+<!-- Game Day mode: sticky bottom quick-reference bar for critical 10B reminders -->
+<div class="sticky-bottom-quickref" id="stickyQuickref">
+  <div>
+    <div class="qr-label">10B QUICK REF</div>
+    <div class="qr-text"><strong>Ball 4 loaded</strong> → coach pitches · <strong>1 bunt/inn</strong> · <strong>No steal home</strong> · <strong>4-run cap</strong></div>
+  </div>
+</div>
+
+<!-- CSV Match Preview Modal -->
+<div class="modal-overlay" id="csvModal">
+  <div class="modal-sheet">
+    <div class="modal-hdr">
+      <div class="modal-title" id="csvModalTitle">Review Player Matches</div>
+      <div class="modal-sub" id="csvModalSub">Verify each roster player maps to the correct CSV row.</div>
+    </div>
+    <div class="modal-body" id="csvModalBody"></div>
+    <div class="modal-footer">
+      <button class="spv-cancel" onclick="cancelCsvImport()">CANCEL</button>
+      <button class="spv-apply" onclick="confirmCsvImport()">CONFIRM &amp; SAVE</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
@@ -354,14 +502,20 @@ let battingOrder=[
 ];
 let defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];
 let fairPlayMode=false;
+let gameDay=false;
+let pendingCsv=null;  // CSV import preview state
+let pendingOrderSuggestion=null; // Batting order suggestion preview
+let awardBlurbVariants={}; // Tracks current reroll index per award
+let gameAbsences={}; // {rosterIdx: fromInning} — 1=out whole game, 3=arrives Inn 3, 5=arrives Inn 5
+let pendingGameRebuild=null; // Preview state for Rebuild Lineup + Defense
 let lpTimer=null,lpActive=false,touchDragIdx=null,dragIdx=null;
 let ghostEl=null,ghostOffsetY=0,saveTimer=null;
 let dragRowH=72,rafPending=false,lastDestIdx=null,rowRects=[];
 
 // ── PERSIST ───────────────────────────────────────────────────────────────────
 const SK='haungs10b-v1';
-function save(){try{localStorage.setItem(SK,JSON.stringify({roster,battingOrder,defBlocks,gameLog,awardOverrides,awardNotes,awardBlurbs,fairPlayMode}));}catch(e){}}
-function load(){try{const r=localStorage.getItem(SK);if(!r)return;const s=JSON.parse(r);if(s.roster)roster=s.roster;if(s.battingOrder)battingOrder=s.battingOrder;if(s.defBlocks)defBlocks=s.defBlocks;if(s.gameLog)gameLog=s.gameLog;if(s.awardOverrides)awardOverrides=s.awardOverrides;if(s.awardNotes)awardNotes=s.awardNotes;if(s.awardBlurbs)awardBlurbs=s.awardBlurbs;if(typeof s.fairPlayMode==='boolean')fairPlayMode=s.fairPlayMode;}catch(e){}}
+function save(){try{localStorage.setItem(SK,JSON.stringify({roster,battingOrder,defBlocks,gameLog,awardOverrides,awardNotes,awardBlurbs,awardBlurbVariants,fairPlayMode,gameDay,gameAbsences}));}catch(e){}}
+function load(){try{const r=localStorage.getItem(SK);if(!r)return;const s=JSON.parse(r);if(s.roster)roster=s.roster;if(s.battingOrder)battingOrder=s.battingOrder;if(s.defBlocks)defBlocks=s.defBlocks;if(s.gameLog)gameLog=s.gameLog;if(s.awardOverrides)awardOverrides=s.awardOverrides;if(s.awardNotes)awardNotes=s.awardNotes;if(s.awardBlurbs)awardBlurbs=s.awardBlurbs;if(s.awardBlurbVariants)awardBlurbVariants=s.awardBlurbVariants;if(typeof s.fairPlayMode==='boolean')fairPlayMode=s.fairPlayMode;if(typeof s.gameDay==='boolean')gameDay=s.gameDay;if(s.gameAbsences)gameAbsences=s.gameAbsences;}catch(e){}}
 
 // ── THEME ─────────────────────────────────────────────────────────────────────
 function toggleTheme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('tv10b-theme',h.dataset.theme);}catch(e){}}
@@ -527,6 +681,394 @@ function manualDefAssign(bi,pos,newPi){
   save();renderDefGrid(bi);renderBatting();
 }
 
+// ── GAME-DAY ABSENCES ───────────────────────────────────────────────────────
+// gameAbsences maps rosterIdx → earliest inning the player is available.
+// Options: undefined/absent = playing whole game (default),
+//          1 = out whole game (conventionally stored as 99 or special, but we use "isOut")
+//          3 = arriving Inn 3 (missed block 0)
+//          5 = arriving Inn 5 (missed blocks 0 and 1)
+// For "out whole game" we store a sentinel value 99.
+
+const INNING_BLOCKS=[1,3,5]; // Inning numbers where each block starts
+function absenceStatus(idx){
+  const v=gameAbsences[idx];
+  if(v===undefined)return{key:'playing',label:'Playing',cls:'playing'};
+  if(v===99)return{key:'out',label:'Out (whole game)',cls:'out'};
+  if(v===3)return{key:'late3',label:'Arriving Inn 3',cls:'late'};
+  if(v===5)return{key:'late5',label:'Arriving Inn 5',cls:'late'};
+  return{key:'playing',label:'Playing',cls:'playing'};
+}
+// Returns true if player is available during the given inning-block index (0/1/2)
+function availableInBlock(idx,blockIdx){
+  const v=gameAbsences[idx];
+  if(v===undefined)return true;
+  if(v===99)return false;
+  // v is the inning number they arrive — block inning start must be >= v
+  return INNING_BLOCKS[blockIdx]>=v;
+}
+function availableAllGame(idx){const v=gameAbsences[idx];return v===undefined;}
+function absenceCounts(){
+  let out=0,late=0,full=0;
+  roster.forEach((_,i)=>{
+    const s=absenceStatus(i);
+    if(s.key==='out')out++;
+    else if(s.key==='late3'||s.key==='late5')late++;
+    else full++;
+  });
+  return{out,late,full};
+}
+function setAbsence(idx,key){
+  if(key==='playing')delete gameAbsences[idx];
+  else if(key==='out')gameAbsences[idx]=99;
+  else if(key==='late3')gameAbsences[idx]=3;
+  else if(key==='late5')gameAbsences[idx]=5;
+  save();
+  renderGameDay();renderBatting();
+}
+function clearAllAbsences(){
+  if(!Object.keys(gameAbsences).length)return;
+  if(!confirm('Clear all absences? All players will be marked as playing the whole game.'))return;
+  gameAbsences={};pendingGameRebuild=null;
+  save();renderGameDay();renderBatting();showSaved();
+}
+
+// ── GAME-DAY REBUILD: batting order + per-block defense ─────────────────────
+// Non-destructive preview. Returns {newBattingOrder, newDefBlocks, warnings}.
+// Strategy:
+//   - Batting: filter battingOrder to playing-all-game players first (preserves current order),
+//              then append late-arriving players at the end. Out-all-game players are dropped.
+//   - Defense: rebuild each block using only players available in that block; prefer benching
+//              someone who'll otherwise play all three blocks, per fairness.
+function buildGameDayPlan(){
+  const warnings=[];
+
+  // Batting order: keep currently-seated players who aren't out, preserve relative order,
+  // then append any late arrivals that aren't already in the order.
+  const keepSet=new Set();
+  const newBat=[];
+  battingOrder.forEach(b=>{
+    const s=absenceStatus(b.idx);
+    if(s.key==='out')return;
+    newBat.push({idx:b.idx,batPos:b.batPos});
+    keepSet.add(b.idx);
+  });
+  // Append any roster players not currently in battingOrder (shouldn't happen normally, but safe)
+  roster.forEach((_,i)=>{
+    if(keepSet.has(i))return;
+    if(absenceStatus(i).key==='out')return;
+    newBat.push({idx:i,batPos:'P'});
+  });
+
+  // Defense: per block, rebuild using available players
+  const newBlocks=[];
+  for(let bi=0;bi<3;bi++){
+    const available=roster.map((_,i)=>i).filter(i=>availableInBlock(i,bi));
+    if(available.length<10){
+      warnings.push(`Inn ${INNING_BLOCKS[bi]}–${INNING_BLOCKS[bi]+1}: only ${available.length} players available (need 10 fielders + 1 bench)`);
+      newBlocks.push({benchIdx:null,assignments:{},insufficient:true,availableCount:available.length});
+      continue;
+    }
+    // Pick bench: prefer a player who is available in ALL blocks (so benching here spreads evenly)
+    // and who has lowest effRank (weakest hitter benches first is rec-league convention;
+    // but we rotate so we pick the player least recently benched).
+    const benchCandidates=available.filter(i=>{
+      // Check this player isn't also benched in a prior block we already assigned
+      return !newBlocks.slice(0,bi).some(b=>b.benchIdx===i);
+    });
+    const benchPool=benchCandidates.length>0?benchCandidates:available;
+    // Rotate fairly: pick the one with highest effRank (weakest) among those available everywhere
+    const allGameAvail=benchPool.filter(i=>availableAllGame(i));
+    const preferredBench=(allGameAvail.length>0?allGameAvail:benchPool)
+      .sort((a,b)=>effRank(b)-effRank(a))[0];
+    const benchIdx=preferredBench!==undefined?preferredBench:available[available.length-1];
+
+    // Now build assignments using existing buildSuggest logic
+    const prev=bi>0?newBlocks[bi-1].assignments:null;
+    const pp=bi>1?newBlocks[bi-2].assignments:null;
+    const priorBlocks=bi>0?newBlocks.slice(0,bi).map(b=>({assignments:b.assignments||{}})):null;
+    // buildSuggest expects a roster-wide pool; we need to restrict it to `available`.
+    // The existing function pulls from all roster except benchIdx — we'll wrap its output,
+    // filtering out any assignment that goes to an unavailable player, then fill gaps from
+    // the available pool.
+    const raw=buildSuggest(benchIdx,prev,pp,priorBlocks);
+    const assignments={};
+    const usedPlayers=new Set([benchIdx]);
+    // Accept raw assignments only if the player is available
+    Object.entries(raw).forEach(([pos,pi])=>{
+      if(available.includes(pi)&&!usedPlayers.has(pi)){
+        assignments[pos]=pi;usedPlayers.add(pi);
+      }
+    });
+    // Fill any unfilled positions from remaining available players
+    const POS_ORDER=POS_PRI;
+    POS_ORDER.forEach(pos=>{
+      if(assignments[pos]!==undefined)return;
+      const remaining=available.filter(i=>!usedPlayers.has(i));
+      if(!remaining.length)return;
+      // Pick the best fit for this position from remaining
+      const best=remaining.sort((a,b)=>{
+        const fa=(roster[a].strengths[pos]||0)*10+(10-effRank(a));
+        const fb=(roster[b].strengths[pos]||0)*10+(10-effRank(b));
+        return fb-fa;
+      })[0];
+      assignments[pos]=best;usedPlayers.add(best);
+    });
+    newBlocks.push({benchIdx,assignments});
+  }
+
+  return{newBattingOrder:newBat,newDefBlocks:newBlocks,warnings};
+}
+
+function showGameDayPreview(){
+  pendingGameRebuild=buildGameDayPlan();
+  renderGameDay();
+}
+function cancelGameDayPreview(){pendingGameRebuild=null;renderGameDay();}
+function applyGameDayPreview(){
+  if(!pendingGameRebuild)return;
+  const {newBattingOrder,newDefBlocks,warnings}=pendingGameRebuild;
+  if(warnings.length){
+    if(!confirm('Some innings have fewer than 10 available players:\n\n'+warnings.join('\n')+'\n\nApply anyway? The short-handed innings will have empty positions you can fill manually.'))return;
+  }
+  battingOrder=newBattingOrder;
+  defBlocks=newDefBlocks.map(b=>({
+    benchIdx:b.benchIdx!==null?b.benchIdx:(roster.length-1),
+    assignments:b.assignments||{}
+  }));
+  pendingGameRebuild=null;
+  save();renderAll();showSaved();
+  // Jump to BAT tab to show the result
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-batting').classList.add('active');
+  const batBtn=document.querySelector('.tab-btn');if(batBtn)batBtn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── GAME DAY TAB RENDER ────────────────────────────────────────────────────
+function renderGameDay(){
+  const sc=document.getElementById('sc-gameday');
+  if(!sc)return;
+  sc.innerHTML='';
+
+  const counts=absenceCounts();
+  const hasAnyAbsences=counts.out>0||counts.late>0;
+
+  // Intro / instructions
+  const intro=document.createElement('div');intro.className='gd-intro';
+  intro.innerHTML=hasAnyAbsences
+    ? `<strong>GAME-DAY ROSTER</strong><br>Toggle each player below, then tap <strong>Rebuild</strong> to re-optimize the lineup and defense for who's actually here.`
+    : `<strong>GAME-DAY ROSTER</strong><br>If a player can't make it or is arriving late, mark them below and rebuild the lineup. Nothing is saved to your roster or stats — this only affects today's game.`;
+  sc.appendChild(intro);
+
+  // Status cells — per inning block
+  const statusRow=document.createElement('div');statusRow.className='gd-status';
+  [0,1,2].forEach(bi=>{
+    const count=roster.filter((_,i)=>availableInBlock(i,bi)).length;
+    const needsFielders=count>=10;
+    const cell=document.createElement('div');
+    cell.className='gd-status-cell '+(needsFielders?'ok':'warn');
+    cell.innerHTML=`<div class="gd-status-lbl">INN ${INNING_BLOCKS[bi]}–${INNING_BLOCKS[bi]+1}</div><div class="gd-status-num">${count}</div><div class="gd-status-sub">${needsFielders?'available':'⚠ need 10'}</div>`;
+    statusRow.appendChild(cell);
+  });
+  sc.appendChild(statusRow);
+
+  // Preview panel if a rebuild is pending
+  if(pendingGameRebuild){
+    const panel=document.createElement('div');panel.className='gd-preview';
+    panel.innerHTML=`<div class="gd-preview-title">✦ REBUILD PREVIEW</div>`;
+
+    // Warnings
+    if(pendingGameRebuild.warnings.length){
+      const w=document.createElement('div');
+      w.style.cssText='background:rgba(176,24,24,0.08);border:1.5px solid var(--bad);border-radius:7px;padding:8px 10px;margin-bottom:8px;font-size:0.72rem;color:var(--bad);line-height:1.4;font-weight:700;';
+      w.innerHTML='⚠ '+pendingGameRebuild.warnings.join('<br>⚠ ');
+      panel.appendChild(w);
+    }
+
+    // Batting preview
+    const batSection=document.createElement('div');batSection.className='gd-preview-section';batSection.textContent='NEW BATTING ORDER';panel.appendChild(batSection);
+    const batList=document.createElement('div');batList.className='gd-preview-list';
+    batList.innerHTML=pendingGameRebuild.newBattingOrder.map((b,i)=>{
+      const s=absenceStatus(b.idx);
+      const tag=s.key==='late3'||s.key==='late5'?` <span style="color:var(--warn);font-weight:700;font-size:0.7rem;">(${s.label})</span>`:'';
+      return `${i+1}. <strong>${fn(b.idx)}</strong>${tag}`;
+    }).join('<br>');
+    panel.appendChild(batList);
+
+    // Defense preview
+    pendingGameRebuild.newDefBlocks.forEach((blk,bi)=>{
+      const defSection=document.createElement('div');defSection.className='gd-preview-section';defSection.textContent=`DEFENSE · INN ${INNING_BLOCKS[bi]}–${INNING_BLOCKS[bi]+1}`;panel.appendChild(defSection);
+      const defList=document.createElement('div');defList.className='gd-preview-list';
+      if(blk.insufficient){
+        defList.innerHTML=`<span style="color:var(--bad);font-weight:700;">⚠ Only ${blk.availableCount} players available</span>`;
+      }else{
+        const benchName=blk.benchIdx!==null?fn(blk.benchIdx):'—';
+        const assigns=Object.entries(blk.assignments).map(([pos,pi])=>`<strong>${pos}</strong> ${fn(pi)}`).join(' · ');
+        defList.innerHTML=`Bench: <strong>${benchName}</strong><br>${assigns}`;
+      }
+      panel.appendChild(defList);
+    });
+
+    const btns=document.createElement('div');btns.className='suggest-preview-btns';btns.style.marginTop='12px';
+    btns.innerHTML=`<button class="spv-cancel" onclick="cancelGameDayPreview()">CANCEL</button><button class="spv-apply" onclick="applyGameDayPreview()">✓ APPLY</button>`;
+    panel.appendChild(btns);
+    sc.appendChild(panel);
+  }
+
+  // Per-player absence rows
+  const listLabel=document.createElement('div');listLabel.className='slabel';listLabel.style.marginTop='12px';
+  listLabel.textContent=hasAnyAbsences?`${counts.full} PLAYING · ${counts.late} LATE · ${counts.out} OUT`:`${roster.length} PLAYERS — ALL AVAILABLE`;
+  sc.appendChild(listLabel);
+
+  roster.forEach((p,idx)=>{
+    const status=absenceStatus(idx);
+    const row=document.createElement('div');row.className='absence-row';
+    const statusBadge=status.key!=='playing'?`<span class="abs-status ${status.cls}">${status.label.toUpperCase()}</span>`:'';
+    row.innerHTML=`
+      <div class="absence-name">${p.name}${statusBadge}</div>
+      <div class="absence-opts">
+        <button class="abs-opt ${status.key==='playing'?'sel-playing':''}" onclick="setAbsence(${idx},'playing')">✓<br>PLAYING</button>
+        <button class="abs-opt ${status.key==='late3'?'sel-late':''}" onclick="setAbsence(${idx},'late3')">⏱<br>INN 3</button>
+        <button class="abs-opt ${status.key==='late5'?'sel-late':''}" onclick="setAbsence(${idx},'late5')">⏱<br>INN 5</button>
+        <button class="abs-opt ${status.key==='out'?'sel-out':''}" onclick="setAbsence(${idx},'out')">✕<br>OUT</button>
+      </div>
+    `;
+    sc.appendChild(row);
+  });
+
+  // Rebuild button + clear
+  const rebuildBtn=document.createElement('button');
+  rebuildBtn.className='btn-print';rebuildBtn.style.marginTop='12px';
+  rebuildBtn.textContent='✦ REBUILD LINEUP & DEFENSE';
+  rebuildBtn.onclick=showGameDayPreview;
+  sc.appendChild(rebuildBtn);
+
+  if(hasAnyAbsences){
+    const clearBtn=document.createElement('button');
+    clearBtn.className='btn-clear-abs';
+    clearBtn.textContent='↺ CLEAR ABSENCES · RESET TO FULL ROSTER';
+    clearBtn.onclick=clearAllAbsences;
+    sc.appendChild(clearBtn);
+  }
+}
+
+// ── BATTING ORDER SUGGESTION ENGINE ─────────────────────────────────────────
+// OBP-first rec-league logic that builds a full lineup with reasoning.
+// Slot intent:
+//   1  Leadoff — highest OBP (gets on base, sets the table)
+//   2  Two-hole — best AVG (contact hitter, moves leadoff over)
+//   3  Three-hole — best overall bat (OBP + AVG blend, some power)
+//   4  Cleanup — most XBH (drives runners in)
+//   5  Protection — next-best OBP (extends rallies)
+//   6  Situational — next-best AVG
+//   7+ Remaining by descending OBP
+// Fallback with no stats: manual draft rank order.
+function suggestBattingOrder(){
+  const pool=roster.map((_,i)=>i);
+  const st=seasonTotals();
+  const hasAnyStats=gameLog.length>0&&Object.values(st).some(s=>s&&(s.ab||0)>0);
+
+  if(!hasAnyStats){
+    const sorted=[...pool].sort((a,b)=>roster[a].rank-roster[b].rank);
+    return sorted.map(idx=>{
+      const existing=battingOrder.find(b=>b.idx===idx);
+      return{idx,batPos:existing?existing.batPos:'P',role:'By draft rank'};
+    });
+  }
+
+  const scored=pool.map(idx=>{
+    const s=st[idx]||{};
+    const qualifies=(s.ab||0)>=3||(s.pa||0)>=4;
+    const xbh=(s.s2||0)+(s.s3||0)+(s.hr||0);
+    return{
+      idx,
+      avg:qualifies&&s.ab>0?(s.avg||0):null,
+      obp:qualifies&&s.pa>0?(s.obp||0):null,
+      xbh,hasData:qualifies,rank:roster[idx].rank
+    };
+  });
+
+  const withData=scored.filter(p=>p.hasData);
+  const noData=scored.filter(p=>!p.hasData).sort((a,b)=>a.rank-b.rank);
+  const result=[];
+  const used=new Set();
+
+  const pickBy=(scoreFn,role)=>{
+    const cand=withData.filter(p=>!used.has(p.idx)).sort(scoreFn)[0];
+    if(cand){result.push({idx:cand.idx,role});used.add(cand.idx);}
+  };
+
+  pickBy((a,b)=>(b.obp||0)-(a.obp||0),'Leadoff · top OBP');
+  pickBy((a,b)=>{const d=(b.avg||0)-(a.avg||0);if(Math.abs(d)>0.001)return d;return(b.obp||0)-(a.obp||0);},'Contact · moves runners');
+  pickBy((a,b)=>((b.obp||0)*1.2+(b.avg||0)+b.xbh*0.05)-((a.obp||0)*1.2+(a.avg||0)+a.xbh*0.05),'Best bat');
+  pickBy((a,b)=>{const d=b.xbh-a.xbh;if(d!==0)return d;return(b.obp||0)-(a.obp||0);},'Cleanup · power');
+  pickBy((a,b)=>(b.obp||0)-(a.obp||0),'Protection');
+  pickBy((a,b)=>(b.avg||0)-(a.avg||0),'Situational');
+
+  withData.filter(p=>!used.has(p.idx))
+    .sort((a,b)=>{const d=(b.obp||0)-(a.obp||0);if(Math.abs(d)>0.001)return d;return(b.avg||0)-(a.avg||0);})
+    .forEach(p=>{result.push({idx:p.idx,role:'Bottom of order'});used.add(p.idx);});
+
+  noData.forEach(p=>{result.push({idx:p.idx,role:'No stats · by rank'});used.add(p.idx);});
+
+  return result.map(p=>{
+    const existing=battingOrder.find(b=>b.idx===p.idx);
+    return{idx:p.idx,batPos:existing?existing.batPos:'P',role:p.role};
+  });
+}
+
+function showOrderSuggestion(){
+  pendingOrderSuggestion=suggestBattingOrder();
+  renderBatting();
+}
+function applyOrderSuggestion(){
+  if(!pendingOrderSuggestion)return;
+  battingOrder=pendingOrderSuggestion.map(p=>({idx:p.idx,batPos:p.batPos}));
+  pendingOrderSuggestion=null;
+  save();renderBatting();showSaved();
+}
+function cancelOrderSuggestion(){pendingOrderSuggestion=null;renderBatting();}
+
+// ── RALLY KILLER DETECTION ─────────────────────────────────────────────────
+// Flags a batter when they AND both neighbors all have L3 OBP < .250.
+// Requires 2+ games of data and 2+ PA in the recent window for all three.
+function isRallyKiller(i){
+  if(gameLog.length<2)return false;
+  const r=recentStats(3);
+  const n=battingOrder.length;
+  if(n<3)return false;
+  const prev=battingOrder[(i-1+n)%n];
+  const cur=battingOrder[i];
+  const next=battingOrder[(i+1)%n];
+  const obp=idx=>{const s=r[idx];return s&&s.pa>=2?(s.obp||0):null;};
+  const pO=obp(prev.idx),cO=obp(cur.idx),nO=obp(next.idx);
+  if(pO===null||cO===null||nO===null)return false;
+  return pO<0.25&&cO<0.25&&nO<0.25;
+}
+
+// ── GAME DAY MODE ──────────────────────────────────────────────────────────
+function toggleGameDay(){
+  gameDay=!gameDay;
+  document.body.classList.toggle('gameday',gameDay);
+  save();
+  if(gameDay){
+    // Force to BAT tab and scroll top
+    document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    const firstTab=document.querySelector('.tab-btn');
+    if(firstTab)firstTab.classList.add('active');
+    const batTab=document.getElementById('tab-batting');
+    if(batTab)batTab.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    // Open Inn 1-2 block in defense (if DEF tab visited later, it's already expanded by default)
+  }
+  renderBatting();
+}
+function applyGameDayInitialState(){
+  if(gameDay)document.body.classList.add('gameday');
+}
+
 // ── ROSTER MANAGEMENT ─────────────────────────────────────────────────────
 // All roster edits flow through these helpers so downstream references
 // (batting order, defense assignments, bench, awards, game log) stay consistent.
@@ -611,6 +1153,15 @@ function removePlayer(idx){
     });
     return{...g,cumTotals:newCum};
   });
+
+  // Reindex gameAbsences — drop the removed player, shift higher indices down
+  const newAbsences={};
+  Object.entries(gameAbsences).forEach(([pi,val])=>{
+    const p=parseInt(pi,10);
+    if(p===idx)return;
+    newAbsences[p>idx?p-1:p]=val;
+  });
+  gameAbsences=newAbsences;
 
   save();renderAll();showSaved();
 }
@@ -730,6 +1281,53 @@ function removeHighlights(){document.querySelectorAll('.brow').forEach(r=>r.clas
 
 function renderBatting(){
   const sc=document.getElementById('sc-batting');sc.innerHTML='';
+
+  // Absence banner — shown when any player is marked late or out
+  const counts=absenceCounts();
+  if(counts.out>0||counts.late>0){
+    const banner=document.createElement('div');banner.className='absence-banner';
+    const parts=[];
+    if(counts.out>0)parts.push(`<strong>${counts.out}</strong> out`);
+    if(counts.late>0)parts.push(`<strong>${counts.late}</strong> arriving late`);
+    banner.innerHTML=`<div class="absence-banner-icon">⚠</div><div class="absence-banner-text">${parts.join(' · ')} — tap <strong>🏟 GAME</strong> to manage</div>`;
+    sc.appendChild(banner);
+  }
+
+  // Top action bar: Suggest Order + Game Day toggle
+  const bar=document.createElement('div');bar.className='bat-action-bar';
+  const hasStats=gameLog.length>0;
+  const sugBtn=document.createElement('button');
+  sugBtn.className='suggest-order-btn';
+  sugBtn.innerHTML=hasStats?'✦ SUGGEST ORDER':'✦ SUGGEST (BY RANK)';
+  sugBtn.onclick=showOrderSuggestion;
+  bar.appendChild(sugBtn);
+  const gdBtn=document.createElement('button');
+  gdBtn.className='gameday-btn'+(gameDay?' on':'');
+  gdBtn.textContent=gameDay?'🎯 GAME DAY ✓':'🎯 GAME DAY';
+  gdBtn.onclick=toggleGameDay;
+  bar.appendChild(gdBtn);
+  sc.appendChild(bar);
+
+  // Suggestion preview panel (if pending)
+  if(pendingOrderSuggestion){
+    const panel=document.createElement('div');panel.className='suggest-preview';
+    const rationale=hasStats
+      ? 'OBP-first logic: leadoff gets on base, cleanup has power, the rest are stacked by on-base percentage. Tweak by dragging after you apply.'
+      : 'No stats yet — ordering by draft rank. Upload a GameChanger CSV to unlock OBP-based suggestions.';
+    panel.innerHTML=`<div class="suggest-preview-hdr"><div class="suggest-preview-title">✦ SUGGESTED ORDER</div></div><div class="suggest-preview-rationale">${rationale}</div>`;
+    const listDiv=document.createElement('div');listDiv.className='suggest-preview-list';
+    pendingOrderSuggestion.forEach((p,i)=>{
+      const row=document.createElement('div');row.className='spv-row';
+      row.innerHTML=`<div class="spv-num">${i+1}</div><div class="spv-name">${fn(p.idx)}</div><div class="spv-role">${p.role}</div>`;
+      listDiv.appendChild(row);
+    });
+    panel.appendChild(listDiv);
+    const btns=document.createElement('div');btns.className='suggest-preview-btns';
+    btns.innerHTML=`<button class="spv-cancel" onclick="cancelOrderSuggestion()">CANCEL</button><button class="spv-apply" onclick="applyOrderSuggestion()">✓ APPLY ORDER</button>`;
+    panel.appendChild(btns);
+    sc.appendChild(panel);
+  }
+
   const lbl=document.createElement('div');lbl.className='slabel';lbl.textContent='HOLD ⠿ TO DRAG · ▲▼ TO MOVE';sc.appendChild(lbl);
   const list=document.createElement('div');list.className='batting-list';list.id='battingList';
   const total=battingOrder.length;
@@ -752,6 +1350,7 @@ function renderBatting(){
     const streakHtml=streak?`<div class="bstreak ${streak.cls}">${streak.label}</div>`:'';
     const isEH=startPos==='EH';
     const ehBadge=isEH?`<span class="eh-badge">EH</span>`:'';
+    const rallyChip=isRallyKiller(i)?`<span class="rally-warn" title="Three cold bats in a row — consider reordering">⚠ COLD ZONE</span>`:'';
 
     // Position display — read-only derived from DEF tab, shown as a non-editable pill
     const posDisplay=`<div class="pos-sel" style="display:flex;align-items:center;justify-content:center;cursor:default;opacity:0.85;" title="Set in DEF tab">${startPos}</div>`;
@@ -760,7 +1359,7 @@ function renderBatting(){
       <div class="drag-handle" data-h="1">⠿</div>
       <div class="${numCls}">${i+1}</div>
       <div>
-        <div class="bname">${fn(b.idx)}${ehBadge}</div>
+        <div class="bname">${fn(b.idx)}${ehBadge}${rallyChip}</div>
         <div class="${statCls}">${statLine}</div>${streakHtml}
       </div>
       ${posDisplay}
@@ -957,7 +1556,7 @@ function renderSettings(){
 
   // ── Save & reset buttons ──
   const sb=document.createElement('button');sb.className='btn-green';sb.textContent='✓ SAVE & APPLY TO LINEUP';sb.onclick=()=>{defBlocks.forEach((_,bi)=>autoSuggest(bi));save();renderAll();showSaved();};sc.appendChild(sb);
-  const rb=document.createElement('button');rb.className='btn-red-outline';rb.textContent='✕ RESET ALL APP DATA';rb.onclick=()=>{if(!confirm('Clear batting order, defense, stats, and awards? Roster stays. (Tip: hit BACKUP first if you want a safety copy.)'))return;battingOrder=roster.map((_,i)=>({idx:i,batPos:'P'}));const n=roster.length;defBlocks=[{benchIdx:Math.max(0,n-1),assignments:{}},{benchIdx:Math.max(0,n-3),assignments:{}},{benchIdx:Math.max(0,n-2),assignments:{}}];gameLog=[];awardOverrides={};awardNotes={};awardBlurbs={};save();renderAll();showSaved();};sc.appendChild(rb);
+  const rb=document.createElement('button');rb.className='btn-red-outline';rb.textContent='✕ RESET ALL APP DATA';rb.onclick=()=>{if(!confirm('Clear batting order, defense, stats, awards, and absences? Roster stays. (Tip: hit BACKUP first if you want a safety copy.)'))return;battingOrder=roster.map((_,i)=>({idx:i,batPos:'P'}));const n=roster.length;defBlocks=[{benchIdx:Math.max(0,n-1),assignments:{}},{benchIdx:Math.max(0,n-3),assignments:{}},{benchIdx:Math.max(0,n-2),assignments:{}}];gameLog=[];awardOverrides={};awardNotes={};awardBlurbs={};awardBlurbVariants={};gameAbsences={};save();renderAll();showSaved();};sc.appendChild(rb);
 }
 
 function handleAddPlayer(){
@@ -998,19 +1597,128 @@ function parseCSV(file){
     const col=n=>header.indexOf(n);
     const iL=col('last'),iF=col('first'),iGP=col('gp'),iPA=col('pa'),iAB=col('ab'),iH=col('h'),i2=col('2b'),i3=col('3b'),iHR=col('hr'),iBB=col('bb'),iSB=col('sb'),iAVG=col('avg'),iOBP=col('obp');
     if(iL===-1&&iF===-1){alert('Cannot read player names. Use GameChanger batting CSV.');return;}
-    const cum={};let matched=0;
+
+    // Parse every data row
+    const csvRows=[];
     for(let i=1;i<lines.length;i++){
-      const cols=lines[i].split(',').map(c=>c.trim().replace(/['"]/g,''));if(cols.length<3)continue;
-      const last=(iL>=0?cols[iL]:'').toLowerCase(),first=(iF>=0?cols[iF]:'').toLowerCase();
-      let bIdx=-1,bSc=0;
-      roster.forEach((p,ri)=>{const rf=p.name.split(' ')[0].toLowerCase(),rl=p.name.split(' ').slice(1).join(' ').toLowerCase();let sc=0;if(first&&rf===first)sc+=4;else if(first&&rf.startsWith(first.slice(0,3)))sc+=2;if(last&&rl===last)sc+=4;else if(last&&rl.startsWith(last.slice(0,3)))sc+=1;if(sc>bSc){bSc=sc;bIdx=ri;}});
-      if(bIdx>=0&&bSc>=2){const gv=n=>n>=0&&cols[n]?parseFloat(cols[n])||0:0;const ab=gv(iAB),h=gv(iH),bb=gv(iBB),pa=gv(iPA)||ab+bb;cum[bIdx]={gp:gv(iGP),pa,ab,h,bb,s2:gv(i2),s3:gv(i3),hr:gv(iHR),sb:gv(iSB),avg:iAVG>=0&&cols[iAVG]?parseFloat(cols[iAVG])||0:(ab>0?h/ab:0),obp:iOBP>=0&&cols[iOBP]?parseFloat(cols[iOBP])||0:(pa>0?(h+bb)/pa:0)};matched++;}
+      const cols=lines[i].split(',').map(c=>c.trim().replace(/['"]/g,''));
+      if(cols.length<3)continue;
+      const last=(iL>=0?cols[iL]:'').toLowerCase();
+      const first=(iF>=0?cols[iF]:'').toLowerCase();
+      if(!first&&!last)continue;
+      csvRows.push({rowIdx:i,first,last,cols,display:`${cols[iF]||''} ${cols[iL]||''}`.trim()});
     }
-    if(!matched){alert('No players matched. Check this is a GameChanger batting CSV.');return;}
-    const label=prompt('Name this game (e.g. "vs Phoenixville")',`Game ${gameLog.length+1}`)||`Game ${gameLog.length+1}`;
-    gameLog.push({label,cumTotals:cum});save();renderAll();showSaved();
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-stats').classList.add('active');document.querySelectorAll('.tab-btn')[3].classList.add('active');
-  };reader.readAsText(file);
+    if(!csvRows.length){alert('No data rows found in CSV.');return;}
+
+    // Score each roster player against each CSV row
+    const matches=roster.map((p,ri)=>{
+      const rf=p.name.split(' ')[0].toLowerCase();
+      const rl=p.name.split(' ').slice(1).join(' ').toLowerCase();
+      let bestSc=-1,bestRow=null;
+      csvRows.forEach(r=>{
+        let sc=0;
+        if(r.first&&rf===r.first)sc+=4;else if(r.first&&rf.startsWith(r.first.slice(0,3)))sc+=2;
+        if(r.last&&rl===r.last)sc+=4;else if(r.last&&rl.startsWith(r.last.slice(0,3)))sc+=1;
+        if(sc>bestSc){bestSc=sc;bestRow=r;}
+      });
+      let quality='none';
+      if(bestSc>=8)quality='perfect';
+      else if(bestSc>=4)quality='fuzzy';
+      else{bestRow=null;quality='none';}
+      return{rosterIdx:ri,csvRowIdx:bestRow?bestRow.rowIdx:null,quality};
+    });
+
+    // Prevent duplicate matches (same CSV row used twice)
+    const usedCsvRows={};
+    matches.forEach(m=>{
+      if(m.csvRowIdx===null)return;
+      if(usedCsvRows[m.csvRowIdx]===undefined){usedCsvRows[m.csvRowIdx]=m.rosterIdx;}
+      else{m.csvRowIdx=null;m.quality='none';}
+    });
+
+    pendingCsv={header,csvRows,matches,iL,iF,iGP,iPA,iAB,iH,i2,i3,iHR,iBB,iSB,iAVG,iOBP};
+    showCsvPreview();
+  };
+  reader.readAsText(file);
+}
+
+function showCsvPreview(){
+  const modal=document.getElementById('csvModal');
+  const body=document.getElementById('csvModalBody');
+  const sub=document.getElementById('csvModalSub');
+  const perfect=pendingCsv.matches.filter(m=>m.quality==='perfect').length;
+  const fuzzy=pendingCsv.matches.filter(m=>m.quality==='fuzzy').length;
+  const manual=pendingCsv.matches.filter(m=>m.quality==='manual').length;
+  const none=pendingCsv.matches.filter(m=>m.quality==='none').length;
+  sub.innerHTML=`<strong style="color:var(--good)">${perfect} perfect</strong> · <strong style="color:var(--warn)">${fuzzy} fuzzy</strong>${manual?' · <strong style="color:var(--teal)">'+manual+' manual</strong>':''} · <strong style="color:var(--bad)">${none} unmatched</strong>. Review before saving.`;
+
+  body.innerHTML='';
+  pendingCsv.matches.forEach((m,idx)=>{
+    const p=roster[m.rosterIdx];
+    const row=document.createElement('div');
+    row.className='match-row'+(m.quality==='none'?' unmatched':(m.quality==='perfect'?' perfect':''));
+    const qBadge=m.quality==='perfect'?'<span class="match-quality mq-perfect">✓</span>':m.quality==='fuzzy'?'<span class="match-quality mq-fuzzy">FUZZY</span>':m.quality==='manual'?'<span class="match-quality mq-manual">MANUAL</span>':'<span class="match-quality mq-none">NO MATCH</span>';
+    const selOpts=pendingCsv.csvRows.map(r=>`<option value="${r.rowIdx}" ${m.csvRowIdx===r.rowIdx?'selected':''}>${(r.display||'(row '+r.rowIdx+')').replace(/</g,'&lt;')}</option>`).join('');
+    const selHtml=`<select class="match-csv ${m.quality==='none'?'unmatched':''}" onchange="updateCsvMatch(${idx},this.value)">
+      <option value="">— Skip this player —</option>
+      ${selOpts}
+    </select>`;
+    row.innerHTML=`<div><div class="match-roster">${p.name}${qBadge}</div><div class="match-roster-sub">Manual #${p.rank}</div></div><div class="match-arrow">→</div><div>${selHtml}</div>`;
+    body.appendChild(row);
+  });
+
+  modal.classList.add('show');
+}
+
+function updateCsvMatch(idx,val){
+  if(!pendingCsv)return;
+  const newRowIdx=val===''?null:parseInt(val,10);
+  if(newRowIdx!==null){
+    // Any other match using this row gets cleared
+    pendingCsv.matches.forEach((m,i)=>{if(i!==idx&&m.csvRowIdx===newRowIdx){m.csvRowIdx=null;m.quality='none';}});
+  }
+  pendingCsv.matches[idx].csvRowIdx=newRowIdx;
+  pendingCsv.matches[idx].quality=newRowIdx===null?'none':'manual';
+  showCsvPreview();
+}
+
+function cancelCsvImport(){
+  pendingCsv=null;
+  document.getElementById('csvModal').classList.remove('show');
+}
+
+function confirmCsvImport(){
+  if(!pendingCsv)return;
+  const {matches,csvRows,iGP,iPA,iAB,iH,i2,i3,iHR,iBB,iSB,iAVG,iOBP}=pendingCsv;
+  const cum={};let matched=0;
+  matches.forEach(m=>{
+    if(m.csvRowIdx===null)return;
+    const r=csvRows.find(cr=>cr.rowIdx===m.csvRowIdx);
+    if(!r)return;
+    const cols=r.cols;
+    const gv=n=>n>=0&&cols[n]?parseFloat(cols[n])||0:0;
+    const ab=gv(iAB),h=gv(iH),bb=gv(iBB),pa=gv(iPA)||ab+bb;
+    cum[m.rosterIdx]={
+      gp:gv(iGP),pa,ab,h,bb,
+      s2:gv(i2),s3:gv(i3),hr:gv(iHR),sb:gv(iSB),
+      avg:iAVG>=0&&cols[iAVG]?parseFloat(cols[iAVG])||0:(ab>0?h/ab:0),
+      obp:iOBP>=0&&cols[iOBP]?parseFloat(cols[iOBP])||0:(pa>0?(h+bb)/pa:0)
+    };
+    matched++;
+  });
+  if(!matched){alert('No matches confirmed — nothing to import.');return;}
+
+  document.getElementById('csvModal').classList.remove('show');
+  pendingCsv=null;
+
+  const label=prompt('Name this game (e.g. "vs Phoenixville")',`Game ${gameLog.length+1}`)||`Game ${gameLog.length+1}`;
+  gameLog.push({label,cumTotals:cum});save();renderAll();showSaved();
+
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-stats').classList.add('active');
+  const statsBtn=[...document.querySelectorAll('.tab-btn')].find(b=>b.textContent.includes('STATS'));
+  if(statsBtn)statsBtn.classList.add('active');
 }
 function delGame(i){if(!confirm(`Remove ${gameLog[i].label}?`))return;gameLog.splice(i,1);save();renderAll();}
 
@@ -1037,18 +1745,110 @@ const AWARDS=[
 ];
 const MEDALS=['🥇','🥈','🥉'];
 
-function genBlurb(award,wi,note){
+// Build stat fragments woven into variants
+function _statFacts(wi){
   const first=fn(wi),s=seasonTotals()[wi];
-  let stat='',extra='';
-  if(s&&s.ab>0){stat=`This season, <strong>${first}</strong> batted <span class="sh">${s.avg.toFixed(3)}</span> with an OBP of <span class="sh">${s.obp.toFixed(3)}</span>, recording ${s.h} hit${s.h!==1?'s':''} in ${s.ab} at-bats across ${s.gp} game${s.gp!==1?'s':''}.`;const xbh=(s.s2||0)+(s.s3||0)+(s.hr||0);if(s.sb>0)stat+=` She swiped <span class="sh">${s.sb}</span> base${s.sb!==1?'s':''}, a constant threat on the basepaths.`;if(xbh>0)stat+=` Her ${xbh} extra-base hit${xbh!==1?'s':''} demonstrated real power at the plate.`;if(streakLabel(wi)?.cls==='hot')stat+=` She finished the season on a tear, posting her best numbers in the final stretch.`;}else{stat=`<strong>${first}</strong> brought energy and effort every single game.`;}
-  if(note&&note.trim())extra=` ${note.trim().replace(/\.$/,'')} — the kind of impact that doesn't show up in any stat line.`;
-  return stat+extra;
+  if(!s||!s.ab)return{first,has:false};
+  const xbh=(s.s2||0)+(s.s3||0)+(s.hr||0);
+  return{
+    first,has:true,
+    avg:s.avg.toFixed(3),obp:s.obp.toFixed(3),
+    h:s.h,ab:s.ab,gp:s.gp,sb:s.sb||0,xbh,hr:s.hr||0,bb:s.bb||0,
+    hot:streakLabel(wi)?.cls==='hot'
+  };
 }
+
+// Category-aware variant banks. Each function takes (facts, note) → HTML string.
+// Multiple variants per category let coaches reroll for different wording.
+const BLURB_VARIANTS={
+  stat:[
+    (f,note)=>{
+      if(!f.has)return `<strong>${f.first}</strong> brought her best every time she stepped into the box.${note?' '+note:''}`;
+      let s=`<strong>${f.first}</strong> finished the season batting <span class="sh">${f.avg}</span> with a <span class="sh">${f.obp}</span> on-base percentage — ${f.h} hit${f.h!==1?'s':''} in ${f.ab} at-bats across ${f.gp} game${f.gp!==1?'s':''}.`;
+      if(f.xbh>0)s+=` She drove ${f.xbh} extra-base hit${f.xbh!==1?'s':''} into the gaps.`;
+      if(f.sb>2)s+=` ${f.sb} stolen bases kept pressure on every pitcher.`;
+      if(f.hot)s+=` She closed the season red-hot.`;
+      if(note)s+=` ${note}`;
+      return s;
+    },
+    (f,note)=>{
+      if(!f.has)return `<strong>${f.first}</strong> gave us everything she had at the plate.${note?' '+note:''}`;
+      let s=`When <strong>${f.first}</strong> stepped in, things happened — <span class="sh">${f.h}</span> hit${f.h!==1?'s':''}, <span class="sh">${f.bb}</span> walk${f.bb!==1?'s':''}, and a <span class="sh">${f.obp}</span> OBP that made her the toughest out in the order.`;
+      if(f.xbh>1)s+=` ${f.xbh} of those hits went for extra bases.`;
+      if(note)s+=` ${note}`;
+      return s;
+    },
+    (f,note)=>{
+      if(!f.has)return `<strong>${f.first}</strong> earned this one with grit and effort.${note?' '+note:''}`;
+      let s=`The numbers tell the story for <strong>${f.first}</strong>: <span class="sh">${f.avg}</span> / <span class="sh">${f.obp}</span> across ${f.gp} game${f.gp!==1?'s':''}, ${f.h} hit${f.h!==1?'s':''}, ${f.sb} steal${f.sb!==1?'s':''}.`;
+      if(f.hot)s+=` And she finished stronger than she started.`;
+      if(note)s+=` ${note}`;
+      return s;
+    }
+  ],
+  def:[
+    (f,note)=>`<strong>${f.first}</strong> was the player we could count on in the field — the one who caught what needed catching and made the plays that kept innings short.${note?' '+note:''}`,
+    (f,note)=>`Great defense is quiet, and <strong>${f.first}</strong> played it that way all season. Balls got to her, outs got made, rallies got stopped.${note?' '+note:''}`,
+    (f,note)=>`Every team needs a defender they can trust. <strong>${f.first}</strong> was that player for us — steady hands, smart reads, and never a loud moment when a loud moment wasn't needed.${note?' '+note:''}`
+  ],
+  spirit:[
+    (f,note)=>`<strong>${f.first}</strong> made this team a team. Her energy in the dugout, her voice on the bench, her willingness to cheer the loudest for the quietest teammate — that's what made her special.${note?' '+note:''}`,
+    (f,note)=>`Stats won't tell you who <strong>${f.first}</strong> was to this team. But every teammate, every parent, every coach knew. She made everyone around her better just by being there.${note?' '+note:''}`,
+    (f,note)=>`There's a kind of player every good team needs — the one who keeps the dugout alive when things get tight. <strong>${f.first}</strong> was that player, every inning, every game.${note?' '+note:''}`
+  ],
+  growth:[
+    (f,note)=>`<strong>${f.first}</strong> walked onto the field in week one and walked off in week eight a different player. That kind of growth doesn't happen by accident — it happens because she chose it, every practice, every at-bat.${note?' '+note:''}`,
+    (f,note)=>`If you want to see what hard work looks like, watch the tape of <strong>${f.first}</strong>'s first game and her last. The difference is enormous — and every bit of it is hers to keep.${note?' '+note:''}`,
+    (f,note)=>`<strong>${f.first}</strong> asked more questions, tried more things, and made more progress than almost anyone on this roster. That's how you become a softball player.${note?' '+note:''}`
+  ],
+  team:[
+    (f,note)=>`Leadership at this age doesn't mean being the loudest — it means showing up, doing the work, and pulling others up with you. <strong>${f.first}</strong> did all three.${note?' '+note:''}`,
+    (f,note)=>`<strong>${f.first}</strong> set the tone for this team. When she hustled, everyone hustled. When she picked up a teammate, everyone picked up each other. Captains aren't appointed — they emerge. And she did.${note?' '+note:''}`,
+    (f,note)=>`Every team has a heartbeat. <strong>${f.first}</strong> was ours. Batting order, defensive slot, dugout corner — wherever she was, the team was better.${note?' '+note:''}`
+  ],
+  fun:[
+    (f,note)=>`<strong>${f.first}</strong> made softball fun. Not just for herself — for everyone. The team smiled more because of her, and that counts for a lot.${note?' '+note:''}`,
+    (f,note)=>`Some players you remember for hits. Some for catches. <strong>${f.first}</strong> you remember for the laughter in the dugout and the way she made even a cold April practice feel like something to look forward to.${note?' '+note:''}`,
+    (f,note)=>`If you were lucky enough to stand next to <strong>${f.first}</strong> during a game this season, you know: she made every moment just a little brighter. That's a gift, and this team got it all season long.${note?' '+note:''}`
+  ]
+};
+
+function _catKey(award){
+  const c=award.cat;
+  if(c==='cat-stat')return 'stat';
+  if(c==='cat-def')return 'def';
+  if(c==='cat-spirit')return 'spirit';
+  if(c==='cat-growth')return 'growth';
+  if(c==='cat-team')return 'team';
+  if(c==='cat-fun')return 'fun';
+  return 'stat';
+}
+
+// Generate blurb. variant cycles 0/1/2 for reroll.
+function genBlurb(award,wi,note,variant){
+  const f=_statFacts(wi);
+  const key=_catKey(award);
+  const bank=BLURB_VARIANTS[key]||BLURB_VARIANTS.stat;
+  const v=((variant||0)%bank.length+bank.length)%bank.length;
+  const cleanNote=(note||'').trim().replace(/\.$/,'');
+  return bank[v](f,cleanNote?cleanNote+'.':'');
+}
+
+function rerollBlurb(awardId,winnerIdx){
+  const award=AWARDS.find(a=>a.id===awardId);if(!award)return;
+  const bank=BLURB_VARIANTS[_catKey(award)]||BLURB_VARIANTS.stat;
+  const cur=awardBlurbVariants[awardId]||0;
+  const next=(cur+1)%bank.length;
+  awardBlurbVariants[awardId]=next;
+  awardBlurbs[awardId]=genBlurb(award,winnerIdx,awardNotes[awardId]||'',next);
+  save();renderAwards();
+}
+
 function renderAwards(){
   const sc=document.getElementById('sc-awards');sc.innerHTML='';
   const hasStats=gameLog.length>0;
   const badge=document.createElement('div');badge.className='award-badge';badge.textContent=hasStats?`✦ AUTO-UPDATED · ${gameLog.length} GAME${gameLog.length>1?'S':''} OF DATA`:'✦ UPLOAD STATS TO ACTIVATE STAT AWARDS';sc.appendChild(badge);
-  const intro=document.createElement('div');intro.className='award-intro';intro.innerHTML=`<strong>Stat awards</strong> auto-nominate top 3 from GameChanger data. <strong>Character awards</strong> are coach-nominated. Add a personal note and hit <strong>Generate Write-Up</strong> for a ceremony-ready blurb.`;sc.appendChild(intro);
+  const intro=document.createElement('div');intro.className='award-intro';intro.innerHTML=`<strong>Stat awards</strong> auto-nominate top 3 from GameChanger data. <strong>Character awards</strong> are coach-nominated. Add a note, hit <strong>Generate</strong>, and <strong>Reroll</strong> to cycle through variations.`;sc.appendChild(intro);
   AWARDS.forEach(award=>{
     const nominees=award.auto(),override=awardOverrides[award.id],winnerIdx=override!==undefined?+override:(nominees.length>0?nominees[0].idx:null);
     const card=document.createElement('div');card.className='acard';
@@ -1062,11 +1862,27 @@ function renderAwards(){
     if(awardBlurbs[award.id]){const bd=document.createElement('div');bd.className='ablurb';bd.innerHTML=awardBlurbs[award.id];body.appendChild(bd);}
     const wlbl=document.createElement('label');wlbl.className='awi-label';wlbl.textContent='PERSONAL NOTE (included in write-up)';body.appendChild(wlbl);
     const ni=document.createElement('textarea');ni.className='awi-text';ni.placeholder=`e.g. "${winnerIdx!==null?fn(winnerIdx):'She'} always encouraged teammates..."`;ni.value=awardNotes[award.id]||'';ni.oninput=()=>{awardNotes[award.id]=ni.value;clearTimeout(saveTimer);saveTimer=setTimeout(save,600);};body.appendChild(ni);
-    const gb=document.createElement('button');gb.className='btn-gen';gb.textContent='✦ GENERATE WRITE-UP';gb.onclick=()=>{const wi=override!==undefined?+override:(nominees.length?nominees[0].idx:null);if(wi===null){alert('Pick a player first.');return;}awardBlurbs[award.id]=genBlurb(award,wi,awardNotes[award.id]||'');save();renderAwards();setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),80);};body.appendChild(gb);
+
+    // Generate + Reroll button row
+    const btnRow=document.createElement('div');btnRow.className='award-btns-row';
+    const gb=document.createElement('button');gb.className='btn-gen';gb.textContent='✦ GENERATE';gb.onclick=()=>{const wi=override!==undefined?+override:(nominees.length?nominees[0].idx:null);if(wi===null){alert('Pick a player first.');return;}awardBlurbVariants[award.id]=0;awardBlurbs[award.id]=genBlurb(award,wi,awardNotes[award.id]||'',0);save();renderAwards();setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),80);};btnRow.appendChild(gb);
+    if(awardBlurbs[award.id]){
+      const rr=document.createElement('button');rr.className='btn-reroll';rr.textContent='🔄 REROLL';rr.onclick=()=>{const wi=override!==undefined?+override:(nominees.length?nominees[0].idx:null);if(wi===null)return;rerollBlurb(award.id,wi);setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),80);};btnRow.appendChild(rr);
+    }
+    body.appendChild(btnRow);
+
     const ovlbl=document.createElement('label');ovlbl.className='aov-label';ovlbl.textContent="COACH'S PICK — OVERRIDES AUTO-NOMINATION";body.appendChild(ovlbl);
-    const os=document.createElement('select');os.className='aov-sel';os.innerHTML=`<option value="">— Choose a player —</option>`+roster.map((p,i)=>`<option value="${i}" ${override===String(i)?'selected':''}>${p.name}</option>`).join('');os.onchange=()=>{if(!os.value)delete awardOverrides[award.id];else awardOverrides[award.id]=os.value;delete awardBlurbs[award.id];save();renderAwards();};body.appendChild(os);
+    const os=document.createElement('select');os.className='aov-sel';os.innerHTML=`<option value="">— Choose a player —</option>`+roster.map((p,i)=>`<option value="${i}" ${override===String(i)?'selected':''}>${p.name}</option>`).join('');os.onchange=()=>{if(!os.value)delete awardOverrides[award.id];else awardOverrides[award.id]=os.value;delete awardBlurbs[award.id];delete awardBlurbVariants[award.id];save();renderAwards();};body.appendChild(os);
     card.appendChild(body);sc.appendChild(card);
   });
+
+  // Ceremony export button at the bottom
+  const ceremonyBtn=document.createElement('button');
+  ceremonyBtn.className='btn-print';
+  ceremonyBtn.style.marginTop='16px';
+  ceremonyBtn.textContent='🏆 EXPORT AWARDS CEREMONY';
+  ceremonyBtn.onclick=exportCeremony;
+  sc.appendChild(ceremonyBtn);
 }
 
 // ── EXPORT PDF ────────────────────────────────────────────────────────────────
@@ -1304,6 +2120,79 @@ function exportDugout(){
 
 function _setPrintPage(orientation){const e=document.getElementById('_print_page_style');if(e)e.remove();const s=document.createElement('style');s.id='_print_page_style';s.textContent=`@media print { @page { size: letter ${orientation}; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} } }`;document.head.appendChild(s);}
 
+// ── EXPORT AWARDS CEREMONY PDF ──────────────────────────────────────────────
+function exportCeremony(){
+  _setPrintPage('portrait');
+  const card=document.getElementById('pdf-card');
+  const today=new Date();
+  const year=today.getFullYear();
+  const dateStr=today.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  // Group awards by section — reorders to create a narrative arc for the ceremony
+  const sections=[
+    {label:'OFFENSE',keys:['cat-stat']},
+    {label:'DEFENSE',keys:['cat-def']},
+    {label:'GROWTH',keys:['cat-growth']},
+    {label:'TEAM SPIRIT',keys:['cat-spirit','cat-fun']},
+    {label:'LEADERSHIP',keys:['cat-team']}
+  ];
+
+  const winnerFor=(award)=>{
+    const override=awardOverrides[award.id];
+    if(override!==undefined)return+override;
+    const noms=award.auto();
+    return noms.length?noms[0].idx:null;
+  };
+
+  const blurbFor=(award)=>{
+    const wi=winnerFor(award);
+    if(wi===null)return null;
+    if(awardBlurbs[award.id])return awardBlurbs[award.id];
+    // Auto-generate if missing so the ceremony page is never blank
+    return genBlurb(award,wi,awardNotes[award.id]||'',awardBlurbVariants[award.id]||0);
+  };
+
+  const sectionsHTML=sections.map(sec=>{
+    const awardsInSection=AWARDS.filter(a=>sec.keys.includes(a.cat));
+    const rows=awardsInSection.map(award=>{
+      const wi=winnerFor(award);
+      if(wi===null){
+        return `<div class="pdf-award-row">
+          <div class="pdf-award-emoji">${award.emoji}</div>
+          <div class="pdf-award-body">
+            <div class="pdf-award-name">${award.name}</div>
+            <div style="font-size:9pt;color:#999;font-style:italic;margin-top:3px;">— to be announced —</div>
+          </div>
+        </div>`;
+      }
+      const blurb=blurbFor(award)||'';
+      return `<div class="pdf-award-row">
+        <div class="pdf-award-emoji">${award.emoji}</div>
+        <div class="pdf-award-body">
+          <div class="pdf-award-name">${award.name}</div>
+          <div class="pdf-award-winner">${roster[wi].name}</div>
+          <div class="pdf-award-blurb">${blurb}</div>
+        </div>
+      </div>`;
+    }).join('');
+    if(!rows)return '';
+    return `<div class="pdf-ceremony-section">${sec.label}</div>${rows}`;
+  }).join('');
+
+  card.innerHTML=`<div class="pdf-ceremony">
+    <div class="pdf-ceremony-hdr">
+      <div class="pdf-ceremony-title">TEAM HAUNGS</div>
+      <div class="pdf-ceremony-sub">SEASON ${year} · AWARDS CEREMONY</div>
+      <div class="pdf-ceremony-year">TVL MINORS 10B · ${dateStr}</div>
+    </div>
+    ${sectionsHTML}
+    <div style="margin-top:22px;padding-top:10px;border-top:1.5px solid #C22818;text-align:center;font-size:9pt;color:#555;font-style:italic;line-height:1.6;">
+      Every player on this roster earned her place here — on the field, in the dugout, and in the hearts of her teammates. This has been a privilege to coach.
+    </div>
+  </div>`;
+  window.print();
+}
+
 // ── OFFLINE ───────────────────────────────────────────────────────────────────
 function updateOnline(){const b=document.getElementById('offlineBar');if(b)b.classList.toggle('show',!navigator.onLine);}
 window.addEventListener('online',updateOnline);window.addEventListener('offline',updateOnline);
@@ -1316,8 +2205,9 @@ window.addEventListener('load',()=>{
 });
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-function renderAll(){renderBatting();renderDefense();renderSettings();renderStats();renderAwards();}
+function renderAll(){renderBatting();renderDefense();renderGameDay();renderSettings();renderStats();renderAwards();}
 load();
+applyGameDayInitialState();
 defBlocks.forEach((b,bi)=>{if(!Object.keys(b.assignments).length)autoSuggest(bi);});
 renderAll();
 updateOnline();
