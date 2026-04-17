@@ -1604,7 +1604,7 @@ function renderPosGrid(idx){const g=document.getElementById(`pg-${idx}`);if(!g)r
 function renderStats(){
   const sc=document.getElementById('sc-stats');sc.innerHTML='';
   const uz=document.createElement('div');uz.className='upload-zone';uz.id='upzone';
-  uz.innerHTML=`<div style="font-size:1.8rem;margin-bottom:7px;">📂</div><div class="upload-h">${gameLog.length?'UPLOAD NEXT GAME':'UPLOAD GAME 1'}</div><div class="upload-p">${gameLog.length?`${gameLog.length} game${gameLog.length>1?'s':''} loaded. CSV for season totals, or box score image for a single game.`:'CSV: export from <strong>web.gc.com</strong> → Stats → Export Stats. Or upload a box score image.'}</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"><label class="btn-clay" for="csvfile">📄 CSV FILE</label><label class="btn-clay" for="imgfile" style="background:linear-gradient(135deg,#2d7a4a,#1e5a36);">📷 BOX SCORE IMAGE</label></div><input type="file" id="csvfile" accept=".csv" style="display:none" onchange="handleCSV(this)"><input type="file" id="imgfile" accept="image/*,.pdf" style="display:none" onchange="handleImage(this)"><div id="imgStatus" style="margin-top:10px;font-size:0.78rem;color:var(--muted);min-height:1em;"></div>`;
+  uz.innerHTML=`<div style="font-size:1.8rem;margin-bottom:7px;">📂</div><div class="upload-h">${gameLog.length?'UPLOAD NEXT GAME':'UPLOAD GAME 1'}</div><div class="upload-p">${gameLog.length?`${gameLog.length} game${gameLog.length>1?'s':''} loaded. CSV for season totals, or box score image for a single game.`:'CSV: export from <strong>web.gc.com</strong> → Stats → Export Stats. Or upload a box score image.'}</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"><label class="btn-clay" for="csvfile">📄 CSV FILE</label><label class="btn-clay" for="imgfile" style="background:linear-gradient(135deg,#2d7a4a,#1e5a36);">📷 BOX SCORE IMAGE</label></div><input type="file" id="csvfile" accept=".csv" style="display:none" onchange="handleCSV(this)"><input type="file" id="imgfile" accept="image/*,.pdf" style="display:none" onchange="handleImage(this)"><div id="imgStatus" style="margin-top:10px;font-size:0.78rem;color:var(--muted);min-height:1em;"></div><div style="margin-top:6px;font-size:0.68rem;color:var(--muted);"><a href="#" onclick="configApiUrl(event)" style="color:var(--muted);text-decoration:underline;">⚙ API settings</a> <span id="apiUrlHint"></span></div>`;
   uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('over');});uz.addEventListener('dragleave',()=>uz.classList.remove('over'));uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('over');const f=e.dataTransfer.files[0];if(!f)return;if(f.type.startsWith('image/')||f.type==='application/pdf')parseImage(f);else parseCSV(f);});
   sc.appendChild(uz);
   if(!gameLog.length)return;
@@ -1631,6 +1631,7 @@ function renderStats(){
   const sorted=roster.map((_,i)=>i).filter(i=>st[i]&&st[i].ab>0).sort((a,b)=>(st[b].avg||0)-(st[a].avg||0));
   const noStats=roster.map((_,i)=>i).filter(i=>!st[i]||!st[i].ab);
   [...sorted,...noStats].forEach(ri=>{const p=roster[ri],s=st[ri];const row=document.createElement('div');row.className='stat-row';if(!s||!s.ab){row.innerHTML=`<div><div class="sp">${fn(ri)}</div><div class="ssub">No data</div></div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div>`;}else{const ac=s.avg>=0.35?'sv ba hi':s.avg>=0.25?'sv ba mid':'sv ba lo',oc=s.obp>=0.4?'sv hi':s.obp>=0.3?'sv mid':'sv lo',streak=streakLabel(ri),tHtml=streak?`<span class="sstreak ${streak.cls}">${streak.label.split(' ')[0]}</span>`:`<span class="sv lo">—</span>`;row.innerHTML=`<div><div class="sp">${fn(ri)}</div><div class="ssub">${s.gp} GP</div></div><div class="${ac}">${s.avg.toFixed(3)}</div><div class="${oc}">${s.obp.toFixed(3)}</div><div class="sv">${s.h}</div><div class="sv">${s.ab}</div><div class="sv">${s.sb||0}</div><div style="text-align:center">${tHtml}</div>`;}sc.appendChild(row);});
+  updateApiUrlHint();
 }
 function handleCSV(input){if(input.files[0])parseCSV(input.files[0]);}
 function handleImage(input){if(input.files[0])parseImage(input.files[0]);}
@@ -1701,6 +1702,24 @@ async function prepImageFile(file){
   });
 }
 
+function updateApiUrlHint(){
+  const el=document.getElementById('apiUrlHint');if(!el)return;
+  const u=(localStorage.getItem('tv10b-api-url')||'').trim();
+  if(!u){el.innerHTML='<span style="color:var(--muted)">(default: Claude.ai only)</span>';}
+  else{try{const h=new URL(u).host;el.innerHTML=`<span style="color:var(--good);font-weight:700">● ${h}</span>`;}catch(e){el.innerHTML='<span style="color:var(--bad)">● invalid URL</span>';}}
+}
+function configApiUrl(ev){
+  if(ev)ev.preventDefault();
+  const cur=localStorage.getItem('tv10b-api-url')||'';
+  const next=prompt('Cloudflare Worker URL for box score image parsing.\n\nLeave blank to use the default (only works inside Claude.ai).\n\nExample: https://peppers-api.yourname.workers.dev',cur);
+  if(next===null)return;  // cancelled
+  const trimmed=next.trim();
+  if(trimmed&&!/^https:\/\//i.test(trimmed)){alert('URL must start with https://');return;}
+  if(trimmed)localStorage.setItem('tv10b-api-url',trimmed);
+  else localStorage.removeItem('tv10b-api-url');
+  updateApiUrlHint();
+}
+
 async function parseImage(file){
   const isImg=file.type.startsWith('image/'),isPdf=file.type==='application/pdf';
   if(!isImg&&!isPdf){alert('Please upload an image or PDF file.');return;}
@@ -1762,7 +1781,9 @@ Rules:
       {type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
       {type:'text',text:prompt}
     ];
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    const customUrl=(localStorage.getItem('tv10b-api-url')||'').trim();
+    const apiUrl=customUrl||'https://api.anthropic.com/v1/messages';
+    const resp=await fetch(apiUrl,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content}]})
