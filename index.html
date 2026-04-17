@@ -1638,21 +1638,96 @@ function handleImage(input){if(input.files[0])parseImage(input.files[0]);}
 // ── BOX SCORE IMAGE IMPORT ────────────────────────────────────────────────────
 function setImgStatus(msg,color){const el=document.getElementById('imgStatus');if(el){el.textContent=msg||'';if(color)el.style.color=color;else el.style.color='var(--muted)';}}
 
+// Lazy-load PDF.js from CDN on demand
+let _pdfjsPromise=null;
+function loadPdfJs(){
+  if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
+  if(_pdfjsPromise)return _pdfjsPromise;
+  _pdfjsPromise=new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload=()=>{
+      if(!window.pdfjsLib){reject(new Error('PDF.js failed to load'));return;}
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      resolve(window.pdfjsLib);
+    };
+    s.onerror=()=>reject(new Error('Could not load PDF reader'));
+    document.head.appendChild(s);
+  });
+  return _pdfjsPromise;
+}
+
+// Convert first page of PDF to base64 PNG
+async function pdfToPng(file){
+  const pdfjsLib=await loadPdfJs();
+  const buf=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  const page=await pdf.getPage(1);
+  // Target ~1600px wide for good OCR readability
+  const v1=page.getViewport({scale:1});
+  const scale=Math.min(2.5,Math.max(1.2,1600/v1.width));
+  const viewport=page.getViewport({scale});
+  const canvas=document.createElement('canvas');
+  canvas.width=viewport.width;canvas.height=viewport.height;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  await page.render({canvasContext:ctx,viewport}).promise;
+  const dataUrl=canvas.toDataURL('image/png');
+  return dataUrl.split(',')[1];
+}
+
+// Re-encode uploaded image through a canvas to normalize and downscale if needed
+async function prepImageFile(file){
+  return new Promise((resolve,reject)=>{
+    const url=URL.createObjectURL(file);
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const maxDim=2000;
+        let w=img.naturalWidth,h=img.naturalHeight;
+        if(Math.max(w,h)>maxDim){const s=maxDim/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s);}
+        const canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);
+        ctx.drawImage(img,0,0,w,h);
+        const dataUrl=canvas.toDataURL('image/jpeg',0.88);
+        URL.revokeObjectURL(url);
+        resolve({base64:dataUrl.split(',')[1],mediaType:'image/jpeg'});
+      }catch(err){URL.revokeObjectURL(url);reject(err);}
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Image could not be decoded'));};
+    img.src=url;
+  });
+}
+
 async function parseImage(file){
   const isImg=file.type.startsWith('image/'),isPdf=file.type==='application/pdf';
   if(!isImg&&!isPdf){alert('Please upload an image or PDF file.');return;}
   if(file.size>10*1024*1024){alert('File too large (10MB max). Please take a smaller photo.');return;}
-  setImgStatus('Reading box score image... (may take 10-20 sec)','var(--teal)');
 
-  // Read as base64
-  let base64,mediaType;
+  let base64,mediaType='image/png';
+
   try{
-    const buf=await file.arrayBuffer();
-    const bytes=new Uint8Array(buf);
-    let bin='';for(let i=0;i<bytes.byteLength;i++)bin+=String.fromCharCode(bytes[i]);
-    base64=btoa(bin);
-    mediaType=file.type||(isPdf?'application/pdf':'image/jpeg');
-  }catch(err){setImgStatus('Could not read file. Try again.','var(--bad)');return;}
+    if(isPdf){
+      setImgStatus('Converting PDF to image...','var(--teal)');
+      const pdfImg=await pdfToPng(file);
+      if(!pdfImg){setImgStatus('Could not read PDF. Try taking a screenshot instead.','var(--bad)');return;}
+      base64=pdfImg;
+    }else{
+      setImgStatus('Preparing image...','var(--teal)');
+      // Re-encode image to PNG to normalize and shrink if huge
+      const prepped=await prepImageFile(file);
+      base64=prepped.base64;
+      mediaType=prepped.mediaType;
+    }
+  }catch(err){
+    console.error('File prep error:',err);
+    setImgStatus('Could not prepare file: '+(err.message||'unknown error'),'var(--bad)');
+    return;
+  }
+
+  setImgStatus('Reading box score... (may take 10-20 sec)','var(--teal)');
 
   // Build our-team roster hint so vision model can match names
   const ourRoster=roster.map(p=>p.name).join(', ');
@@ -1684,8 +1759,7 @@ Rules:
   let apiData;
   try{
     const content=[
-      isPdf?{type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}}
-           :{type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
+      {type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
       {type:'text',text:prompt}
     ];
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -1693,9 +1767,18 @@ Rules:
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content}]})
     });
-    if(!resp.ok){const t=await resp.text();throw new Error(`API ${resp.status}: ${t.slice(0,200)}`);}
+    if(!resp.ok){
+      let detail='';try{const t=await resp.text();detail=': '+t.slice(0,200);}catch(e){}
+      throw new Error('Server returned '+resp.status+detail);
+    }
     apiData=await resp.json();
-  }catch(err){setImgStatus('Could not read box score: '+err.message,'var(--bad)');return;}
+  }catch(err){
+    console.error('API error:',err);
+    const msg=err.message||String(err);
+    const friendly=msg.includes('Failed to fetch')||msg.includes('Load failed')?'Network error. Check connection and retry.':msg;
+    setImgStatus('Could not read box score: '+friendly,'var(--bad)');
+    return;
+  }
 
   // Extract text from response
   const textOut=(apiData.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
