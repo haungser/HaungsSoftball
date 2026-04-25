@@ -1529,8 +1529,13 @@ function renderDefense(){
     roster.forEach((p,pi)=>{const c=compliance[pi];const isBench=benchSet.has(pi);const minIF=isBench?1:2,minOF=isBench?1:2;const ok=c.if>=minIF&&c.of>=minOF;const chip=document.createElement('span');chip.className='fp-chip '+(ok?'fp-chip-ok':'fp-chip-warn');chip.textContent=(ok?'✓ ':'⚠ ')+p.name.split(' ')[0]+` ${c.if}IF/${c.of}OF`;chips.appendChild(chip);});
     sc.appendChild(chips);
   }
+  // Track whether any block had saved assignments before we started rendering.
+  // Used below to guard against auto-suggest overwriting manually-set lineups on reload.
+  const hadSavedAssignments=defBlocks.map(b=>Object.keys(b.assignments).length>0);
   defBlocks.forEach((block,bi)=>{
-    if(!Object.keys(block.assignments).length)autoSuggest(bi);
+    // Only auto-suggest if this block is genuinely empty AND was not previously saved.
+    // This prevents reloading the app (or switching tabs) from blowing away manual edits.
+    if(!Object.keys(block.assignments).length&&!hadSavedAssignments[bi])autoSuggest(bi);
     const wrap=document.createElement('div');wrap.className='iblock';
     const hdr=document.createElement('div');hdr.className='iblock-hdr open';
     const benchTag=usingBench?`BENCH: ${fn(block.benchIdx)}`:'EVERYONE PLAYING';
