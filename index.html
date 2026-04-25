@@ -745,8 +745,11 @@ function autoSuggest(bi){
   const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>b.assignments?{assignments:b.assignments}:null):null;
   defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks);
 }
-function autoSuggestAll(){
-  for(let bi=0;bi<3;bi++){
+// Rebuild blocks startBi..2, treating any earlier block as a locked anchor.
+// In Fair Play mode, locked blocks count toward IF/OF totals.
+function autoSuggestAll(){autoSuggestFrom(0);}
+function autoSuggestFrom(startBi){
+  for(let bi=startBi;bi<3;bi++){
     const prev=bi>0?defBlocks[bi-1].assignments:null;
     const pp=bi>1?defBlocks[bi-2].assignments:null;
     const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>({assignments:{...b.assignments}})):null;
@@ -1614,13 +1617,19 @@ function setBench(bi,pi){
   const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(pi);
   save();renderDefGrid(bi);renderBatting();refreshComplianceChips();
 }
+// Suggest rebuilds ONLY the tapped block.
+// Earlier blocks contribute as locked context (rotation diversity + fair-play counts).
+// Later blocks are left untouched — if the user wants to refresh them, they tap Suggest there.
 function doSuggest(bi){
   reconcileDefBlocksToMode();
   const usingBench=benchNeeded();
   const tagText=(i)=>usingBench?'BENCH: '+fn(defBlocks[i].benchIdx):'EVERYONE PLAYING';
-  if(fairPlayMode){autoSuggestAll();defBlocks.forEach((_,i)=>{const tag=document.getElementById(`btag-${i}`);if(tag)tag.textContent=tagText(i);renderDefGrid(i);});}
-  else{autoSuggest(bi);const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent=tagText(bi);renderDefGrid(bi);}
-  if(defBlocks[0].assignments){Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBatPos(pi,pos));renderBatting();}
+  // Single-block rebuild — preserves all other blocks' edits
+  autoSuggest(bi);
+  const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent=tagText(bi);
+  renderDefGrid(bi);
+  // Sync batting positions only when block 0 was the one re-suggested
+  if(bi===0&&defBlocks[0].assignments){Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBatPos(pi,pos));renderBatting();}
   save();refreshComplianceChips();
 }
 function refreshComplianceChips(){
