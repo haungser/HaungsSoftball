@@ -415,17 +415,31 @@ margin:0.35in;
 .pdf-rule::before{content:'→';position:absolute;left:0;color:#C22818;font-weight:900;}
 .pdf-footer{margin-top:10px;border-top:1px solid #ddd;padding-top:5px;display:flex;justify-content:space-between;font-size:6.5pt;color:#aaa;letter-spacing:1px;}
 
-/* Solo batting-order PDF — whole page, larger fonts */
-.pdf-bat-solo-table{width:100%;border-collapse:collapse;margin-top:4px;}
-.pdf-bat-solo-table th{font-size:8pt;letter-spacing:2.5px;color:#777;padding:0 8px 6px;text-align:left;border-bottom:2px solid #C22818;font-weight:700;}
-.pdf-bat-solo-table th.c{text-align:center;}
-.pdf-bat-solo-table td{padding:12px 8px;border-bottom:0.5px solid #e4e4e4;vertical-align:middle;line-height:1.15;}
-.pdf-bat-solo-table tr:last-child td{border-bottom:none;}
-.bat-solo-num{font-size:20pt;font-weight:900;color:#C22818;text-align:center;}
-.bat-solo-num.top3{color:#9a6800;}
-.bat-solo-name{font-size:15pt;font-weight:700;color:#111;}
-.bat-solo-pos{text-align:center;font-size:13pt;font-weight:900;color:#111;background:#f5f5f5;}
-.bat-solo-stat{font-size:9.5pt;color:#666;font-weight:600;white-space:nowrap;}
+/* Combined Lineup PDF (batting + defense on one portrait page) */
+.pdf-section-label{font-size:8pt;letter-spacing:3.5px;color:#fff;background:#C22818;font-weight:900;padding:4px 10px;margin:10px 0 4px;border-radius:3px;}
+/* Batting compact table */
+.pdf-bat-c-table{width:100%;border-collapse:collapse;margin-bottom:2px;}
+.pdf-bat-c-table th{font-size:7pt;letter-spacing:2px;color:#777;padding:0 7px 4px;text-align:left;border-bottom:1.5px solid #C22818;font-weight:700;}
+.pdf-bat-c-table th.c{text-align:center;}
+.pdf-bat-c-table td{padding:5px 7px;border-bottom:0.5px solid #e8e8e8;vertical-align:middle;line-height:1.1;}
+.pdf-bat-c-table tr:last-child td{border-bottom:none;}
+.bat-c-num{font-size:11pt;font-weight:900;color:#C22818;text-align:center;}
+.bat-c-name{font-size:10.5pt;font-weight:700;color:#111;}
+.bat-c-pos{text-align:center;font-size:9.5pt;font-weight:900;color:#111;background:#f5f5f5;border-radius:3px;}
+.bat-c-stat{font-size:8pt;color:#666;font-weight:600;white-space:nowrap;}
+/* Defense compact table — rows of players, columns of inning blocks */
+.pdf-def-c-table{width:100%;border-collapse:collapse;margin-bottom:2px;}
+.pdf-def-c-table th{font-size:7pt;letter-spacing:2px;color:#777;padding:0 7px 4px;text-align:left;border-bottom:1.5px solid #C22818;font-weight:700;}
+.pdf-def-c-table th.c{text-align:center;}
+.pdf-def-c-table td{padding:5px 6px;border-bottom:0.5px solid #e8e8e8;vertical-align:middle;line-height:1.1;text-align:center;}
+.pdf-def-c-table tr:last-child td{border-bottom:none;}
+.def-c-name{font-size:10pt;font-weight:700;color:#111;text-align:left !important;}
+.def-c-pos{font-size:10pt;font-weight:900;border-radius:3px;}
+.def-c-if{color:#C22818;background:#fdf0ee;}
+.def-c-of{color:#1a7a38;background:#eef7f1;}
+.def-c-bench{font-size:8.5pt;font-weight:800;color:#666;background:#f0f0f0;letter-spacing:1px;border-radius:3px;}
+.def-c-empty{font-size:10pt;color:#bbb;font-weight:600;}
+.pdf-out-line{margin-top:5px;font-size:8.5pt;color:#b01818;font-weight:700;letter-spacing:1px;padding:4px 9px;background:#fdf0ee;border-radius:3px;border-left:3px solid #b01818;}
 
 /* Awards Ceremony PDF */
 .pdf-ceremony{font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;padding:0;font-size:10pt;}
@@ -1482,7 +1496,7 @@ function renderBatting(){
   });
   sc.appendChild(list);
 
-  const printBtn=document.createElement('button');printBtn.className='btn-print';printBtn.textContent='📄 EXPORT BATTING ORDER';printBtn.onclick=exportPDF;sc.appendChild(printBtn);
+  const printBtn=document.createElement('button');printBtn.className='btn-print';printBtn.textContent='📄 EXPORT LINEUP';printBtn.onclick=exportPDF;sc.appendChild(printBtn);
 }
 
 function doDrop(ti){const src=dragIdx!==null?dragIdx:touchDragIdx;if(src===null||src===ti)return;const m=battingOrder.splice(src,1)[0];battingOrder.splice(ti,0,m);save();renderBatting();}
@@ -1547,7 +1561,6 @@ function renderDefense(){
     save();renderDefense();renderBatting();showSaved();
   };
   sc.appendChild(resetDefBtn);
-  const dugoutBtn=document.createElement('button');dugoutBtn.className='btn-print';dugoutBtn.style.marginTop='6px';dugoutBtn.textContent='📋 EXPORT DEFENSE BY INNING';dugoutBtn.onclick=exportDugout;sc.appendChild(dugoutBtn);
 }
 function toggleFairPlay(on){fairPlayMode=on;save();autoSuggestAll();save();renderDefense();renderBatting();}
 function countChanges(bi){if(!bi||!defBlocks[bi-1])return 10;const prev=defBlocks[bi-1].assignments,cur=defBlocks[bi].assignments,pm={};Object.entries(prev).forEach(([p,pi])=>pm[pi]=p);let c=0;Object.entries(cur).forEach(([p,pi])=>{if(pm[pi]!==p)c++;});return c;}
@@ -2337,34 +2350,85 @@ function renderAwards(){
   sc.appendChild(ceremonyBtn);
 }
 
-// ── EXPORT PDF ────────────────────────────────────────────────────────────────
+// ── EXPORT PDF (combined lineup: batting order + defense by inning) ──────────
 function exportPDF(){
   const card=document.getElementById('pdf-card');
   const today=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   const st=seasonTotals();
   _setPrintPage('portrait');
 
-  // Batting rows — larger fonts since this is the only thing on the page
+  // ── BATTING ORDER ROWS ──
   const batRows=battingOrder.map((b,i)=>{
     const p=roster[b.idx];
     const s=st[b.idx];
     const statStr=s&&s.ab>0?`${s.avg.toFixed(3)} / ${s.obp.toFixed(3)}`:'—';
-    const numCls='bat-solo-num';
     const dispPos=getStartingPos(b.idx);
     return `<tr>
-      <td class="${numCls}">${i+1}</td>
-      <td class="bat-solo-name">${p.name}</td>
-      <td class="bat-solo-pos">${dispPos}</td>
-      <td class="bat-solo-stat">${statStr}</td>
+      <td class="bat-c-num">${i+1}</td>
+      <td class="bat-c-name">${p.name}</td>
+      <td class="bat-c-pos">${dispPos}</td>
+      <td class="bat-c-stat">${statStr}</td>
     </tr>`;
   }).join('');
+
+  // ── DEFENSE BY INNING (rows = players, cols = inning blocks) ──
+  const usingBench=benchNeeded();
+  const playerInnings={};
+  // Include every roster player who isn't OUT for whole game
+  roster.forEach((p,pi)=>{
+    if(isOutWholeGame(pi))return;
+    playerInnings[pi]=['','',''];
+  });
+  defBlocks.forEach((block,bi)=>{
+    Object.entries(block.assignments).forEach(([pos,pi])=>{
+      if(playerInnings[pi]!==undefined)playerInnings[pi][bi]=pos;
+    });
+    if(usingBench&&block.benchIdx!==null&&block.benchIdx!==undefined&&playerInnings[block.benchIdx]!==undefined){
+      playerInnings[block.benchIdx][bi]='BENCH';
+    }
+    Object.keys(playerInnings).forEach(pi=>{
+      const v=gameAbsences[pi];
+      if(v===3&&bi===0)playerInnings[pi][0]='—';
+      if(v===5&&(bi===0||bi===1))playerInnings[pi][bi]='—';
+    });
+  });
+
+  // Sort defense table by batting order so it mirrors lineup order
+  const orderIdx={};battingOrder.forEach((b,i)=>{orderIdx[b.idx]=i;});
+  const defenseSorted=Object.keys(playerInnings)
+    .map(pi=>+pi)
+    .sort((a,b)=>{
+      const oa=orderIdx[a]??999,ob=orderIdx[b]??999;
+      return oa-ob;
+    });
+
+  const defRows=defenseSorted.map(pi=>{
+    const p=roster[pi];
+    const slots=playerInnings[pi];
+    const cell=(v)=>{
+      if(v==='BENCH')return `<td class="def-c-bench">BENCH</td>`;
+      if(v==='—'||v==='')return `<td class="def-c-empty">—</td>`;
+      const klass=IF_POS.has(v)?'def-c-if':'def-c-of';
+      return `<td class="def-c-pos ${klass}">${v}</td>`;
+    };
+    return `<tr>
+      <td class="def-c-name">${p.name}</td>
+      ${cell(slots[0])}
+      ${cell(slots[1])}
+      ${cell(slots[2])}
+    </tr>`;
+  }).join('');
+
+  // OUT players list
+  const outPlayers=roster.map((p,i)=>isOutWholeGame(i)?p.name:null).filter(Boolean);
+  const outLine=outPlayers.length?`<div class="pdf-out-line">OUT: ${outPlayers.join(', ')}</div>`:'';
 
   card.innerHTML=`
     <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;">
       <div class="pdf-hdr">
         <div>
           <div class="pdf-team">🌶️ RED HOT CHILI PEPPERS</div>
-          <div class="pdf-sub">TVL MINORS 10B · BATTING ORDER</div>
+          <div class="pdf-sub">TVL MINORS 10B · LINEUP</div>
         </div>
         <div class="pdf-meta">
           <div><strong>${today}</strong></div>
@@ -2372,25 +2436,42 @@ function exportPDF(){
           <div>&#9744; Home &nbsp; &#9744; Away</div>
         </div>
       </div>
-      <table class="pdf-bat-solo-table">
+
+      <div class="pdf-section-label">BATTING ORDER</div>
+      <table class="pdf-bat-c-table">
         <thead>
           <tr>
-            <th class="c" style="width:36px;">#</th>
+            <th class="c" style="width:24px;">#</th>
             <th>PLAYER</th>
-            <th class="c" style="width:50px;">POS</th>
-            <th style="width:120px;">AVG / OBP</th>
+            <th class="c" style="width:36px;">POS</th>
+            <th style="width:88px;">AVG / OBP</th>
           </tr>
         </thead>
         <tbody>${batRows}</tbody>
       </table>
-      <div class="pdf-rules" style="margin-top:14px;">
-        <div class="pdf-rules-title">10B RULES — KNOW COLD (differences vs. standard baseball/softball)</div>
-        <div class="pdf-rule"><strong>WALKS/HBP:</strong> Bases loaded + ball 4 → pitcher stays in, coach pitches to that batter (count carries over). HBP = batter takes 1st — EXCEPT when coach is pitching (no base awarded).</div>
-        <div class="pdf-rule"><strong>STEALING:</strong> No stealing home. No advancing on an overthrow during a steal. No stealing if up by 10+.</div>
-        <div class="pdf-rule"><strong>BUNTING:</strong> Only 1 batter may square to bunt per inning. No slash bunting (show bunt then swing = dead ball, batter out).</div>
-        <div class="pdf-rule"><strong>SCORING:</strong> 4-run cap per inning (final inning is unlimited). Run-ahead: 12 after 3, 10 after 4, 8 after 5.</div>
-        <div class="pdf-rule"><strong>PITCHING:</strong> 3-inning limit per game. Pitcher removed after 3 direct HBPs in an inning (bounced pitches don't count). Only the starter can return to the mound.</div>
-        <div class="pdf-rule"><strong>DEFENSE:</strong> 10 fielders (4 OF). Max 6 infielders at pitch release. No infield fly rule. No advancing on dropped 3rd strike.</div>
+
+      <div class="pdf-section-label">DEFENSE BY INNING</div>
+      <table class="pdf-def-c-table">
+        <thead>
+          <tr>
+            <th>PLAYER</th>
+            <th class="c">INN 1–2</th>
+            <th class="c">INN 3–4</th>
+            <th class="c">INN 5–6</th>
+          </tr>
+        </thead>
+        <tbody>${defRows}</tbody>
+      </table>
+      ${outLine}
+
+      <div class="pdf-rules" style="margin-top:9px;">
+        <div class="pdf-rules-title">10B RULES — KNOW COLD</div>
+        <div class="pdf-rule"><strong>WALKS/HBP:</strong> Bases loaded + ball 4 → coach pitches (count carries). No base on HBP when coach pitches.</div>
+        <div class="pdf-rule"><strong>STEALING:</strong> No stealing home. No advance on overthrow during a steal. None when up 10+.</div>
+        <div class="pdf-rule"><strong>BUNTING:</strong> 1 bunt batter per inning. No slash bunting (dead ball, out).</div>
+        <div class="pdf-rule"><strong>SCORING:</strong> 4-run cap per inning (last inning unlimited). Run-ahead: 12 after 3, 10 after 4, 8 after 5.</div>
+        <div class="pdf-rule"><strong>PITCHING:</strong> 3-inning limit. Out after 3 direct HBPs in an inning. Only the starter may return.</div>
+        <div class="pdf-rule"><strong>DEFENSE:</strong> 10 fielders (4 OF). Max 6 IF at pitch release. No infield fly. No advance on dropped 3rd.</div>
       </div>
       <div class="pdf-footer">
         <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
@@ -2400,55 +2481,6 @@ function exportPDF(){
   window.print();
 }
 
-
-function exportDugout(){
-  const card=document.getElementById('pdf-card');
-  const today=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  _setPrintPage('landscape');
-
-  // Three columns, one per inning block, alphabetized by first name for quick lookup
-  const colsHTML=defBlocks.map((block,bi)=>{
-    const label=['INNINGS 1–2','INNINGS 3–4','INNINGS 5–6'][bi];
-    const benchName=roster[block.benchIdx].name;
-    const players=Object.entries(block.assignments)
-      .map(([pos,pi])=>({first:roster[pi].name.split(' ')[0],last:roster[pi].name.split(' ').slice(1).join(' '),pos}))
-      .sort((a,b)=>a.first.localeCompare(b.first));
-    const rows=players.map(({first,last,pos},idx)=>`
-      <tr style="background:${idx%2===0?'#fff':'#fafafa'};">
-        <td style="padding:7px 11px;font-size:13pt;font-weight:800;color:#111;border-bottom:1px solid #eee;">${first} <span style="font-size:9pt;font-weight:600;color:#666;">${last}</span></td>
-        <td style="padding:7px 11px;font-size:15pt;font-weight:900;color:#C22818;text-align:right;border-bottom:1px solid #eee;white-space:nowrap;">${pos}</td>
-      </tr>`).join('');
-    return `<td style="vertical-align:top;padding:0 7px;width:33.3%;">
-      <table style="width:100%;border-collapse:collapse;border:2px solid #ddd;border-radius:5px;overflow:hidden;">
-        <tr><td colspan="2" style="background:#C22818;color:#fff;font-size:12pt;font-weight:900;letter-spacing:2px;padding:8px 11px;text-align:center;">${label}</td></tr>
-        <tr><td colspan="2" style="background:#fff3f3;color:#C22818;font-size:9pt;font-weight:700;letter-spacing:1px;padding:5px 11px;border-bottom:1px solid #fcc;">BENCH: ${benchName}</td></tr>
-        ${rows}
-      </table></td>`;
-  }).join('');
-
-  card.innerHTML=`
-    <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;">
-      <table style="width:100%;border-collapse:collapse;border-bottom:4px solid #C22818;margin-bottom:12px;">
-        <tr>
-          <td style="padding-bottom:7px;">
-            <div style="font-size:18pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS — DEFENSE</div>
-            <div style="font-size:8pt;letter-spacing:3px;color:#555;margin-top:3px;">TVL MINORS 10B · FIND YOUR NAME → FIND YOUR POSITION</div>
-          </td>
-          <td style="text-align:right;padding-bottom:7px;white-space:nowrap;">
-            <div style="font-size:11pt;font-weight:700;">${today}</div>
-            <div style="font-size:9pt;color:#555;">vs. _______________</div>
-          </td>
-        </tr>
-      </table>
-      <table style="width:100%;border-collapse:collapse;"><tr>${colsHTML}</tr></table>
-      <div style="margin-top:10px;border-top:1px solid #ddd;padding-top:4px;display:flex;justify-content:space-between;font-size:6.5pt;color:#bbb;letter-spacing:1px;">
-        <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
-        <span>Post in dugout — check position each inning change</span>
-        <span>${today}</span>
-      </div>
-    </div>`;
-  window.print();
-}
 
 function _setPrintPage(orientation){const e=document.getElementById('_print_page_style');if(e)e.remove();const s=document.createElement('style');s.id='_print_page_style';s.textContent=`@media print { @page { size: letter ${orientation}; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} } }`;document.head.appendChild(s);}
 
