@@ -343,17 +343,26 @@ body.gameday .tab-scroll{padding-bottom:80px;}
 .stats-note{background:rgba(26,122,56,0.09);border:1.5px solid rgba(26,122,56,0.3);border-radius:9px;padding:10px 13px;margin-bottom:10px;font-size:0.78rem;color:var(–ink2);line-height:1.5;}
 .stats-note strong{color:var(–good);font-family:‘Barlow Condensed’,sans-serif;letter-spacing:1px;display:block;margin-bottom:3px;font-weight:800;}
 .btn-clear{background:transparent;border:1.5px solid var(–bad);color:var(–bad);font-family:‘Barlow Condensed’,sans-serif;font-size:0.72rem;letter-spacing:2px;padding:6px 12px;border-radius:7px;cursor:pointer;margin-bottom:10px;font-weight:700;}
-.stats-hdr{display:grid;grid-template-columns:1fr repeat(6,36px);gap:3px;padding:5px 10px;margin-bottom:4px;}
-.stats-hdr span{font-family:‘Barlow Condensed’,sans-serif;font-size:0.63rem;letter-spacing:2px;color:var(–muted);text-align:center;font-weight:700;}
-.stats-hdr span:first-child{text-align:left;}
-.stat-row{display:grid;grid-template-columns:1fr repeat(6,36px);gap:3px;align-items:center;background:var(–panel);border:1.5px solid var(–border2);border-radius:9px;padding:7px 10px;margin-bottom:5px;box-shadow:0 1px 3px var(–shadow);}
-.sp{font-size:0.83rem;font-weight:700;color:var(–ink);}
-.ssub{font-size:0.65rem;color:var(–muted);font-weight:600;}
-.sv{font-family:‘Barlow Condensed’,sans-serif;font-size:0.87rem;text-align:center;font-weight:700;color:var(–ink2);}
+/* Stats table — wider grid with horizontal scroll on phone, sticky player column */
+.stats-scroll{overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;margin-bottom:6px;border-radius:9px;position:relative;}
+.stats-scroll::-webkit-scrollbar{height:6px;}
+.stats-scroll::-webkit-scrollbar-track{background:transparent;}
+.stats-scroll::-webkit-scrollbar-thumb{background:var(–border2);border-radius:3px;}
+.stats-scroll-hint{font-size:0.62rem;color:var(–muted);text-align:right;font-family:‘Barlow Condensed’,sans-serif;letter-spacing:1.5px;font-weight:700;margin:0 4px 4px;}
+.stats-grid{min-width:730px;}
+.stats-hdr{display:grid;grid-template-columns:140px 44px 44px 44px 44px 38px 38px 38px 38px 38px 38px 38px 46px 38px 38px;gap:0;padding:5px 0;margin-bottom:4px;background:var(–panel2);border-radius:7px;}
+.stats-hdr span{font-family:‘Barlow Condensed’,sans-serif;font-size:0.6rem;letter-spacing:1.5px;color:var(–muted);text-align:center;font-weight:700;padding:3px 2px;}
+.stats-hdr span:first-child{text-align:left;padding-left:10px;position:sticky;left:0;background:var(–panel2);z-index:2;}
+.stat-row{display:grid;grid-template-columns:140px 44px 44px 44px 44px 38px 38px 38px 38px 38px 38px 38px 46px 38px 38px;gap:0;align-items:center;background:var(–panel);border:1.5px solid var(–border2);border-radius:9px;padding:7px 0;margin-bottom:5px;box-shadow:0 1px 3px var(–shadow);}
+.stat-row .sp-cell{padding-left:10px;position:sticky;left:0;background:var(–panel);z-index:1;border-right:1px solid var(–border2);}
+.sp{font-size:0.83rem;font-weight:700;color:var(–ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ssub{font-size:0.62rem;color:var(–muted);font-weight:600;white-space:nowrap;}
+.sv{font-family:‘Barlow Condensed’,sans-serif;font-size:0.86rem;text-align:center;font-weight:700;color:var(–ink2);padding:0 2px;}
 .sv.hi{color:var(–good);}
 .sv.mid{color:var(–warn);}
 .sv.lo{color:var(–muted);}
-.sv.ba{font-size:0.94rem;}
+.sv.ba{font-size:0.92rem;}
+.sv.col-divider{border-left:1px solid var(–border2);}
 .sstreak{font-size:0.65rem;font-weight:700;}
 .sstreak.hot{color:var(–hot);}
 .sstreak.cold{color:var(–cold);}
@@ -1822,13 +1831,90 @@ function renderStats(){
     gl.appendChild(row);
   });
   sc.appendChild(gl);
-  const note=document.createElement('div');note.className='stats-note';note.innerHTML=`<strong>✓ SEASON STATS LIVE</strong>Delta tracking active. 🔥/❄️ streaks show when recent avg differs from season by 80+ pts.`;sc.appendChild(note);
+  const note=document.createElement('div');note.className='stats-note';note.innerHTML=`<strong>✓ SEASON STATS LIVE</strong>Delta tracking active. 🔥/❄️ streaks show when recent avg differs from season by 80+ pts. Swipe table sideways to see all stats.`;sc.appendChild(note);
   const cb=document.createElement('button');cb.className='btn-clear';cb.textContent='✕ CLEAR ALL GAME DATA';cb.onclick=()=>{if(confirm('Clear all game data?')){gameLog=[];save();renderStats();}};sc.appendChild(cb);
-  const hdr=document.createElement('div');hdr.className='stats-hdr';hdr.innerHTML=`<span>PLAYER</span><span>AVG</span><span>OBP</span><span>H</span><span>AB</span><span>SB</span><span>L3</span>`;sc.appendChild(hdr);
-  const st=seasonTotals(),rc=recentStats(3);
-  const sorted=roster.map((_,i)=>i).filter(i=>st[i]&&st[i].ab>0).sort((a,b)=>(st[b].avg||0)-(st[a].avg||0));
+
+  // Hint that the table scrolls horizontally
+  const hint=document.createElement('div');hint.className='stats-scroll-hint';hint.textContent='← SWIPE FOR MORE STATS →';sc.appendChild(hint);
+
+  // Outer scroll container + inner grid
+  const scroll=document.createElement('div');scroll.className='stats-scroll';
+  const grid=document.createElement('div');grid.className='stats-grid';
+  scroll.appendChild(grid);
+
+  // Header row — 15 columns: player + 14 stats
+  // Order: PLAYER · AVG · OBP · SLG · OPS | H · AB · R · RBI · BB · SO | XBH · QAB% | SB · L3
+  const hdr=document.createElement('div');hdr.className='stats-hdr';
+  hdr.innerHTML=`<span>PLAYER</span><span>AVG</span><span>OBP</span><span>SLG</span><span>OPS</span><span>H</span><span>AB</span><span>R</span><span>RBI</span><span>BB</span><span>SO</span><span>XBH</span><span>QAB%</span><span>SB</span><span>L3</span>`;
+  grid.appendChild(hdr);
+
+  const st=seasonTotals();
+  const sorted=roster.map((_,i)=>i).filter(i=>st[i]&&st[i].ab>0).sort((a,b)=>(st[b].ops||st[b].avg||0)-(st[a].ops||st[a].avg||0));
   const noStats=roster.map((_,i)=>i).filter(i=>!st[i]||!st[i].ab);
-  [...sorted,...noStats].forEach(ri=>{const p=roster[ri],s=st[ri];const row=document.createElement('div');row.className='stat-row';if(!s||!s.ab){row.innerHTML=`<div><div class="sp">${fn(ri)}</div><div class="ssub">No data</div></div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div><div class="sv lo">—</div>`;}else{const ac=s.avg>=0.35?'sv ba hi':s.avg>=0.25?'sv ba mid':'sv ba lo',oc=s.obp>=0.4?'sv hi':s.obp>=0.3?'sv mid':'sv lo',streak=streakLabel(ri),tHtml=streak?`<span class="sstreak ${streak.cls}">${streak.label.split(' ')[0]}</span>`:`<span class="sv lo">—</span>`;row.innerHTML=`<div><div class="sp">${fn(ri)}</div><div class="ssub">${s.gp} GP</div></div><div class="${ac}">${s.avg.toFixed(3)}</div><div class="${oc}">${s.obp.toFixed(3)}</div><div class="sv">${s.h}</div><div class="sv">${s.ab}</div><div class="sv">${s.sb||0}</div><div style="text-align:center">${tHtml}</div>`;}sc.appendChild(row);});
+
+  [...sorted,...noStats].forEach(ri=>{
+    const p=roster[ri],s=st[ri];
+    const row=document.createElement('div');row.className='stat-row';
+
+    if(!s||!s.ab){
+      // Player has no AB — could be all-walks (Sadie) or DNP. Show whatever we have.
+      const hasPa=s&&s.pa>0;
+      const subLine=hasPa?`${s.gp} GP · ${s.bb||0} BB`:'No data';
+      const dashes='<div class="sv lo">—</div>'.repeat(14);
+      if(hasPa){
+        // Render with the few stats we DO have (BB, R, SB, SO, OBP)
+        const oc=s.obp>=0.4?'sv hi':s.obp>=0.3?'sv mid':'sv lo';
+        row.innerHTML=`
+          <div class="sp-cell"><div class="sp">${fn(ri)}</div><div class="ssub">${subLine}</div></div>
+          <div class="sv lo">—</div>
+          <div class="${oc}">${s.obp.toFixed(3)}</div>
+          <div class="sv lo">—</div>
+          <div class="sv lo">—</div>
+          <div class="sv">0</div>
+          <div class="sv">0</div>
+          <div class="sv">${s.r||0}</div>
+          <div class="sv">${s.rbi||0}</div>
+          <div class="sv">${s.bb||0}</div>
+          <div class="sv">${s.so||0}</div>
+          <div class="sv">0</div>
+          <div class="sv">${(s.qabPct||0).toFixed(0)}</div>
+          <div class="sv">${s.sb||0}</div>
+          <div style="text-align:center"><span class="sv lo">—</span></div>`;
+      }else{
+        row.innerHTML=`<div class="sp-cell"><div class="sp">${fn(ri)}</div><div class="ssub">${subLine}</div></div>${dashes}`;
+      }
+    }else{
+      // Color tiers for rate stats. AVG/OBP thresholds tuned for youth softball.
+      const ac=s.avg>=0.35?'sv ba hi':s.avg>=0.25?'sv ba mid':'sv ba lo';
+      const oc=s.obp>=0.4?'sv hi':s.obp>=0.3?'sv mid':'sv lo';
+      const slg=s.slg||0,ops=s.ops||0;
+      const sc2=slg>=0.5?'sv hi':slg>=0.3?'sv mid':'sv lo';
+      const opsC=ops>=0.9?'sv hi':ops>=0.65?'sv mid':'sv lo';
+      const qab=s.qabPct||0,qabC=qab>=50?'sv hi':qab>=30?'sv mid':'sv lo';
+      const xbh=s.xbh||0,xbhC=xbh>=2?'sv hi':xbh>=1?'sv mid':'sv lo';
+      const streak=streakLabel(ri);
+      const tHtml=streak?`<span class="sstreak ${streak.cls}">${streak.label.split(' ')[0]}</span>`:`<span class="sv lo">—</span>`;
+
+      row.innerHTML=`
+        <div class="sp-cell"><div class="sp">${fn(ri)}</div><div class="ssub">${s.gp} GP · ${s.pa||0} PA</div></div>
+        <div class="${ac}">${s.avg.toFixed(3)}</div>
+        <div class="${oc}">${s.obp.toFixed(3)}</div>
+        <div class="${sc2}">${slg.toFixed(3)}</div>
+        <div class="${opsC}">${ops.toFixed(3)}</div>
+        <div class="sv">${s.h}</div>
+        <div class="sv">${s.ab}</div>
+        <div class="sv">${s.r||0}</div>
+        <div class="sv">${s.rbi||0}</div>
+        <div class="sv">${s.bb||0}</div>
+        <div class="sv">${s.so||0}</div>
+        <div class="${xbhC}">${xbh}</div>
+        <div class="${qabC}">${qab.toFixed(0)}</div>
+        <div class="sv">${s.sb||0}</div>
+        <div style="text-align:center">${tHtml}</div>`;
+    }
+    grid.appendChild(row);
+  });
+  sc.appendChild(scroll);
 }
 function handleCSV(input){if(input.files[0])parseCSV(input.files[0]);}
 function setCsvStatus(msg,color){const el=document.getElementById('csvStatus');if(el){el.textContent=msg||'';el.style.color=color||'var(--muted)';}}
