@@ -28,10 +28,10 @@
 }
 [data-theme="dark"]{
   --bg:#14181a;--panel:#1c2124;--panel2:#222a2e;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.22);
   --ink:#edeae2;--ink2:#ccc9be;--muted:rgba(237,234,226,0.45);
-  --clay:#C2553A;--clay-d:#9E3E26;--clay-l:#e8705a;
-  --grass:#2a5c3a;--grass-l:#3a7a50;
+  --clay:#D86040;--clay-d:#B0452A;--clay-l:#ec7a5e;
+  --grass:#2f8a4a;--grass-l:#3da55a;
   --gold:#d4a84b;--good:#4caf72;--warn:#e0943a;--bad:#e05a5a;--teal:#3a8a82;
   --tab-bg:#1c2124;--tab-text:rgba(237,234,226,0.45);--shadow:rgba(0,0,0,0.35);
   --hot:#ff7043;--cold:#4dd0e1;
@@ -124,8 +124,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-h
 .spv-name{font-weight:700;color:var(–ink);}
 .spv-role{font-size:0.66rem;color:var(–muted);font-family:‘Barlow Condensed’,sans-serif;letter-spacing:1px;font-weight:700;text-align:right;}
 .suggest-preview-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.spv-apply{background:var(–grass);color:#fff;border:none;border-radius:7px;padding:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.78rem;letter-spacing:2px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;}
-.spv-cancel{background:transparent;color:var(–muted);border:1.5px solid var(–border2);border-radius:7px;padding:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.78rem;letter-spacing:2px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;}
+.spv-apply{background:var(–grass);color:#fff;border:none;border-radius:7px;padding:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.78rem;letter-spacing:2px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;transition:background 0.15s;}
+.spv-apply:hover{background:var(–grass-l);}
+.spv-cancel{background:transparent;color:var(–ink2);border:1.5px solid var(–border2);border-radius:7px;padding:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.78rem;letter-spacing:2px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;}
+.spv-cancel:hover{border-color:var(–ink2);}
 
 /* Rally killer warning chip (on batting rows) */
 .rally-warn{display:inline-flex;align-items:center;gap:3px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.58rem;letter-spacing:1px;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:4px;background:rgba(176,90,0,0.16);color:var(–warn);vertical-align:middle;border:1px solid rgba(176,90,0,0.4);}
@@ -190,7 +192,8 @@ body.gameday .tab-scroll{padding-bottom:80px;}
 .abs-status.late{color:var(–warn);background:rgba(176,90,0,0.14);}
 .abs-status.out{color:var(–bad);background:rgba(176,24,24,0.12);}
 .absence-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
-.abs-opt{background:var(–panel2);border:1.5px solid var(–border2);color:var(–muted);font-family:‘Barlow Condensed’,sans-serif;font-size:0.62rem;letter-spacing:1px;font-weight:700;padding:6px 2px;border-radius:6px;cursor:pointer;min-height:34px;text-align:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:flex;align-items:center;justify-content:center;line-height:1.1;}
+.abs-opt{background:var(–panel2);border:1.5px solid var(–border2);color:var(–ink2);font-family:‘Barlow Condensed’,sans-serif;font-size:0.62rem;letter-spacing:1px;font-weight:700;padding:6px 2px;border-radius:6px;cursor:pointer;min-height:34px;text-align:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:flex;align-items:center;justify-content:center;line-height:1.1;transition:border-color 0.15s,background 0.15s;}
+.abs-opt:hover{border-color:var(–ink2);}
 .abs-opt:active{transform:scale(0.97);}
 .abs-opt.sel-playing{background:var(–good);border-color:var(–good);color:#fff;}
 .abs-opt.sel-late{background:var(–warn);border-color:var(–warn);color:#fff;}
@@ -210,7 +213,8 @@ body.gameday .tab-scroll{padding-bottom:80px;}
 .absence-banner-text strong{color:var(–ink);}
 
 /* Clear button */
-.btn-clear-abs{background:transparent;border:1.5px solid var(–border2);color:var(–muted);border-radius:7px;padding:8px 12px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.72rem;letter-spacing:2px;cursor:pointer;font-weight:700;margin-top:8px;width:100%;-webkit-tap-highlight-color:transparent;}
+.btn-clear-abs{background:transparent;border:1.5px solid var(–border2);color:var(–ink2);border-radius:7px;padding:8px 12px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.72rem;letter-spacing:2px;cursor:pointer;font-weight:700;margin-top:8px;width:100%;-webkit-tap-highlight-color:transparent;}
+.btn-clear-abs:hover{border-color:var(–ink2);}
 .def-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 .def-cell{display:flex;align-items:center;gap:7px;background:var(–panel2);border:1.5px solid var(–border2);border-radius:8px;padding:7px 10px;}
 .def-pos{font-family:‘Barlow Condensed’,sans-serif;font-size:0.82rem;color:var(–clay);min-width:26px;letter-spacing:1px;font-weight:800;}
@@ -287,13 +291,15 @@ body.gameday .tab-scroll{padding-bottom:80px;}
 .name-edit:focus{outline:none;border-color:var(–clay);}
 
 /* Remove player button */
-.btn-remove-player{background:transparent;border:1.5px solid var(–bad);color:var(–bad);border-radius:7px;padding:6px 12px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.7rem;letter-spacing:2px;cursor:pointer;font-weight:700;margin-top:8px;-webkit-tap-highlight-color:transparent;}
+.btn-remove-player{background:transparent;border:1.5px solid var(–bad);color:var(–bad);border-radius:7px;padding:6px 12px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.7rem;letter-spacing:2px;cursor:pointer;font-weight:700;margin-top:8px;-webkit-tap-highlight-color:transparent;transition:background 0.15s;}
+.btn-remove-player:hover{background:rgba(176,24,24,0.08);}
 
 /* Add player */
 .add-player-card{background:var(–panel);border:2px dashed var(–border2);border-radius:11px;padding:12px 14px;margin-bottom:8px;}
 .add-player-title{font-family:‘Barlow Condensed’,sans-serif;font-size:0.78rem;letter-spacing:2px;color:var(–muted);font-weight:800;margin-bottom:8px;}
 .add-player-row{display:grid;grid-template-columns:1fr 70px 72px;gap:6px;align-items:center;}
-.btn-add{background:var(–grass);color:#fff;border:none;border-radius:7px;padding:9px 6px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.75rem;letter-spacing:1.5px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;}
+.btn-add{background:var(–grass);color:#fff;border:none;border-radius:7px;padding:9px 6px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.75rem;letter-spacing:1.5px;cursor:pointer;font-weight:700;min-height:40px;-webkit-tap-highlight-color:transparent;transition:background 0.15s;}
+.btn-add:hover{background:var(–grass-l);}
 .btn-add:active{background:var(–grass-l);}
 
 /* Backup / Restore buttons */
@@ -318,13 +324,18 @@ body.gameday .tab-scroll{padding-bottom:80px;}
 .pos-legend{display:flex;gap:12px;margin-bottom:9px;flex-wrap:wrap;}
 .pos-legend span{font-size:0.68rem;color:var(–muted);display:flex;align-items:center;gap:4px;font-weight:600;}
 .ldot{width:8px;height:8px;border-radius:50%;display:inline-block;}
-.btn-green{width:100%;padding:12px;background:var(–grass);color:#fff;border:none;border-radius:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.95rem;letter-spacing:3px;cursor:pointer;font-weight:700;margin-top:5px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-.btn-red-outline{width:100%;padding:11px;background:transparent;color:var(–bad);border:1.5px solid var(–bad);border-radius:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.85rem;letter-spacing:2px;cursor:pointer;margin-top:8px;font-weight:700;-webkit-tap-highlight-color:transparent;}
+.btn-green{width:100%;padding:12px;background:var(–grass);color:#fff;border:none;border-radius:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.95rem;letter-spacing:3px;cursor:pointer;font-weight:700;margin-top:5px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background 0.15s,transform 0.1s;}
+.btn-green:hover{background:var(–grass-l);}
+.btn-green:active{transform:scale(0.99);}
+.btn-red-outline{width:100%;padding:11px;background:transparent;color:var(–bad);border:1.5px solid var(–bad);border-radius:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.85rem;letter-spacing:2px;cursor:pointer;margin-top:8px;font-weight:700;-webkit-tap-highlight-color:transparent;transition:background 0.15s;}
+.btn-red-outline:hover{background:rgba(176,24,24,0.08);}
 .upload-zone{background:var(–panel);border:2.5px dashed var(–border2);border-radius:12px;padding:22px 16px;text-align:center;margin-bottom:10px;box-shadow:0 2px 6px var(–shadow);}
 .upload-zone.over{border-color:var(–clay);}
 .upload-h{font-family:‘Barlow Condensed’,sans-serif;font-size:1rem;letter-spacing:2px;color:var(–ink);margin-bottom:4px;font-weight:800;}
 .upload-p{font-size:0.77rem;color:var(–muted);line-height:1.5;margin-bottom:10px;}
-.btn-clay{display:inline-block;background:var(–clay);color:#fff;font-family:‘Barlow Condensed’,sans-serif;font-size:0.82rem;letter-spacing:2px;padding:8px 18px;border-radius:8px;cursor:pointer;border:none;font-weight:700;-webkit-tap-highlight-color:transparent;}
+.btn-clay{display:inline-block;background:var(–clay);color:#fff;font-family:‘Barlow Condensed’,sans-serif;font-size:0.82rem;letter-spacing:2px;padding:8px 18px;border-radius:8px;cursor:pointer;border:none;font-weight:700;-webkit-tap-highlight-color:transparent;transition:background 0.15s,transform 0.1s;}
+.btn-clay:hover{background:var(–clay-l);}
+.btn-clay:active{transform:scale(0.97);}
 .gamelog{background:var(–panel);border:1.5px solid var(–border2);border-radius:11px;padding:12px 14px;margin-bottom:10px;box-shadow:0 2px 6px var(–shadow);}
 .gamelog h4{font-family:‘Barlow Condensed’,sans-serif;font-size:0.8rem;letter-spacing:2px;color:var(–clay);margin-bottom:10px;font-weight:800;}
 .glog-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(–border);}
@@ -342,7 +353,8 @@ body.gameday .tab-scroll{padding-bottom:80px;}
 .glog-del{font-size:0.7rem;color:var(–bad);cursor:pointer;background:none;border:1.5px solid var(–bad);padding:3px 8px;border-radius:5px;font-weight:700;-webkit-tap-highlight-color:transparent;}
 .stats-note{background:rgba(26,122,56,0.09);border:1.5px solid rgba(26,122,56,0.3);border-radius:9px;padding:10px 13px;margin-bottom:10px;font-size:0.78rem;color:var(–ink2);line-height:1.5;}
 .stats-note strong{color:var(–good);font-family:‘Barlow Condensed’,sans-serif;letter-spacing:1px;display:block;margin-bottom:3px;font-weight:800;}
-.btn-clear{background:transparent;border:1.5px solid var(–bad);color:var(–bad);font-family:‘Barlow Condensed’,sans-serif;font-size:0.72rem;letter-spacing:2px;padding:6px 12px;border-radius:7px;cursor:pointer;margin-bottom:10px;font-weight:700;}
+.btn-clear{background:transparent;border:1.5px solid var(–bad);color:var(–bad);font-family:‘Barlow Condensed’,sans-serif;font-size:0.72rem;letter-spacing:2px;padding:6px 12px;border-radius:7px;cursor:pointer;margin-bottom:10px;font-weight:700;transition:background 0.15s;}
+.btn-clear:hover{background:rgba(176,24,24,0.08);}
 /* Stats table — wider grid with horizontal scroll on phone, sticky player column */
 .stats-scroll{overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;margin-bottom:6px;border-radius:9px;position:relative;}
 .stats-scroll::-webkit-scrollbar{height:6px;}
@@ -400,7 +412,9 @@ body.gameday .tab-scroll{padding-bottom:80px;}
 .btn-gen{background:var(–clay);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-family:‘Barlow Condensed’,sans-serif;font-size:0.75rem;letter-spacing:2px;cursor:pointer;margin-top:6px;font-weight:700;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .aov-label{font-family:‘Barlow Condensed’,sans-serif;font-size:0.65rem;letter-spacing:2px;color:var(–muted);display:block;margin-bottom:5px;font-weight:700;margin-top:8px;}
 .aov-sel{background:var(–panel2);border:1.5px solid var(–border2);color:var(–ink);border-radius:7px;padding:7px 9px;width:100%;font-family:‘Barlow’,sans-serif;font-size:0.83rem;cursor:pointer;appearance:none;font-weight:600;}
-.btn-print{width:100%;padding:14px;background:var(–clay);color:#fff;border:none;border-radius:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:1rem;letter-spacing:3px;cursor:pointer;margin-top:6px;font-weight:700;min-height:52px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.btn-print{width:100%;padding:14px;background:var(–clay);color:#fff;border:none;border-radius:9px;font-family:‘Barlow Condensed’,sans-serif;font-size:1rem;letter-spacing:3px;cursor:pointer;margin-top:6px;font-weight:700;min-height:52px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background 0.15s,transform 0.1s;}
+.btn-print:hover{background:var(–clay-l);}
+.btn-print:active{transform:scale(0.99);}
 .age-tag{display:inline-block;font-size:0.6rem;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:3px;vertical-align:middle;}
 .a10{background:rgba(154,104,0,0.15);color:var(–gold);}
 .a9{background:rgba(26,122,56,0.15);color:var(–good);}
@@ -1512,7 +1526,8 @@ function renderBatting(){
   });
   sc.appendChild(list);
 
-  const printBtn=document.createElement('button');printBtn.className='btn-print';printBtn.textContent='📄 EXPORT BATTING ORDER';printBtn.onclick=exportPDF;sc.appendChild(printBtn);
+  const printBtn=document.createElement('button');printBtn.className='btn-print';printBtn.textContent='📄 EXPORT GAME-DAY PDF';printBtn.onclick=exportGameDayPDF;sc.appendChild(printBtn);
+  const printSub=document.createElement('div');printSub.style.cssText='font-size:0.66rem;color:var(--muted);text-align:center;margin-top:5px;font-weight:600;';printSub.textContent='Page 1: Batting order · Page 2: Defense by inning';sc.appendChild(printSub);
 }
 
 function doDrop(ti){const src=dragIdx!==null?dragIdx:touchDragIdx;if(src===null||src===ti)return;const m=battingOrder.splice(src,1)[0];battingOrder.splice(ti,0,m);save();renderBatting();}
@@ -1560,7 +1575,7 @@ function renderDefense(){
     save();renderDefense();renderBatting();showSaved();
   };
   sc.appendChild(resetDefBtn);
-  const dugoutBtn=document.createElement('button');dugoutBtn.className='btn-print';dugoutBtn.style.marginTop='6px';dugoutBtn.textContent='📋 EXPORT DEFENSE BY INNING';dugoutBtn.onclick=exportDugout;sc.appendChild(dugoutBtn);
+  const exportNote=document.createElement('div');exportNote.style.cssText='font-size:0.7rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.4;font-weight:600;';exportNote.innerHTML='Defense PDF is included in the <strong>📄 EXPORT GAME-DAY PDF</strong> on the BAT tab (page 2).';sc.appendChild(exportNote);
 }
 function toggleFairPlay(on){fairPlayMode=on;save();autoSuggestAll();save();renderDefense();renderBatting();}
 function countChanges(bi){if(!bi||!defBlocks[bi-1])return 10;const prev=defBlocks[bi-1].assignments,cur=defBlocks[bi].assignments,pm={};Object.entries(prev).forEach(([p,pi])=>pm[pi]=p);let c=0;Object.entries(cur).forEach(([p,pi])=>{if(pm[pi]!==p)c++;});return c;}
@@ -2298,75 +2313,33 @@ function renderAwards(){
 }
 
 // ── EXPORT PDF ────────────────────────────────────────────────────────────────
-function exportPDF(){
+// Produces a single 2-page PDF for game day:
+//   • Page 1 (portrait): batting order one-pager + 10B rules summary
+//   • Page 2 (landscape): defense by inning, three columns, alphabetized
+// Both are printed in one job so the coach gets a single PDF to share.
+function exportGameDayPDF(){
   const card=document.getElementById('pdf-card');
-  const today=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const todayLong=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const todayShort=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   const st=seasonTotals();
-  _setPrintPage('portrait');
+  // Mixed orientation: page 1 portrait, page 2 landscape — handled per-section via CSS
+  _setMixedPrintPage();
 
-  // Batting rows — larger fonts since this is the only thing on the page
+  // ── PAGE 1: Batting order (portrait) ──
   const batRows=battingOrder.map((b,i)=>{
     const p=roster[b.idx];
     const s=st[b.idx];
     const statStr=s&&s.ab>0?`${s.avg.toFixed(3)} / ${s.obp.toFixed(3)}`:'—';
-    const numCls='bat-solo-num';
     const dispPos=getStartingPos(b.idx);
     return `<tr>
-      <td class="${numCls}">${i+1}</td>
+      <td class="bat-solo-num">${i+1}</td>
       <td class="bat-solo-name">${p.name}</td>
       <td class="bat-solo-pos">${dispPos}</td>
       <td class="bat-solo-stat">${statStr}</td>
     </tr>`;
   }).join('');
 
-  card.innerHTML=`
-    <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;">
-      <div class="pdf-hdr">
-        <div>
-          <div class="pdf-team">🌶️ RED HOT CHILI PEPPERS</div>
-          <div class="pdf-sub">TVL MINORS 10B · BATTING ORDER</div>
-        </div>
-        <div class="pdf-meta">
-          <div><strong>${today}</strong></div>
-          <div>vs. ___________________</div>
-          <div>&#9744; Home &nbsp; &#9744; Away</div>
-        </div>
-      </div>
-      <table class="pdf-bat-solo-table">
-        <thead>
-          <tr>
-            <th class="c" style="width:36px;">#</th>
-            <th>PLAYER</th>
-            <th class="c" style="width:50px;">POS</th>
-            <th style="width:120px;">AVG / OBP</th>
-          </tr>
-        </thead>
-        <tbody>${batRows}</tbody>
-      </table>
-      <div class="pdf-rules" style="margin-top:14px;">
-        <div class="pdf-rules-title">10B RULES — KNOW COLD (differences vs. standard baseball/softball)</div>
-        <div class="pdf-rule"><strong>WALKS/HBP:</strong> Bases loaded + ball 4 → pitcher stays in, coach pitches to that batter (count carries over). HBP = batter takes 1st — EXCEPT when coach is pitching (no base awarded).</div>
-        <div class="pdf-rule"><strong>STEALING:</strong> No stealing home. No advancing on an overthrow during a steal. No stealing if up by 10+.</div>
-        <div class="pdf-rule"><strong>BUNTING:</strong> Only 1 batter may square to bunt per inning. No slash bunting (show bunt then swing = dead ball, batter out).</div>
-        <div class="pdf-rule"><strong>SCORING:</strong> 4-run cap per inning (final inning is unlimited). Run-ahead: 12 after 3, 10 after 4, 8 after 5.</div>
-        <div class="pdf-rule"><strong>PITCHING:</strong> 3-inning limit per game. Pitcher removed after 3 direct HBPs in an inning (bounced pitches don't count). Only the starter can return to the mound.</div>
-        <div class="pdf-rule"><strong>DEFENSE:</strong> 10 fielders (4 OF). Max 6 infielders at pitch release. No infield fly rule. No advancing on dropped 3rd strike.</div>
-      </div>
-      <div class="pdf-footer">
-        <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
-        <span>${today}</span>
-      </div>
-    </div>`;
-  window.print();
-}
-
-
-function exportDugout(){
-  const card=document.getElementById('pdf-card');
-  const today=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  _setPrintPage('landscape');
-
-  // Three columns, one per inning block, alphabetized by first name for quick lookup
+  // ── PAGE 2: Defense by inning (landscape) ──
   const colsHTML=defBlocks.map((block,bi)=>{
     const label=['INNINGS 1–2','INNINGS 3–4','INNINGS 5–6'][bi];
     const benchName=roster[block.benchIdx].name;
@@ -2387,27 +2360,84 @@ function exportDugout(){
   }).join('');
 
   card.innerHTML=`
-    <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;">
-      <table style="width:100%;border-collapse:collapse;border-bottom:4px solid #C22818;margin-bottom:12px;">
-        <tr>
-          <td style="padding-bottom:7px;">
-            <div style="font-size:18pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS — DEFENSE</div>
-            <div style="font-size:8pt;letter-spacing:3px;color:#555;margin-top:3px;">TVL MINORS 10B · FIND YOUR NAME → FIND YOUR POSITION</div>
-          </td>
-          <td style="text-align:right;padding-bottom:7px;white-space:nowrap;">
-            <div style="font-size:11pt;font-weight:700;">${today}</div>
-            <div style="font-size:9pt;color:#555;">vs. _______________</div>
-          </td>
-        </tr>
-      </table>
-      <table style="width:100%;border-collapse:collapse;"><tr>${colsHTML}</tr></table>
-      <div style="margin-top:10px;border-top:1px solid #ddd;padding-top:4px;display:flex;justify-content:space-between;font-size:6.5pt;color:#bbb;letter-spacing:1px;">
-        <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
-        <span>Post in dugout — check position each inning change</span>
-        <span>${today}</span>
-      </div>
+    <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;">
+      <!-- Page 1: Batting Order (portrait) -->
+      <section class="pdf-page-portrait">
+        <div class="pdf-hdr">
+          <div>
+            <div class="pdf-team">🌶️ RED HOT CHILI PEPPERS</div>
+            <div class="pdf-sub">TVL MINORS 10B · BATTING ORDER</div>
+          </div>
+          <div class="pdf-meta">
+            <div><strong>${todayLong}</strong></div>
+            <div>vs. ___________________</div>
+            <div>&#9744; Home &nbsp; &#9744; Away</div>
+          </div>
+        </div>
+        <table class="pdf-bat-solo-table">
+          <thead>
+            <tr>
+              <th class="c" style="width:36px;">#</th>
+              <th>PLAYER</th>
+              <th class="c" style="width:50px;">POS</th>
+              <th style="width:120px;">AVG / OBP</th>
+            </tr>
+          </thead>
+          <tbody>${batRows}</tbody>
+        </table>
+        <div class="pdf-rules" style="margin-top:14px;">
+          <div class="pdf-rules-title">10B RULES — KNOW COLD (differences vs. standard baseball/softball)</div>
+          <div class="pdf-rule"><strong>WALKS/HBP:</strong> Bases loaded + ball 4 → pitcher stays in, coach pitches to that batter (count carries over). HBP = batter takes 1st — EXCEPT when coach is pitching (no base awarded).</div>
+          <div class="pdf-rule"><strong>STEALING:</strong> No stealing home. No advancing on an overthrow during a steal. No stealing if up by 10+.</div>
+          <div class="pdf-rule"><strong>BUNTING:</strong> Only 1 batter may square to bunt per inning. No slash bunting (show bunt then swing = dead ball, batter out).</div>
+          <div class="pdf-rule"><strong>SCORING:</strong> 4-run cap per inning (final inning is unlimited). Run-ahead: 12 after 3, 10 after 4, 8 after 5.</div>
+          <div class="pdf-rule"><strong>PITCHING:</strong> 3-inning limit per game. Pitcher removed after 3 direct HBPs in an inning (bounced pitches don't count). Only the starter can return to the mound.</div>
+          <div class="pdf-rule"><strong>DEFENSE:</strong> 10 fielders (4 OF). Max 6 infielders at pitch release. No infield fly rule. No advancing on dropped 3rd strike.</div>
+        </div>
+        <div class="pdf-footer">
+          <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
+          <span>${todayLong}</span>
+        </div>
+      </section>
+
+      <!-- Page 2: Defense by Inning (landscape) -->
+      <section class="pdf-page-landscape">
+        <table style="width:100%;border-collapse:collapse;border-bottom:4px solid #C22818;margin-bottom:12px;">
+          <tr>
+            <td style="padding-bottom:7px;">
+              <div style="font-size:18pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS — DEFENSE</div>
+              <div style="font-size:8pt;letter-spacing:3px;color:#555;margin-top:3px;">TVL MINORS 10B · FIND YOUR NAME → FIND YOUR POSITION</div>
+            </td>
+            <td style="text-align:right;padding-bottom:7px;white-space:nowrap;">
+              <div style="font-size:11pt;font-weight:700;">${todayShort}</div>
+              <div style="font-size:9pt;color:#555;">vs. _______________</div>
+            </td>
+          </tr>
+        </table>
+        <table style="width:100%;border-collapse:collapse;"><tr>${colsHTML}</tr></table>
+        <div style="margin-top:10px;border-top:1px solid #ddd;padding-top:4px;display:flex;justify-content:space-between;font-size:6.5pt;color:#bbb;letter-spacing:1px;">
+          <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
+          <span>Post in dugout — check position each inning change</span>
+          <span>${todayShort}</span>
+        </div>
+      </section>
     </div>`;
   window.print();
+}
+
+// Mixed orientation print: per-page CSS with named pages so page 1 is portrait
+// and page 2 is landscape in the same print job. Browsers that don't support
+// named pages fall back to portrait for both — still legible.
+function _setMixedPrintPage(){
+  const e=document.getElementById('_print_page_style');if(e)e.remove();
+  const s=document.createElement('style');s.id='_print_page_style';
+  s.textContent=`@media print {
+    @page portraitPage { size: letter portrait; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} }
+    @page landscapePage { size: letter landscape; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} }
+    .pdf-page-portrait { page: portraitPage; page-break-after: always; }
+    .pdf-page-landscape { page: landscapePage; page-break-before: always; }
+  }`;
+  document.head.appendChild(s);
 }
 
 function _setPrintPage(orientation){const e=document.getElementById('_print_page_style');if(e)e.remove();const s=document.createElement('style');s.id='_print_page_style';s.textContent=`@media print { @page { size: letter ${orientation}; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} } }`;document.head.appendChild(s);}
