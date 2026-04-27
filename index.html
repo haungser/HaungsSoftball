@@ -587,7 +587,10 @@ let battingOrder=[
   {idx:6,batPos:'2B'},{idx:7,batPos:'LC'},{idx:8,batPos:'CF'},
   {idx:9,batPos:'RF'},{idx:10,batPos:'EH'}
 ];
-let defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];
+let defBlocks=[
+  {benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}},
+  {benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}
+];
 let fairPlayMode=false;
 let gameDay=false;
 let pendingCsv=null;  // CSV import preview state
@@ -602,7 +605,8 @@ let dragRowH=72,rafPending=false,lastDestIdx=null,rowRects=[];
 // ── PERSIST ───────────────────────────────────────────────────────────────────
 const SK='haungs10b-v1';
 function save(){try{localStorage.setItem(SK,JSON.stringify({roster,battingOrder,defBlocks,gameLog,awardOverrides,awardNotes,awardBlurbs,awardBlurbVariants,fairPlayMode,gameDay,gameAbsences}));}catch(e){}}
-function load(){try{const r=localStorage.getItem(SK);if(!r)return;const s=JSON.parse(r);if(s.roster)roster=s.roster;if(s.battingOrder)battingOrder=s.battingOrder;if(s.defBlocks)defBlocks=s.defBlocks;if(s.gameLog)gameLog=s.gameLog;if(s.awardOverrides)awardOverrides=s.awardOverrides;if(s.awardNotes)awardNotes=s.awardNotes;if(s.awardBlurbs)awardBlurbs=s.awardBlurbs;if(s.awardBlurbVariants)awardBlurbVariants=s.awardBlurbVariants;if(typeof s.fairPlayMode==='boolean')fairPlayMode=s.fairPlayMode;if(typeof s.gameDay==='boolean')gameDay=s.gameDay;if(s.gameAbsences)gameAbsences=s.gameAbsences;}catch(e){}}
+function load(){try{const r=localStorage.getItem(SK);if(!r)return;const s=JSON.parse(r);if(s.roster)roster=s.roster;if(s.battingOrder)battingOrder=s.battingOrder;if(s.defBlocks){defBlocks=s.defBlocks;// Migrate: if saved data has 3 blocks (old format), expand to 6
+if(defBlocks.length===3){defBlocks=[...defBlocks,...defBlocks.map(b=>({benchIdx:b.benchIdx,assignments:{}}))];}}if(s.gameLog)gameLog=s.gameLog;if(s.awardOverrides)awardOverrides=s.awardOverrides;if(s.awardNotes)awardNotes=s.awardNotes;if(s.awardBlurbs)awardBlurbs=s.awardBlurbs;if(s.awardBlurbVariants)awardBlurbVariants=s.awardBlurbVariants;if(typeof s.fairPlayMode==='boolean')fairPlayMode=s.fairPlayMode;if(typeof s.gameDay==='boolean')gameDay=s.gameDay;if(s.gameAbsences)gameAbsences=s.gameAbsences;}catch(e){}}
 
 // ── THEME ─────────────────────────────────────────────────────────────────────
 function toggleTheme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('tv10b-theme',h.dataset.theme);}catch(e){}}
@@ -760,7 +764,7 @@ const IF_POS=new Set(['P','C','1B','2B','3B','SS']);
 const OF_POS=new Set(['LF','LC','CF','RF']);
 
 function buildSuggest(benchIdx,prev,pp,allBlocks){
-  const pool=roster.map((_,i)=>i).filter(i=>i!==benchIdx);
+  const pool=roster.map((_,i)=>i).filter(i=>benchIdx===null||i!==benchIdx);
   const assigned={},used=new Set();
   const prevMap={};if(prev)Object.entries(prev).forEach(([p,pi])=>prevMap[pi]=p);
   const ppMap={};if(pp)Object.entries(pp).forEach(([p,pi])=>ppMap[pi]=p);
@@ -768,7 +772,7 @@ function buildSuggest(benchIdx,prev,pp,allBlocks){
   if(fairPlayMode&&allBlocks){
     const ifCount={},ofCount={};
     pool.forEach(pi=>{ifCount[pi]=0;ofCount[pi]=0;});
-    (allBlocks||[]).forEach(b=>{if(!b||!b.assignments)return;Object.entries(b.assignments).forEach(([pos,pi])=>{if(IF_POS.has(pos))ifCount[pi]=(ifCount[pi]||0)+2;if(OF_POS.has(pos))ofCount[pi]=(ofCount[pi]||0)+2;});});
+    (allBlocks||[]).forEach(b=>{if(!b||!b.assignments)return;Object.entries(b.assignments).forEach(([pos,pi])=>{if(IF_POS.has(pos))ifCount[pi]=(ifCount[pi]||0)+1;if(OF_POS.has(pos))ofCount[pi]=(ofCount[pi]||0)+1;});});
     const needsIF=pool.filter(pi=>ifCount[pi]===0);
     const needsOF=pool.filter(pi=>ofCount[pi]===0);
     const ifPositions=[...IF_POS].filter(p=>POS_PRI.includes(p));
@@ -798,7 +802,7 @@ function autoSuggest(bi){
   defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks);
 }
 function autoSuggestAll(){
-  for(let bi=0;bi<3;bi++){
+  for(let bi=0;bi<6;bi++){
     const prev=bi>0?defBlocks[bi-1].assignments:null;
     const pp=bi>1?defBlocks[bi-2].assignments:null;
     const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>({assignments:{...b.assignments}})):null;
@@ -808,7 +812,7 @@ function autoSuggestAll(){
 function getFairPlayCompliance(){
   const result={};
   roster.forEach((_,pi)=>{result[pi]={if:0,of:0};});
-  defBlocks.forEach(block=>{Object.entries(block.assignments).forEach(([pos,pi])=>{if(IF_POS.has(pos))result[pi].if+=2;if(OF_POS.has(pos))result[pi].of+=2;});});
+  defBlocks.forEach(block=>{Object.entries(block.assignments).forEach(([pos,pi])=>{if(IF_POS.has(pos))result[pi].if+=1;if(OF_POS.has(pos))result[pi].of+=1;});});
   return result;
 }
 function syncBatPos(pi,pos){const b=battingOrder.find(b=>b.idx===pi);if(b)b.batPos=pos;}
@@ -829,7 +833,7 @@ function manualDefAssign(bi,pos,newPi){
 //          5 = arriving Inn 5 (missed blocks 0 and 1)
 // For "out whole game" we store a sentinel value 99.
 
-const INNING_BLOCKS=[1,3,5]; // Inning numbers where each block starts
+const INNING_BLOCKS=[1,2,3,4,5,6]; // Inning number for each block
 function absenceStatus(idx){
   const v=gameAbsences[idx];
   if(v===undefined)return{key:'playing',label:'Playing',cls:'playing'};
@@ -838,12 +842,12 @@ function absenceStatus(idx){
   if(v===5)return{key:'late5',label:'Arriving Inn 5',cls:'late'};
   return{key:'playing',label:'Playing',cls:'playing'};
 }
-// Returns true if player is available during the given inning-block index (0/1/2)
+// Returns true if player is available during the given inning-block index (0-5)
 function availableInBlock(idx,blockIdx){
   const v=gameAbsences[idx];
   if(v===undefined)return true;
   if(v===99)return false;
-  // v is the inning number they arrive — block inning start must be >= v
+  // v is the inning number they arrive — block inning must be >= v
   return INNING_BLOCKS[blockIdx]>=v;
 }
 function availableAllGame(idx){const v=gameAbsences[idx];return v===undefined;}
@@ -901,10 +905,10 @@ function buildGameDayPlan(){
 
   // Defense: per block, rebuild using available players
   const newBlocks=[];
-  for(let bi=0;bi<3;bi++){
+  for(let bi=0;bi<6;bi++){
     const available=roster.map((_,i)=>i).filter(i=>availableInBlock(i,bi));
     if(available.length<10){
-      warnings.push(`Inn ${INNING_BLOCKS[bi]}–${INNING_BLOCKS[bi]+1}: only ${available.length} players available (need 10 fielders + 1 bench)`);
+      warnings.push(`Inning ${INNING_BLOCKS[bi]}: only ${available.length} players available (need 10 fielders + 1 bench)`);
       newBlocks.push({benchIdx:null,assignments:{},insufficient:true,availableCount:available.length});
       continue;
     }
@@ -1263,7 +1267,7 @@ function removePlayer(idx){
 
   // Reindex defense blocks
   defBlocks=defBlocks.map(block=>{
-    const newBench=block.benchIdx===idx
+    const newBench=block.benchIdx===null?null:block.benchIdx===idx
       ? (roster.length>0?Math.min(block.benchIdx,roster.length-1):0)
       : (block.benchIdx>idx?block.benchIdx-1:block.benchIdx);
     const newAssignments={};
@@ -1383,8 +1387,8 @@ function restoreData(input){
 // Only block 0 matters — that's the player's "starting position".
 // The bench player for block 0 gets EH.
 function getStartingPos(playerIdx) {
-  // If this player is on the bench for innings 1-2, they are EH
-  if (defBlocks[0].benchIdx === playerIdx) return 'EH';
+  // If this player is on the bench for inning 1, they are EH
+  if (defBlocks[0].benchIdx !== null && defBlocks[0].benchIdx === playerIdx) return 'EH';
   // Otherwise, look up their position in block 0 assignments
   const pos = Object.entries(defBlocks[0].assignments).find(([,pi])=>pi===playerIdx)?.[0];
   return pos || battingOrder.find(b=>b.idx===playerIdx)?.batPos || 'P';
@@ -1527,7 +1531,7 @@ function renderBatting(){
   sc.appendChild(list);
 
   const printBtn=document.createElement('button');printBtn.className='btn-print';printBtn.textContent='📄 EXPORT GAME-DAY PDF';printBtn.onclick=exportGameDayPDF;sc.appendChild(printBtn);
-  const printSub=document.createElement('div');printSub.style.cssText='font-size:0.66rem;color:var(--muted);text-align:center;margin-top:5px;font-weight:600;';printSub.textContent='Single landscape page · batting order + defense by inning';sc.appendChild(printSub);
+  const printSub=document.createElement('div');printSub.style.cssText='font-size:0.66rem;color:var(--muted);text-align:center;margin-top:5px;font-weight:600;';printSub.textContent='Single portrait page · batting order + defense by inning (all 6)';sc.appendChild(printSub);
 }
 
 function doDrop(ti){const src=dragIdx!==null?dragIdx:touchDragIdx;if(src===null||src===ti)return;const m=battingOrder.splice(src,1)[0];battingOrder.splice(ti,0,m);save();renderBatting();}
@@ -1535,10 +1539,10 @@ function moveRow(i,dir){const ti=i+dir;if(ti<0||ti>=battingOrder.length)return;c
 function updateBatPos(i,v){battingOrder[i].batPos=v;save();}
 
 // ── DEFENSE TAB ───────────────────────────────────────────────────────────────
-const BLK=['Innings 1–2','Innings 3–4','Innings 5–6'];
+const BLK=['Inning 1','Inning 2','Inning 3','Inning 4','Inning 5','Inning 6'];
 function renderDefense(){
   const sc=document.getElementById('sc-defense');sc.innerHTML='';
-  sc.appendChild(Object.assign(document.createElement('div'),{className:'slabel',textContent:'SELECT BENCH · ✦ SUGGEST FILLS 10 POSITIONS'}));
+  sc.appendChild(Object.assign(document.createElement('div'),{className:'slabel',textContent:'SELECT BENCH (OR NO BENCH) · ✦ SUGGEST FILLS POSITIONS'}));
   const fpBanner=document.createElement('div');fpBanner.className='fp-banner';
   fpBanner.innerHTML=`<div class="fp-icon">⚖️</div><div class="fp-text"><div class="fp-label">FAIR PLAY MODE</div><div class="fp-sub">Ensures every player gets ≥2 innings in IF <em>and</em> ≥2 innings in OF per game</div></div><label class="fp-toggle"><input type="checkbox" id="fpToggle" ${fairPlayMode?'checked':''} onchange="toggleFairPlay(this.checked)"><span class="fp-slider"></span></label>`;
   sc.appendChild(fpBanner);
@@ -1554,12 +1558,13 @@ function renderDefense(){
     if(!Object.keys(block.assignments).length)autoSuggest(bi);
     const wrap=document.createElement('div');wrap.className='iblock';
     const hdr=document.createElement('div');hdr.className='iblock-hdr open';
-    hdr.innerHTML=`<div class="iblock-hdr-left"><div class="iblock-title">${BLK[bi]}</div><div class="iblock-bench" id="btag-${bi}">BENCH: ${fn(block.benchIdx)}</div></div><span class="iblock-chev">▼</span>`;
+    hdr.innerHTML=`<div class="iblock-hdr-left"><div class="iblock-title">${BLK[bi]}</div><div class="iblock-bench" id="btag-${bi}">${block.benchIdx===null?'NO BENCH':'BENCH: '+fn(block.benchIdx)}</div></div><span class="iblock-chev">▼</span>`;
     const body=document.createElement('div');body.className='iblock-body open';body.id=`dbody-${bi}`;
     hdr.addEventListener('click',()=>{hdr.classList.toggle('open');body.classList.toggle('open');});
     const br=document.createElement('div');br.className='bench-row';
-    const bOpts=roster.map((p,i)=>`<option value="${i}" ${i===block.benchIdx?'selected':''}>${p.name}</option>`).join('');
-    br.innerHTML=`<span class="bench-lbl">BENCH</span><select class="bench-sel" onchange="setBench(${bi},+this.value)">${bOpts}</select><button class="suggest-btn" onclick="doSuggest(${bi})">✦ SUGGEST</button>`;
+    const noBenchSel=block.benchIdx===null?'selected':'';
+    const bOpts=`<option value="-1" ${noBenchSel}>— No bench (10 players field)</option>`+roster.map((p,i)=>`<option value="${i}" ${i===block.benchIdx?'selected':''}>${p.name}</option>`).join('');
+    br.innerHTML=`<span class="bench-lbl">BENCH</span><select class="bench-sel" onchange="setBench(${bi},this.value)">${bOpts}</select><button class="suggest-btn" onclick="doSuggest(${bi})">✦ SUGGEST</button>`;
     body.appendChild(br);
     const leg=document.createElement('div');leg.className='fit-legend';leg.innerHTML=`<span><span class="fit-dot fit-g"></span>Primary</span><span><span class="fit-dot fit-o"></span>Secondary</span><span><span class="fit-dot fit-w"></span>Stretch</span>`;
     body.appendChild(leg);
@@ -1570,12 +1575,15 @@ function renderDefense(){
   resetDefBtn.className='btn-red-outline';resetDefBtn.style.marginTop='4px';
   resetDefBtn.textContent='↺ RESET DEFENSE TO FRESH SUGGEST';
   resetDefBtn.onclick=()=>{
-    defBlocks=[{benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}];
+    defBlocks=[
+      {benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}},
+      {benchIdx:10,assignments:{}},{benchIdx:8,assignments:{}},{benchIdx:9,assignments:{}}
+    ];
     defBlocks.forEach((_,bi)=>autoSuggest(bi));
     save();renderDefense();renderBatting();showSaved();
   };
   sc.appendChild(resetDefBtn);
-  const exportNote=document.createElement('div');exportNote.style.cssText='font-size:0.7rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.4;font-weight:600;';exportNote.innerHTML='Defense is included on the single-page <strong>📄 EXPORT GAME-DAY PDF</strong> on the BAT tab.';sc.appendChild(exportNote);
+  const exportNote=document.createElement('div');exportNote.style.cssText='font-size:0.7rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.4;font-weight:600;';exportNote.innerHTML='Defense is included on the <strong>📄 EXPORT GAME-DAY PDF</strong> on the BAT tab — all 6 innings shown.';sc.appendChild(exportNote);
 }
 function toggleFairPlay(on){fairPlayMode=on;save();autoSuggestAll();save();renderDefense();renderBatting();}
 function countChanges(bi){if(!bi||!defBlocks[bi-1])return 10;const prev=defBlocks[bi-1].assignments,cur=defBlocks[bi].assignments,pm={};Object.entries(prev).forEach(([p,pi])=>pm[pi]=p);let c=0;Object.entries(cur).forEach(([p,pi])=>{if(pm[pi]!==p)c++;});return c;}
@@ -1589,29 +1597,34 @@ function renderDefGrid(bi){
     const ai=block.assignments[pos],cell=document.createElement('div');cell.className='def-cell';
     const f=ai!==undefined?fit(ai,pos):0,dotCls=f===2?'fit-dot fit-g':f===1?'fit-dot fit-o':'fit-dot fit-w';
     const dup=ai!==undefined&&seen.has(ai);if(ai!==undefined)seen.add(ai);
-    const pOpts=roster.map((p,i)=>i===block.benchIdx?'':`<option value="${i}" ${i===ai?'selected':''}>${fn(i)}</option>`).join('');
+    const pOpts=roster.map((p,i)=>block.benchIdx!==null&&i===block.benchIdx?'':`<option value="${i}" ${i===ai?'selected':''}>${fn(i)}</option>`).join('');
     cell.innerHTML=`<div class="def-pos" ${dup?'style="color:var(--bad)"':''}>${pos}${dup?' ⚠':''}</div><select class="def-psel" onchange="manualDefAssign(${bi},'${pos}',+this.value)">${pOpts}</select><div class="${dotCls}"></div>`;
     grid.appendChild(cell);
   });
   // Batting reads defBlocks directly via getStartingPos — no re-render needed here
 }
 
-function setBench(bi,pi){
+
+function setBench(bi,val){
+  const pi=val==='-1'||val===null?null:+val;
   const old=defBlocks[bi].benchIdx;
-  const taken=Object.entries(defBlocks[bi].assignments).find(([,v])=>v===pi);
-  if(taken){defBlocks[bi].assignments[taken[0]]=old;syncBatPos(old,taken[0]);}
+  // If a player was previously in the field and is being moved to bench, swap them out
+  if(pi!==null){
+    const taken=Object.entries(defBlocks[bi].assignments).find(([,v])=>v===pi);
+    if(taken&&old!==null){defBlocks[bi].assignments[taken[0]]=old;syncBatPos(old,taken[0]);}
+    else if(taken){delete defBlocks[bi].assignments[taken[0]];}
+  }
+  // If old bench player needs to be put back into a field slot, remove their EH
+  if(old!==null&&bi===0){battingOrder.forEach(b=>{if(b.idx===old)b.batPos=getStartingPos(old);});}
   defBlocks[bi].benchIdx=pi;
   // EH assignment: block 0 bench player => EH in batting order
-  if(bi===0){
-    const ehRow=battingOrder.find(b=>b.batPos==='EH'||b.idx===pi||b.idx===old);
-    battingOrder.forEach(b=>{if(b.idx===pi)b.batPos='EH';if(b.idx===old&&old!==pi)b.batPos=getStartingPos(old);});
-  }
-  const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(pi);
+  if(bi===0&&pi!==null){battingOrder.forEach(b=>{if(b.idx===pi)b.batPos='EH';});}
+  const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent=pi===null?'NO BENCH':'BENCH: '+fn(pi);
   save();renderDefGrid(bi);renderBatting();refreshComplianceChips();
 }
 function doSuggest(bi){
-  if(fairPlayMode){autoSuggestAll();defBlocks.forEach((_,i)=>{const tag=document.getElementById(`btag-${i}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[i].benchIdx);renderDefGrid(i);});}
-  else{autoSuggest(bi);const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent='BENCH: '+fn(defBlocks[bi].benchIdx);renderDefGrid(bi);}
+  if(fairPlayMode){autoSuggestAll();defBlocks.forEach((_,i)=>{const tag=document.getElementById(`btag-${i}`);if(tag)tag.textContent=defBlocks[i].benchIdx===null?'NO BENCH':'BENCH: '+fn(defBlocks[i].benchIdx);renderDefGrid(i);});}
+  else{autoSuggest(bi);const tag=document.getElementById(`btag-${bi}`);if(tag)tag.textContent=defBlocks[bi].benchIdx===null?'NO BENCH':'BENCH: '+fn(defBlocks[bi].benchIdx);renderDefGrid(bi);}
   if(defBlocks[0].assignments){Object.entries(defBlocks[0].assignments).forEach(([pos,pi])=>syncBatPos(pi,pos));renderBatting();}
   save();refreshComplianceChips();
 }
@@ -1810,7 +1823,7 @@ function renderSettings(){
 
   // ── Save & reset buttons ──
   const sb=document.createElement('button');sb.className='btn-green';sb.textContent='✓ SAVE & APPLY TO LINEUP';sb.onclick=()=>{defBlocks.forEach((_,bi)=>autoSuggest(bi));save();renderAll();showSaved();};sc.appendChild(sb);
-  const rb=document.createElement('button');rb.className='btn-red-outline';rb.textContent='✕ RESET ALL APP DATA';rb.onclick=()=>{if(!confirm('Clear batting order, defense, stats, awards, and absences? Roster stays. (Tip: hit BACKUP first if you want a safety copy.)'))return;battingOrder=roster.map((_,i)=>({idx:i,batPos:'P'}));const n=roster.length;defBlocks=[{benchIdx:Math.max(0,n-1),assignments:{}},{benchIdx:Math.max(0,n-3),assignments:{}},{benchIdx:Math.max(0,n-2),assignments:{}}];gameLog=[];awardOverrides={};awardNotes={};awardBlurbs={};awardBlurbVariants={};gameAbsences={};save();renderAll();showSaved();};sc.appendChild(rb);
+  const rb=document.createElement('button');rb.className='btn-red-outline';rb.textContent='✕ RESET ALL APP DATA';rb.onclick=()=>{if(!confirm('Clear batting order, defense, stats, awards, and absences? Roster stays. (Tip: hit BACKUP first if you want a safety copy.)'))return;battingOrder=roster.map((_,i)=>({idx:i,batPos:'P'}));const n=roster.length;defBlocks=[{benchIdx:Math.max(0,n-1),assignments:{}},{benchIdx:Math.max(0,n-3),assignments:{}},{benchIdx:Math.max(0,n-2),assignments:{}},{benchIdx:Math.max(0,n-1),assignments:{}},{benchIdx:Math.max(0,n-3),assignments:{}},{benchIdx:Math.max(0,n-2),assignments:{}}];gameLog=[];awardOverrides={};awardNotes={};awardBlurbs={};awardBlurbVariants={};gameAbsences={};save();renderAll();showSaved();};sc.appendChild(rb);
 }
 
 function handleAddPlayer(){
@@ -2313,89 +2326,95 @@ function renderAwards(){
 }
 
 // ── EXPORT PDF ────────────────────────────────────────────────────────────────
-// Produces a single LANDSCAPE letter page for game day:
-//   • Left column: batting order (lineup card)
-//   • Right area: defense by inning — three blocks side-by-side
-// Designed to be printed once and posted in the dugout, with everything
-// you need at a glance and nothing you don't.
+// Portrait letter page.
+//   TOP half: batting order — clean, big, readable.
+//   BOTTOM half: defense by inning — 6 individual columns (Inn 1–6).
 function exportGameDayPDF(){
   const card=document.getElementById('pdf-card');
   const todayLong=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   const st=seasonTotals();
-  _setPrintPage('landscape');
+  _setPrintPage('portrait');
 
-  // Batting rows
+  // Batting rows — compact but readable
   const batRows=battingOrder.map((b,i)=>{
     const p=roster[b.idx];
     const s=st[b.idx];
-    const statStr=s&&s.ab>0?`${s.avg.toFixed(3)}/${s.obp.toFixed(3)}`:'—';
+    const avg=s&&s.ab>0?s.avg.toFixed(3):'—';
     const dispPos=getStartingPos(b.idx);
     const zebra=i%2===1?'background:#fafafa;':'';
     return `<tr style="${zebra}">
-      <td style="padding:6px 8px;font-size:13pt;font-weight:900;color:#C22818;text-align:center;border-bottom:1px solid #eee;width:30px;">${i+1}</td>
-      <td style="padding:6px 8px;font-size:12pt;font-weight:800;color:#111;border-bottom:1px solid #eee;">${p.name}</td>
-      <td style="padding:6px 8px;font-size:11pt;font-weight:800;color:#C22818;text-align:center;border-bottom:1px solid #eee;width:42px;">${dispPos}</td>
-      <td style="padding:6px 8px;font-size:9pt;font-weight:600;color:#555;text-align:right;border-bottom:1px solid #eee;width:90px;white-space:nowrap;">${statStr}</td>
+      <td style="padding:5px 8px;font-size:16pt;font-weight:900;color:#C22818;text-align:center;border-bottom:1px solid #eee;width:32px;">${i+1}</td>
+      <td style="padding:5px 8px;font-size:13pt;font-weight:800;color:#111;border-bottom:1px solid #eee;">${p.name}</td>
+      <td style="padding:5px 8px;font-size:12pt;font-weight:900;color:#C22818;text-align:center;border-bottom:1px solid #eee;width:44px;background:#fff8f8;">${dispPos}</td>
+      <td style="padding:5px 8px;font-size:9pt;font-weight:600;color:#777;text-align:right;border-bottom:1px solid #eee;width:60px;">${avg}</td>
     </tr>`;
   }).join('');
 
-  // Defense — three columns side-by-side, each its own table
+  // Defense — 6 individual inning columns
+  // Sort positions in a logical field order for readability
+  const POS_ORDER=['P','C','1B','2B','3B','SS','LF','LC','CF','RF'];
   const defColsHTML=defBlocks.map((block,bi)=>{
-    const label=['INN 1–2','INN 3–4','INN 5–6'][bi];
-    const benchName=roster[block.benchIdx].name;
-    const players=Object.entries(block.assignments)
-      .map(([pos,pi])=>({first:roster[pi].name.split(' ')[0],last:roster[pi].name.split(' ').slice(1).join(' '),pos}))
-      .sort((a,b)=>a.first.localeCompare(b.first));
-    const rows=players.map(({first,last,pos},idx)=>`
-      <tr style="background:${idx%2===0?'#fff':'#fafafa'};">
-        <td style="padding:5px 8px;font-size:10.5pt;font-weight:800;color:#111;border-bottom:1px solid #eee;line-height:1.15;">${first} <span style="font-size:7.5pt;font-weight:600;color:#666;">${last}</span></td>
-        <td style="padding:5px 8px;font-size:12pt;font-weight:900;color:#C22818;text-align:right;border-bottom:1px solid #eee;white-space:nowrap;width:38px;">${pos}</td>
-      </tr>`).join('');
-    return `<td style="vertical-align:top;padding:0 4px;width:33.3%;">
-      <table style="width:100%;border-collapse:collapse;border:2px solid #ddd;border-radius:5px;overflow:hidden;">
-        <tr><td colspan="2" style="background:#C22818;color:#fff;font-size:11pt;font-weight:900;letter-spacing:2px;padding:6px 8px;text-align:center;">${label}</td></tr>
-        <tr><td colspan="2" style="background:#fff3f3;color:#C22818;font-size:7.5pt;font-weight:700;letter-spacing:1px;padding:3px 8px;border-bottom:1px solid #fcc;text-align:center;">BENCH: ${benchName}</td></tr>
+    const label=`INN ${bi+1}`;
+    const benchName=block.benchIdx!==null&&roster[block.benchIdx]?roster[block.benchIdx].name.split(' ')[0]:'ALL IN';
+    // Build position → player name map, ordered by field position
+    const rows=POS_ORDER.map((pos,idx)=>{
+      const pi=block.assignments[pos];
+      const firstName=pi!==undefined?roster[pi].name.split(' ')[0]:'?';
+      return `<tr style="background:${idx%2===0?'#fff':'#fafafa'};">
+        <td style="padding:3px 5px;font-size:8.5pt;font-weight:900;color:#C22818;white-space:nowrap;width:28px;">${pos}</td>
+        <td style="padding:3px 5px;font-size:8.5pt;font-weight:700;color:#111;">${firstName}</td>
+      </tr>`;
+    }).join('');
+    return `<td style="vertical-align:top;padding:0 2px;width:16.66%;">
+      <table style="width:100%;border-collapse:collapse;border:1.5px solid #ddd;border-radius:4px;overflow:hidden;">
+        <tr><td colspan="2" style="background:#C22818;color:#fff;font-size:9pt;font-weight:900;letter-spacing:1px;padding:4px 5px;text-align:center;">${label}</td></tr>
+        <tr><td colspan="2" style="background:${block.benchIdx===null?'#e8f5e9':'#fff3f3'};color:${block.benchIdx===null?'#2e7d32':'#C22818'};font-size:6.5pt;font-weight:700;padding:2px 5px;border-bottom:1px solid ${block.benchIdx===null?'#c8e6c9':'#fcc'};text-align:center;">${block.benchIdx===null?'ALL IN':'OUT: '+benchName}</td></tr>
         ${rows}
       </table></td>`;
   }).join('');
 
   card.innerHTML=`
     <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;">
+
       <!-- Header -->
-      <table style="width:100%;border-collapse:collapse;border-bottom:3px solid #C22818;margin-bottom:10px;">
+      <table style="width:100%;border-collapse:collapse;border-bottom:3px solid #C22818;margin-bottom:8px;">
         <tr>
           <td style="padding-bottom:5px;">
-            <div style="font-size:18pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS</div>
-            <div style="font-size:8pt;letter-spacing:3px;color:#555;margin-top:3px;">TVL MINORS 10B · GAME DAY</div>
+            <div style="font-size:17pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS</div>
+            <div style="font-size:7.5pt;letter-spacing:3px;color:#555;margin-top:2px;">TVL MINORS 10B · GAME DAY CARD</div>
           </td>
-          <td style="text-align:right;padding-bottom:5px;white-space:nowrap;">
-            <div style="font-size:11pt;font-weight:800;">${todayLong}</div>
-            <div style="font-size:9pt;color:#555;">vs. ____________________ &nbsp; &#9744; Home &nbsp; &#9744; Away</div>
+          <td style="text-align:right;padding-bottom:5px;white-space:nowrap;vertical-align:bottom;">
+            <div style="font-size:10pt;font-weight:800;">${todayLong}</div>
+            <div style="font-size:8.5pt;color:#555;">vs. _________________ &nbsp; &#9744; Home &nbsp; &#9744; Away</div>
           </td>
         </tr>
       </table>
 
-      <!-- Two-column body: batting order left, defense right -->
-      <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
-        <tr>
-          <!-- LEFT: Batting order -->
-          <td style="vertical-align:top;width:38%;padding-right:10px;border-right:1.5px dashed #ccc;">
-            <div style="font-size:9pt;font-weight:900;letter-spacing:3px;color:#C22818;text-align:center;background:#fff3f3;padding:5px;border-radius:4px;margin-bottom:5px;">BATTING ORDER</div>
-            <table style="width:100%;border-collapse:collapse;">${batRows}</table>
-          </td>
-
-          <!-- RIGHT: Defense -->
-          <td style="vertical-align:top;width:62%;padding-left:10px;">
-            <div style="font-size:9pt;font-weight:900;letter-spacing:3px;color:#C22818;text-align:center;background:#fff3f3;padding:5px;border-radius:4px;margin-bottom:5px;">DEFENSE BY INNING — FIND YOUR NAME → FIND YOUR POSITION</div>
-            <table style="width:100%;border-collapse:collapse;"><tr>${defColsHTML}</tr></table>
-          </td>
-        </tr>
+      <!-- BATTING ORDER section -->
+      <div style="font-size:8pt;font-weight:900;letter-spacing:3px;color:#C22818;background:#fff3f3;padding:4px 8px;border-radius:4px;margin-bottom:5px;text-align:center;border:1px solid #fdd;">BATTING ORDER</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+        <thead>
+          <tr style="border-bottom:2px solid #C22818;">
+            <th style="font-size:7pt;letter-spacing:2px;color:#888;padding:0 8px 4px;text-align:center;width:32px;">#</th>
+            <th style="font-size:7pt;letter-spacing:2px;color:#888;padding:0 8px 4px;text-align:left;">PLAYER</th>
+            <th style="font-size:7pt;letter-spacing:2px;color:#888;padding:0 8px 4px;text-align:center;width:44px;">POS</th>
+            <th style="font-size:7pt;letter-spacing:2px;color:#888;padding:0 8px 4px;text-align:right;width:60px;">AVG</th>
+          </tr>
+        </thead>
+        <tbody>${batRows}</tbody>
       </table>
+
+      <!-- Divider -->
+      <div style="border-top:2px dashed #C22818;margin-bottom:8px;"></div>
+
+      <!-- DEFENSE BY INNING section -->
+      <div style="font-size:8pt;font-weight:900;letter-spacing:3px;color:#C22818;background:#fff3f3;padding:4px 8px;border-radius:4px;margin-bottom:6px;text-align:center;border:1px solid #fdd;">DEFENSE BY INNING — FIND YOUR NAME · FIND YOUR POSITION</div>
+      <table style="width:100%;border-collapse:collapse;"><tr>${defColsHTML}</tr></table>
 
       <!-- Footer -->
-      <div style="margin-top:10px;border-top:1px solid #ddd;padding-top:4px;display:flex;justify-content:space-between;font-size:6.5pt;color:#bbb;letter-spacing:1px;">
+      <div style="margin-top:8px;border-top:1px solid #ddd;padding-top:4px;display:flex;justify-content:space-between;font-size:6pt;color:#bbb;letter-spacing:1px;">
         <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
-        <span>Post in dugout — check position each inning change</span>
+        <span>4-run cap · 1 bunt/inn · no steal home</span>
         <span>${todayLong}</span>
       </div>
     </div>`;
