@@ -2475,32 +2475,33 @@ function exportGameDayPDF(){
 
   </div>`;
   window.print();
-  // Reset card sizing after print so it doesn't stay wide on screen
-  setTimeout(()=>{card.style.width='';card.style.maxWidth='';},500);
 }
 
 function _setPrintPage(orientation){
   const e=document.getElementById('_print_page_style');if(e)e.remove();
-  const isLandscape=orientation==='landscape';
-  // iOS Safari ignores @page size — use a transform+width trick to force landscape rendering
-  const iosLandscape=isLandscape?`
-    @media print {
-      #pdf-card {
-        width: 10.3in !important;
-        transform-origin: top left !important;
-      }
-    }
-  `:'';
   const s=document.createElement('style');
   s.id='_print_page_style';
-  s.textContent=`@media print { @page { size: letter ${orientation}; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} } }${iosLandscape}`;
+  s.textContent=`
+    @media print {
+      @page { size: letter ${orientation}; margin: 0.3in;
+        @top-left{content:none} @top-center{content:none} @top-right{content:none}
+        @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none}
+      }
+      html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; background: #fff !important; }
+      body > *:not(#pdf-card) { display: none !important; }
+      #pdf-card {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        page-break-inside: avoid;
+      }
+    }
+  `;
   document.head.appendChild(s);
-  // Also set the pdf-card width so layout is calculated at landscape width before print
-  const card=document.getElementById('pdf-card');
-  if(card){
-    card.style.width=isLandscape?'10.3in':'7.5in';
-    card.style.maxWidth='none';
-  }
 }
 
 // ── EXPORT AWARDS CEREMONY PDF ──────────────────────────────────────────────
