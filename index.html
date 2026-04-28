@@ -2367,118 +2367,141 @@ function renderAwards(){
 }
 
 // ── EXPORT PDF ────────────────────────────────────────────────────────────────
-// Single LANDSCAPE letter page.
-//   Left column: batting order
-//   Right area: defense by inning — 6 columns, players A–Z, bench shown inline
+// Single LANDSCAPE letter page — 100% table-based, no flex, no grid.
+// Left col (24%): batting order. Right 6 cols (76%): defense by inning, A–Z.
 function exportGameDayPDF(){
   const card=document.getElementById('pdf-card');
   const todayLong=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   const st=seasonTotals();
   _setPrintPage('landscape');
 
-  // ── Batting order rows ──
+  // ── Batting order ──
   const batRows=battingOrder.map((b,i)=>{
     const p=roster[b.idx];
     const s=st[b.idx];
     const avg=s&&s.ab>0?s.avg.toFixed(3):'—';
     const dispPos=getStartingPos(b.idx);
-    const bg=i%2===1?'#f7f7f7':'#ffffff';
+    const bg=i%2===1?'#f5f5f5':'#fff';
     return `<tr style="background:${bg};">
-      <td style="padding:5px 8px;font-size:14pt;font-weight:900;color:#C22818;text-align:center;width:28px;">${i+1}</td>
-      <td style="padding:5px 8px;font-size:12pt;font-weight:700;color:#111;">${p.name}</td>
-      <td style="padding:5px 8px;font-size:11pt;font-weight:900;color:#C22818;text-align:center;width:40px;">${dispPos}</td>
-      <td style="padding:5px 8px;font-size:9pt;font-weight:600;color:#999;text-align:right;width:44px;">${avg}</td>
+      <td style="padding:5px 7px;font-size:13pt;font-weight:900;color:#C22818;text-align:center;width:20pt;border-bottom:1px solid #eee;">${i+1}</td>
+      <td style="padding:5px 7px;font-size:10.5pt;font-weight:700;color:#111;border-bottom:1px solid #eee;">${p.name}</td>
+      <td style="padding:5px 7px;font-size:10pt;font-weight:900;color:#C22818;text-align:center;width:28pt;border-bottom:1px solid #eee;">${dispPos}</td>
+      <td style="padding:5px 7px;font-size:8pt;color:#aaa;font-weight:600;text-align:right;width:32pt;border-bottom:1px solid #eee;">${avg}</td>
     </tr>`;
   }).join('');
 
-  // ── Defense columns — bench player listed inline with BENCH label ──
-  const defColsHTML=defBlocks.map((block,bi)=>{
-    // All players A–Z including bench (shown inline with BENCH label)
-    const benchIdx=block.benchIdx;
+  // ── Defense: 6 inning columns, all players A–Z, bench shown inline ──
+  const defCols=defBlocks.map((block,bi)=>{
+    const bIdx=block.benchIdx;
     const fielders=Object.entries(block.assignments)
       .map(([pos,pi])=>({name:roster[pi].name,pos,isBench:false}));
-    const benchEntry=benchIdx!==null&&roster[benchIdx]
-      ?[{name:roster[benchIdx].name,pos:'BENCH',isBench:true}]
-      :[];
-    const allPlayers=[...fielders,...benchEntry]
-      .sort((a,b)=>a.name.localeCompare(b.name));
+    const bench=bIdx!==null&&roster[bIdx]
+      ?[{name:roster[bIdx].name,pos:'BENCH',isBench:true}]:[];
+    const players=[...fielders,...bench].sort((a,b)=>a.name.localeCompare(b.name));
 
-    const rows=allPlayers.map(({name,pos,isBench},idx)=>{
-      const nameParts=name.split(' ');
-      const first=nameParts[0];
-      const last=nameParts.slice(1).join(' ');
-      const bg=isBench?'#f0f0f0':idx%2===0?'#fff':'#f7f7f7';
-      const posColor=isBench?'#888':'#C22818';
-      const nameColor=isBench?'#777':'#111';
+    const rows=players.map(({name,pos,isBench},ri)=>{
+      const first=name.split(' ')[0];
+      const last=name.split(' ').slice(1).join(' ');
+      const bg=isBench?'#ebebeb':ri%2===0?'#fff':'#f5f5f5';
       return `<tr style="background:${bg};">
-        <td style="padding:4px 5px;font-size:10pt;font-weight:700;color:${nameColor};line-height:1.15;">${first} <span style="font-size:8pt;font-weight:500;">${last}</span></td>
-        <td style="padding:4px 5px;font-size:${isBench?'7.5':'10'}pt;font-weight:900;color:${posColor};text-align:right;white-space:nowrap;width:${isBench?'40':'32'}px;font-style:${isBench?'italic':'normal'};">${pos}</td>
+        <td style="padding:3px 4px;font-size:8.5pt;font-weight:700;color:${isBench?'#888':'#111'};border-bottom:1px solid #eee;white-space:nowrap;">${first} <span style="font-size:7pt;font-weight:400;color:${isBench?'#aaa':'#555'};">${last}</span></td>
+        <td style="padding:3px 4px;font-size:${isBench?'6.5':'8.5'}pt;font-weight:900;color:${isBench?'#999':'#C22818'};text-align:right;white-space:nowrap;border-bottom:1px solid #eee;font-style:${isBench?'italic':'normal'};">${pos}</td>
       </tr>`;
     }).join('');
 
-    return `<td style="vertical-align:top;padding:0 4px;width:16.66%;">
+    return `<td style="vertical-align:top;padding:0 2px;">
       <table style="width:100%;border-collapse:collapse;border:1.5px solid #ccc;">
-        <tr><td colspan="2" style="background:#C22818;color:#fff;font-size:10pt;font-weight:900;letter-spacing:2px;padding:5px 8px;text-align:center;">INN ${bi+1}</td></tr>
+        <tr><td colspan="2" style="background:#C22818;color:#fff;font-size:9.5pt;font-weight:900;letter-spacing:1px;padding:5px 6px;text-align:center;white-space:nowrap;">INN ${bi+1}</td></tr>
         ${rows}
-      </table></td>`;
+      </table>
+    </td>`;
   }).join('');
 
-  card.innerHTML=`
-    <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;width:100%;box-sizing:border-box;">
+  card.innerHTML=`<div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;">
 
-      <!-- Header -->
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #C22818;padding-bottom:6px;margin-bottom:10px;">
-        <div>
-          <div style="font-size:18pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS</div>
-          <div style="font-size:8pt;letter-spacing:3px;color:#777;margin-top:3px;">TVL MINORS 10B · GAME DAY</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:11pt;font-weight:800;color:#111;">${todayLong}</div>
-          <div style="font-size:9pt;color:#555;margin-top:2px;">vs. _____________________ &nbsp;&#9744; Home &nbsp;&#9744; Away</div>
-        </div>
-      </div>
+    <!-- HEADER -->
+    <table style="width:100%;border-collapse:collapse;margin-bottom:8px;border-bottom:3px solid #C22818;">
+      <tr>
+        <td style="padding-bottom:5px;vertical-align:bottom;">
+          <div style="font-size:17pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS</div>
+          <div style="font-size:7pt;letter-spacing:3px;color:#888;margin-top:3px;">TVL MINORS 10B · GAME DAY</div>
+        </td>
+        <td style="text-align:right;padding-bottom:5px;vertical-align:bottom;white-space:nowrap;">
+          <div style="font-size:10pt;font-weight:800;color:#111;">${todayLong}</div>
+          <div style="font-size:8.5pt;color:#666;margin-top:2px;">vs. ______________________ &nbsp;&#9744; Home &nbsp;&#9744; Away</div>
+        </td>
+      </tr>
+    </table>
 
-      <!-- Body: batting left, defense right -->
-      <div style="display:flex;gap:14px;align-items:flex-start;">
+    <!-- BODY: outer table splits batting (left) from defense (right) -->
+    <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+      <colgroup>
+        <col style="width:24%;">
+        <col style="width:76%;">
+      </colgroup>
+      <tr>
 
         <!-- BATTING ORDER -->
-        <div style="flex:0 0 26%;">
-          <div style="font-size:8pt;font-weight:900;letter-spacing:3px;color:#C22818;border-bottom:2px solid #C22818;padding-bottom:4px;margin-bottom:4px;">BATTING ORDER</div>
+        <td style="vertical-align:top;padding-right:10px;border-right:2px solid #ddd;">
+          <div style="font-size:7.5pt;font-weight:900;letter-spacing:2px;color:#C22818;border-bottom:2px solid #C22818;padding-bottom:3px;margin-bottom:4px;">BATTING ORDER</div>
           <table style="width:100%;border-collapse:collapse;">
-            <thead>
-              <tr style="border-bottom:1px solid #ddd;">
-                <th style="font-size:7pt;color:#bbb;padding:2px 8px;text-align:center;font-weight:600;">#</th>
-                <th style="font-size:7pt;color:#bbb;padding:2px 8px;text-align:left;font-weight:600;">PLAYER</th>
-                <th style="font-size:7pt;color:#bbb;padding:2px 8px;text-align:center;font-weight:600;">POS</th>
-                <th style="font-size:7pt;color:#bbb;padding:2px 8px;text-align:right;font-weight:600;">AVG</th>
-              </tr>
-            </thead>
+            <thead><tr>
+              <th style="font-size:6.5pt;color:#ccc;font-weight:600;padding:1px 7px 3px;text-align:center;">#</th>
+              <th style="font-size:6.5pt;color:#ccc;font-weight:600;padding:1px 7px 3px;text-align:left;">PLAYER</th>
+              <th style="font-size:6.5pt;color:#ccc;font-weight:600;padding:1px 7px 3px;text-align:center;">POS</th>
+              <th style="font-size:6.5pt;color:#ccc;font-weight:600;padding:1px 7px 3px;text-align:right;">AVG</th>
+            </tr></thead>
             <tbody>${batRows}</tbody>
           </table>
-        </div>
-
-        <!-- VERTICAL DIVIDER -->
-        <div style="flex:0 0 1px;background:#ddd;align-self:stretch;"></div>
+        </td>
 
         <!-- DEFENSE BY INNING -->
-        <div style="flex:1;">
-          <div style="font-size:8pt;font-weight:900;letter-spacing:3px;color:#C22818;border-bottom:2px solid #C22818;padding-bottom:4px;margin-bottom:4px;">DEFENSE BY INNING — FIND YOUR NAME · FIND YOUR POSITION</div>
-          <table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr>${defColsHTML}</tr></table>
-        </div>
+        <td style="vertical-align:top;padding-left:10px;">
+          <div style="font-size:7.5pt;font-weight:900;letter-spacing:2px;color:#C22818;border-bottom:2px solid #C22818;padding-bottom:3px;margin-bottom:4px;">DEFENSE BY INNING — FIND YOUR NAME · FIND YOUR POSITION</div>
+          <table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr>${defCols}</tr></table>
+        </td>
 
-      </div>
+      </tr>
+    </table>
 
-      <!-- Footer -->
-      <div style="margin-top:10px;border-top:1px solid #eee;padding-top:4px;display:flex;justify-content:space-between;font-size:6pt;color:#bbb;letter-spacing:1px;">
-        <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
-        <span>4-run cap · 1 bunt/inn · no steal home · no advance on overthrow</span>
-        <span>${todayLong}</span>
-      </div>
-    </div>`;
+    <!-- FOOTER -->
+    <table style="width:100%;border-collapse:collapse;margin-top:7px;border-top:1px solid #eee;">
+      <tr>
+        <td style="font-size:5.5pt;color:#ccc;padding-top:3px;">🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</td>
+        <td style="font-size:5.5pt;color:#ccc;padding-top:3px;text-align:center;">4-run cap · 1 bunt/inn · no steal home · no advance on overthrow</td>
+        <td style="font-size:5.5pt;color:#ccc;padding-top:3px;text-align:right;">${todayLong}</td>
+      </tr>
+    </table>
+
+  </div>`;
   window.print();
+  // Reset card sizing after print so it doesn't stay wide on screen
+  setTimeout(()=>{card.style.width='';card.style.maxWidth='';},500);
 }
 
-function _setPrintPage(orientation){const e=document.getElementById('_print_page_style');if(e)e.remove();const s=document.createElement('style');s.id='_print_page_style';s.textContent=`@media print { @page { size: letter ${orientation}; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} } }`;document.head.appendChild(s);}
+function _setPrintPage(orientation){
+  const e=document.getElementById('_print_page_style');if(e)e.remove();
+  const isLandscape=orientation==='landscape';
+  // iOS Safari ignores @page size — use a transform+width trick to force landscape rendering
+  const iosLandscape=isLandscape?`
+    @media print {
+      #pdf-card {
+        width: 10.3in !important;
+        transform-origin: top left !important;
+      }
+    }
+  `:'';
+  const s=document.createElement('style');
+  s.id='_print_page_style';
+  s.textContent=`@media print { @page { size: letter ${orientation}; margin:0.35in; @top-left{content:none} @top-center{content:none} @top-right{content:none} @bottom-left{content:none} @bottom-center{content:none} @bottom-right{content:none} } }${iosLandscape}`;
+  document.head.appendChild(s);
+  // Also set the pdf-card width so layout is calculated at landscape width before print
+  const card=document.getElementById('pdf-card');
+  if(card){
+    card.style.width=isLandscape?'10.3in':'7.5in';
+    card.style.maxWidth='none';
+  }
+}
 
 // ── EXPORT AWARDS CEREMONY PDF ──────────────────────────────────────────────
 function exportCeremony(){
