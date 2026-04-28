@@ -763,34 +763,75 @@ function manualRankOrder(){
 const IF_POS=new Set(['P','C','1B','2B','3B','SS']);
 const OF_POS=new Set(['LF','LC','CF','RF']);
 
-function buildSuggest(benchIdx,prev,pp,allBlocks){
+// Returns pitcher eligibility info for a given block index, given all prior blocks.
+// Rules:
+//   1. No player may pitch more than 3 innings total (each block = 1 inning).
+//   2. Only the Inning 1 starter may return to P after being removed in Inn 1 or 2.
+//      Any other pitcher must be "new" (hasn't pitched yet in the game).
+function getPitcherEligibility(bi,priorBlocks,benchIdx){
+  const inningsPitched={};  // pi -> count of innings pitched so far
+  let inn1Starter=null;     // roster idx of the inning 1 starter pitcher
+  (priorBlocks||[]).forEach((b,idx)=>{
+    if(!b||!b.assignments)return;
+    const p=b.assignments['P'];
+    if(p===undefined)return;
+    if(idx===0)inn1Starter=p;
+    inningsPitched[p]=(inningsPitched[p]||0)+1;
+  });
+  // Build eligible pitcher pool for this block
+  const pool=roster.map((_,i)=>i).filter(i=>benchIdx===null||i!==benchIdx);
+  return pool.filter(pi=>{
+    const innings=inningsPitched[pi]||0;
+    if(innings>=3)return false; // 3-inning limit
+    if(bi===0)return true;      // Inning 1: anyone eligible
+    // For inn 2+: must be either the inn1 starter OR a player who hasn't pitched yet
+    if(inn1Starter!==null&&pi===inn1Starter)return true;
+    return innings===0; // "new" pitcher — hasn't thrown yet
+  });
+}
+
+function buildSuggest(benchIdx,prev,pp,allBlocks,bi){
   const pool=roster.map((_,i)=>i).filter(i=>benchIdx===null||i!==benchIdx);
   const assigned={},used=new Set();
   const prevMap={};if(prev)Object.entries(prev).forEach(([p,pi])=>prevMap[pi]=p);
   const ppMap={};if(pp)Object.entries(pp).forEach(([p,pi])=>ppMap[pi]=p);
   function sc(pi,pos){return(roster[pi].strengths[pos]||0)*10+(10-effRank(pi))+(prevMap[pi]===pos?-8:0)+(pp&&ppMap[pi]===pos?2:0);}
+
+  // ── Assign P first under pitching rules ──
+  const blockIdx=bi!==undefined?bi:(allBlocks?allBlocks.length:0);
+  const eligiblePitchers=getPitcherEligibility(blockIdx,allBlocks,benchIdx);
+  if(eligiblePitchers.length){
+    // Score eligible pitchers for P; strongly prefer pitcher strength, then avoid repeating prev
+    const bestP=eligiblePitchers.sort((a,b)=>sc(b,'P')-sc(a,'P'))[0];
+    assigned['P']=bestP;used.add(bestP);
+  }
+
   if(fairPlayMode&&allBlocks){
     const ifCount={},ofCount={};
     pool.forEach(pi=>{ifCount[pi]=0;ofCount[pi]=0;});
     (allBlocks||[]).forEach(b=>{if(!b||!b.assignments)return;Object.entries(b.assignments).forEach(([pos,pi])=>{if(IF_POS.has(pos))ifCount[pi]=(ifCount[pi]||0)+1;if(OF_POS.has(pos))ofCount[pi]=(ofCount[pi]||0)+1;});});
-    const needsIF=pool.filter(pi=>ifCount[pi]===0);
-    const needsOF=pool.filter(pi=>ofCount[pi]===0);
-    const ifPositions=[...IF_POS].filter(p=>POS_PRI.includes(p));
+    const needsIF=pool.filter(pi=>ifCount[pi]===0&&!used.has(pi));
+    const needsOF=pool.filter(pi=>ofCount[pi]===0&&!used.has(pi));
+    const ifPositions=[...IF_POS].filter(p=>POS_PRI.includes(p)&&p!=='P');
     const ofPositions=[...OF_POS].filter(p=>POS_PRI.includes(p));
-    const usedPos=new Set();
+    const usedPos=new Set(['P']);
     const sortedNeedsIF=[...needsIF].sort((a,b)=>{const bA=Math.max(...ifPositions.map(p=>roster[a].strengths[p]||0));const bB=Math.max(...ifPositions.map(p=>roster[b].strengths[p]||0));return bB-bA;});
     sortedNeedsIF.forEach(pi=>{if(used.has(pi))return;const best=ifPositions.filter(p=>!usedPos.has(p)).sort((a,b)=>sc(pi,b)-sc(pi,a))[0];if(best){assigned[best]=pi;used.add(pi);usedPos.add(best);}});
     const sortedNeedsOF=[...needsOF].sort((a,b)=>{const bA=Math.max(...ofPositions.map(p=>roster[a].strengths[p]||0));const bB=Math.max(...ofPositions.map(p=>roster[b].strengths[p]||0));return bB-bA;});
     sortedNeedsOF.forEach(pi=>{if(used.has(pi))return;const best=ofPositions.filter(p=>!usedPos.has(p)).sort((a,b)=>sc(pi,b)-sc(pi,a))[0];if(best){assigned[best]=pi;used.add(pi);usedPos.add(best);}});
-    for(const pos of POS_PRI){if(assigned[pos]!==undefined)continue;const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}}
+    for(const pos of POS_PRI){if(pos==='P'||assigned[pos]!==undefined)continue;const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}}
   }else{
-    for(const pos of POS_PRI){const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}}
+    for(const pos of POS_PRI){if(pos==='P'||assigned[pos]!==undefined)continue;const cands=pool.filter(i=>!used.has(i)).sort((a,b)=>sc(b,pos)-sc(a,pos));if(cands.length){assigned[pos]=cands[0];used.add(cands[0]);}}
   }
   if(prev){
     let changed=0;pool.forEach(pi=>{const np=Object.entries(assigned).find(([,v])=>v===pi)?.[0];if(prevMap[pi]!==np)changed++;});
     if(changed<=pool.length/2){
       const same=pool.filter(pi=>{const np=Object.entries(assigned).find(([,v])=>v===pi)?.[0];return prevMap[pi]===np;});
-      for(let i=0;i<same.length-1&&changed<=pool.length/2;i++){const a=same[i],b=same[i+1];const pa=Object.entries(assigned).find(([,v])=>v===a)?.[0];const pb=Object.entries(assigned).find(([,v])=>v===b)?.[0];if(pa&&pb&&pa!==pb&&(roster[a].strengths[pb]||0)>0&&(roster[b].strengths[pa]||0)>0){assigned[pa]=b;assigned[pb]=a;changed+=2;}}
+      for(let i=0;i<same.length-1&&changed<=pool.length/2;i++){const a=same[i],b=same[i+1];const pa=Object.entries(assigned).find(([,v])=>v===a)?.[0];const pb=Object.entries(assigned).find(([,v])=>v===b)?.[0];
+        // Never swap if it would put an ineligible player at P
+        if(pa==='P'&&!eligiblePitchers.includes(b))continue;
+        if(pb==='P'&&!eligiblePitchers.includes(a))continue;
+        if(pa&&pb&&pa!==pb&&(roster[a].strengths[pb]||0)>0&&(roster[b].strengths[pa]||0)>0){assigned[pa]=b;assigned[pb]=a;changed+=2;}}
     }
   }
   return assigned;
@@ -799,14 +840,14 @@ function autoSuggest(bi){
   const prev=bi>0?defBlocks[bi-1].assignments:null;
   const pp=bi>1?defBlocks[bi-2].assignments:null;
   const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>b.assignments?{assignments:b.assignments}:null):null;
-  defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks);
+  defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks,bi);
 }
 function autoSuggestAll(){
   for(let bi=0;bi<6;bi++){
     const prev=bi>0?defBlocks[bi-1].assignments:null;
     const pp=bi>1?defBlocks[bi-2].assignments:null;
     const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>({assignments:{...b.assignments}})):null;
-    defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks);
+    defBlocks[bi].assignments=buildSuggest(defBlocks[bi].benchIdx,prev,pp,priorBlocks,bi);
   }
 }
 function getFairPlayCompliance(){
@@ -934,7 +975,7 @@ function buildGameDayPlan(){
     // The existing function pulls from all roster except benchIdx — we'll wrap its output,
     // filtering out any assignment that goes to an unavailable player, then fill gaps from
     // the available pool.
-    const raw=buildSuggest(benchIdx,prev,pp,priorBlocks);
+    const raw=buildSuggest(benchIdx,prev,pp,priorBlocks,bi);
     const assignments={};
     const usedPlayers=new Set([benchIdx]);
     // Accept raw assignments only if the player is available
@@ -1531,7 +1572,7 @@ function renderBatting(){
   sc.appendChild(list);
 
   const printBtn=document.createElement('button');printBtn.className='btn-print';printBtn.textContent='📄 EXPORT GAME-DAY PDF';printBtn.onclick=exportGameDayPDF;sc.appendChild(printBtn);
-  const printSub=document.createElement('div');printSub.style.cssText='font-size:0.66rem;color:var(--muted);text-align:center;margin-top:5px;font-weight:600;';printSub.textContent='Single portrait page · batting order + defense by inning (all 6)';sc.appendChild(printSub);
+  const printSub=document.createElement('div');printSub.style.cssText='font-size:0.66rem;color:var(--muted);text-align:center;margin-top:5px;font-weight:600;';printSub.textContent='Single landscape page · batting order + all 6 innings · players A–Z';sc.appendChild(printSub);
 }
 
 function doDrop(ti){const src=dragIdx!==null?dragIdx:touchDragIdx;if(src===null||src===ti)return;const m=battingOrder.splice(src,1)[0];battingOrder.splice(ti,0,m);save();renderBatting();}
@@ -2326,16 +2367,16 @@ function renderAwards(){
 }
 
 // ── EXPORT PDF ────────────────────────────────────────────────────────────────
-// Portrait letter page.
-//   TOP half: batting order — clean, big, readable.
-//   BOTTOM half: defense by inning — 6 individual columns (Inn 1–6).
+// Single LANDSCAPE letter page.
+//   Left column (~28%): batting order
+//   Right area (~72%): defense by inning — 6 columns, players sorted A–Z
 function exportGameDayPDF(){
   const card=document.getElementById('pdf-card');
   const todayLong=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   const st=seasonTotals();
-  _setPrintPage('portrait');
+  _setPrintPage('landscape');
 
-  // Batting rows — compact but readable
+  // ── Batting order (left column) ──
   const batRows=battingOrder.map((b,i)=>{
     const p=roster[b.idx];
     const s=st[b.idx];
@@ -2343,32 +2384,36 @@ function exportGameDayPDF(){
     const dispPos=getStartingPos(b.idx);
     const zebra=i%2===1?'background:#fafafa;':'';
     return `<tr style="${zebra}">
-      <td style="padding:5px 8px;font-size:16pt;font-weight:900;color:#C22818;text-align:center;border-bottom:1px solid #eee;width:32px;">${i+1}</td>
-      <td style="padding:5px 8px;font-size:13pt;font-weight:800;color:#111;border-bottom:1px solid #eee;">${p.name}</td>
-      <td style="padding:5px 8px;font-size:12pt;font-weight:900;color:#C22818;text-align:center;border-bottom:1px solid #eee;width:44px;background:#fff8f8;">${dispPos}</td>
-      <td style="padding:5px 8px;font-size:9pt;font-weight:600;color:#777;text-align:right;border-bottom:1px solid #eee;width:60px;">${avg}</td>
+      <td style="padding:4px 6px;font-size:12pt;font-weight:900;color:#C22818;text-align:center;border-bottom:1px solid #eee;width:24px;line-height:1;">${i+1}</td>
+      <td style="padding:4px 6px;font-size:10.5pt;font-weight:800;color:#111;border-bottom:1px solid #eee;line-height:1;">${p.name}</td>
+      <td style="padding:4px 6px;font-size:10pt;font-weight:900;color:#C22818;text-align:center;border-bottom:1px solid #eee;width:36px;background:#fff8f8;line-height:1;">${dispPos}</td>
+      <td style="padding:4px 6px;font-size:8pt;font-weight:600;color:#888;text-align:right;border-bottom:1px solid #eee;width:46px;line-height:1;">${avg}</td>
     </tr>`;
   }).join('');
 
-  // Defense — 6 individual inning columns
-  // Sort positions in a logical field order for readability
-  const POS_ORDER=['P','C','1B','2B','3B','SS','LF','LC','CF','RF'];
+  // ── Defense columns — alphabetical by first name ──
   const defColsHTML=defBlocks.map((block,bi)=>{
     const label=`INN ${bi+1}`;
-    const benchName=block.benchIdx!==null&&roster[block.benchIdx]?roster[block.benchIdx].name.split(' ')[0]:'ALL IN';
-    // Build position → player name map, ordered by field position
-    const rows=POS_ORDER.map((pos,idx)=>{
-      const pi=block.assignments[pos];
-      const firstName=pi!==undefined?roster[pi].name.split(' ')[0]:'?';
-      return `<tr style="background:${idx%2===0?'#fff':'#fafafa'};">
-        <td style="padding:3px 5px;font-size:8.5pt;font-weight:900;color:#C22818;white-space:nowrap;width:28px;">${pos}</td>
-        <td style="padding:3px 5px;font-size:8.5pt;font-weight:700;color:#111;">${firstName}</td>
-      </tr>`;
-    }).join('');
-    return `<td style="vertical-align:top;padding:0 2px;width:16.66%;">
-      <table style="width:100%;border-collapse:collapse;border:1.5px solid #ddd;border-radius:4px;overflow:hidden;">
-        <tr><td colspan="2" style="background:#C22818;color:#fff;font-size:9pt;font-weight:900;letter-spacing:1px;padding:4px 5px;text-align:center;">${label}</td></tr>
-        <tr><td colspan="2" style="background:${block.benchIdx===null?'#e8f5e9':'#fff3f3'};color:${block.benchIdx===null?'#2e7d32':'#C22818'};font-size:6.5pt;font-weight:700;padding:2px 5px;border-bottom:1px solid ${block.benchIdx===null?'#c8e6c9':'#fcc'};text-align:center;">${block.benchIdx===null?'ALL IN':'OUT: '+benchName}</td></tr>
+    const benchFirst=block.benchIdx!==null&&roster[block.benchIdx]?roster[block.benchIdx].name.split(' ')[0]:'—';
+    const benchLast=block.benchIdx!==null&&roster[block.benchIdx]?roster[block.benchIdx].name.split(' ').slice(1).join(' '):'';
+    // Build player list sorted alphabetically by first name
+    const players=Object.entries(block.assignments)
+      .map(([pos,pi])=>({
+        firstName:roster[pi].name.split(' ')[0],
+        lastName:roster[pi].name.split(' ').slice(1).join(' '),
+        pos
+      }))
+      .sort((a,b)=>a.firstName.localeCompare(b.firstName));
+    const rows=players.map(({firstName,lastName,pos},idx)=>`
+      <tr style="background:${idx%2===0?'#fff':'#fafafa'};">
+        <td style="padding:3px 4px;font-size:9pt;font-weight:800;color:#111;border-bottom:1px solid #eee;line-height:1.1;">${firstName} <span style="font-size:7pt;color:#777;font-weight:600;">${lastName}</span></td>
+        <td style="padding:3px 4px;font-size:9.5pt;font-weight:900;color:#C22818;text-align:right;border-bottom:1px solid #eee;white-space:nowrap;width:30px;line-height:1.1;">${pos}</td>
+      </tr>`).join('');
+    const noBench=block.benchIdx===null;
+    return `<td style="vertical-align:top;padding:0 3px;width:11.9%;">
+      <table style="width:100%;border-collapse:collapse;border:1.5px solid #ddd;overflow:hidden;">
+        <tr><td colspan="2" style="background:#C22818;color:#fff;font-size:8.5pt;font-weight:900;letter-spacing:1px;padding:4px 5px;text-align:center;">${label}</td></tr>
+        <tr><td colspan="2" style="background:${noBench?'#e8f5e9':'#fff3f3'};color:${noBench?'#2e7d32':'#C22818'};font-size:6pt;font-weight:700;padding:2px 4px;border-bottom:1px solid ${noBench?'#c8e6c9':'#fdd'};text-align:center;">${noBench?'ALL IN':'OUT: '+benchFirst+' '+benchLast}</td></tr>
         ${rows}
       </table></td>`;
   }).join('');
@@ -2377,44 +2422,50 @@ function exportGameDayPDF(){
     <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif;color:#000;background:#fff;">
 
       <!-- Header -->
-      <table style="width:100%;border-collapse:collapse;border-bottom:3px solid #C22818;margin-bottom:8px;">
+      <table style="width:100%;border-collapse:collapse;border-bottom:3px solid #C22818;margin-bottom:7px;">
         <tr>
-          <td style="padding-bottom:5px;">
-            <div style="font-size:17pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS</div>
-            <div style="font-size:7.5pt;letter-spacing:3px;color:#555;margin-top:2px;">TVL MINORS 10B · GAME DAY CARD</div>
+          <td style="padding-bottom:4px;">
+            <div style="font-size:15pt;font-weight:900;color:#C22818;letter-spacing:1px;line-height:1;">🌶️ RED HOT CHILI PEPPERS</div>
+            <div style="font-size:7pt;letter-spacing:3px;color:#666;margin-top:2px;">TVL MINORS 10B · GAME DAY</div>
           </td>
-          <td style="text-align:right;padding-bottom:5px;white-space:nowrap;vertical-align:bottom;">
-            <div style="font-size:10pt;font-weight:800;">${todayLong}</div>
-            <div style="font-size:8.5pt;color:#555;">vs. _________________ &nbsp; &#9744; Home &nbsp; &#9744; Away</div>
+          <td style="text-align:right;padding-bottom:4px;white-space:nowrap;vertical-align:bottom;">
+            <div style="font-size:9pt;font-weight:800;">${todayLong}</div>
+            <div style="font-size:8pt;color:#555;">vs. _________________ &nbsp;&#9744; Home &nbsp;&#9744; Away</div>
           </td>
         </tr>
       </table>
 
-      <!-- BATTING ORDER section -->
-      <div style="font-size:8pt;font-weight:900;letter-spacing:3px;color:#C22818;background:#fff3f3;padding:4px 8px;border-radius:4px;margin-bottom:5px;text-align:center;border:1px solid #fdd;">BATTING ORDER</div>
-      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
-        <thead>
-          <tr style="border-bottom:2px solid #C22818;">
-            <th style="font-size:7pt;letter-spacing:2px;color:#888;padding:0 8px 4px;text-align:center;width:32px;">#</th>
-            <th style="font-size:7pt;letter-spacing:2px;color:#888;padding:0 8px 4px;text-align:left;">PLAYER</th>
-            <th style="font-size:7pt;letter-spacing:2px;color:#888;padding:0 8px 4px;text-align:center;width:44px;">POS</th>
-            <th style="font-size:7pt;letter-spacing:2px;color:#888;padding:0 8px 4px;text-align:right;width:60px;">AVG</th>
-          </tr>
-        </thead>
-        <tbody>${batRows}</tbody>
+      <!-- Two-column body -->
+      <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+        <tr>
+
+          <!-- LEFT: Batting order -->
+          <td style="vertical-align:top;width:27%;padding-right:10px;border-right:2px dashed #ddd;">
+            <div style="font-size:7pt;font-weight:900;letter-spacing:3px;color:#C22818;text-align:center;background:#fff3f3;padding:3px 6px;margin-bottom:4px;border:1px solid #fdd;">BATTING ORDER</div>
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr>
+                <th style="font-size:6pt;letter-spacing:1px;color:#aaa;padding:0 6px 3px;text-align:center;">#</th>
+                <th style="font-size:6pt;letter-spacing:1px;color:#aaa;padding:0 6px 3px;text-align:left;">PLAYER</th>
+                <th style="font-size:6pt;letter-spacing:1px;color:#aaa;padding:0 6px 3px;text-align:center;">POS</th>
+                <th style="font-size:6pt;letter-spacing:1px;color:#aaa;padding:0 6px 3px;text-align:right;">AVG</th>
+              </tr></thead>
+              <tbody>${batRows}</tbody>
+            </table>
+          </td>
+
+          <!-- RIGHT: Defense by inning -->
+          <td style="vertical-align:top;width:73%;padding-left:10px;">
+            <div style="font-size:7pt;font-weight:900;letter-spacing:3px;color:#C22818;text-align:center;background:#fff3f3;padding:3px 6px;margin-bottom:4px;border:1px solid #fdd;">DEFENSE BY INNING — FIND YOUR NAME · FIND YOUR POSITION</div>
+            <table style="width:100%;border-collapse:collapse;"><tr>${defColsHTML}</tr></table>
+          </td>
+
+        </tr>
       </table>
 
-      <!-- Divider -->
-      <div style="border-top:2px dashed #C22818;margin-bottom:8px;"></div>
-
-      <!-- DEFENSE BY INNING section -->
-      <div style="font-size:8pt;font-weight:900;letter-spacing:3px;color:#C22818;background:#fff3f3;padding:4px 8px;border-radius:4px;margin-bottom:6px;text-align:center;border:1px solid #fdd;">DEFENSE BY INNING — FIND YOUR NAME · FIND YOUR POSITION</div>
-      <table style="width:100%;border-collapse:collapse;"><tr>${defColsHTML}</tr></table>
-
       <!-- Footer -->
-      <div style="margin-top:8px;border-top:1px solid #ddd;padding-top:4px;display:flex;justify-content:space-between;font-size:6pt;color:#bbb;letter-spacing:1px;">
+      <div style="margin-top:6px;border-top:1px solid #eee;padding-top:3px;display:flex;justify-content:space-between;font-size:5.5pt;color:#bbb;letter-spacing:1px;">
         <span>🌶️ RED HOT CHILI PEPPERS · TVL MINORS 10B</span>
-        <span>4-run cap · 1 bunt/inn · no steal home</span>
+        <span>4-run cap · 1 bunt/inn · no steal home · no advance on overthrow</span>
         <span>${todayLong}</span>
       </div>
     </div>`;
