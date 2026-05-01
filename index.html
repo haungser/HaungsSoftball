@@ -783,8 +783,11 @@ function getPitcherEligibility(bi,priorBlocks,benchIdx){
     if(idx===0)inn1Starter=p;
     inningsPitched[p]=(inningsPitched[p]||0)+1;
   });
-  // Build eligible pitcher pool for this block
-  const pool=roster.map((_,i)=>i).filter(i=>benchIdx===null||i!==benchIdx);
+  // Build eligible pitcher pool for this block.
+  // Exclude bench AND any player who isn't available this inning block (OUT or arriving later).
+  const pool=roster.map((_,i)=>i)
+    .filter(i=>benchIdx===null||i!==benchIdx)
+    .filter(i=>availableInBlock(i,bi));
   return pool.filter(pi=>{
     const innings=inningsPitched[pi]||0;
     if(innings>=3)return false; // 3-inning limit
@@ -796,14 +799,20 @@ function getPitcherEligibility(bi,priorBlocks,benchIdx){
 }
 
 function buildSuggest(benchIdx,prev,pp,allBlocks,bi){
-  const pool=roster.map((_,i)=>i).filter(i=>benchIdx===null||i!==benchIdx);
+  // Pool excludes the bench AND any player not available in this inning block
+  // (out for the game, or arriving in a later inning). Without this filter, the
+  // DEF-tab ✦ SUGGEST button could place an absent player on the field even after
+  // the coach marked them OUT on the GAME tab.
+  const blockIdx=bi!==undefined?bi:(allBlocks?allBlocks.length:0);
+  const pool=roster.map((_,i)=>i)
+    .filter(i=>benchIdx===null||i!==benchIdx)
+    .filter(i=>availableInBlock(i,blockIdx));
   const assigned={},used=new Set();
   const prevMap={};if(prev)Object.entries(prev).forEach(([p,pi])=>prevMap[pi]=p);
   const ppMap={};if(pp)Object.entries(pp).forEach(([p,pi])=>ppMap[pi]=p);
   function sc(pi,pos){return(roster[pi].strengths[pos]||0)*10+(10-effRank(pi))+(prevMap[pi]===pos?-8:0)+(pp&&ppMap[pi]===pos?2:0);}
 
   // ── Assign P first under pitching rules ──
-  const blockIdx=bi!==undefined?bi:(allBlocks?allBlocks.length:0);
   const eligiblePitchers=getPitcherEligibility(blockIdx,allBlocks,benchIdx);
   if(eligiblePitchers.length){
     // Score eligible pitchers for P; strongly prefer pitcher strength, then avoid repeating prev
@@ -842,6 +851,12 @@ function buildSuggest(benchIdx,prev,pp,allBlocks,bi){
   return assigned;
 }
 function autoSuggest(bi){
+  // Sanity: if the currently-chosen bench player is now marked OUT or arriving
+  // later than this block, drop them as bench so SUGGEST can pick a valid one.
+  const cur=defBlocks[bi].benchIdx;
+  if(cur!==null&&cur!==undefined&&!availableInBlock(cur,bi)){
+    defBlocks[bi].benchIdx=null;
+  }
   const prev=bi>0?defBlocks[bi-1].assignments:null;
   const pp=bi>1?defBlocks[bi-2].assignments:null;
   const priorBlocks=bi>0?defBlocks.slice(0,bi).map(b=>b.assignments?{assignments:b.assignments}:null):null;
